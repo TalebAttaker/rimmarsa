@@ -1,0 +1,704 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { motion } from 'framer-motion'
+import {
+  Store,
+  User,
+  MapPin,
+  Upload,
+  CreditCard,
+  CheckCircle,
+  ArrowLeft,
+  Shield,
+  Building2,
+  Phone,
+  Mail
+} from 'lucide-react'
+import toast, { Toaster } from 'react-hot-toast'
+import Link from 'next/link'
+
+interface Region {
+  id: string
+  name: string
+  name_ar: string
+}
+
+interface City {
+  id: string
+  name: string
+  name_ar: string
+  region_id: string
+}
+
+const PRICING_PLANS = [
+  {
+    id: '1_month',
+    name: '1 Month Plan',
+    price: 1250,
+    duration: '30 days',
+    features: ['Full platform access', 'Unlimited products', 'Customer support', 'Analytics dashboard']
+  },
+  {
+    id: '2_months',
+    name: '2 Months Plan',
+    price: 1600,
+    duration: '60 days',
+    savings: 'Save 350 MRU',
+    features: ['Full platform access', 'Unlimited products', 'Priority customer support', 'Analytics dashboard', 'Featured vendor badge']
+  }
+]
+
+export default function VendorRegistrationPage() {
+  const [step, setStep] = useState(1)
+  const [regions, setRegions] = useState<Region[]>([])
+  const [cities, setCities] = useState<City[]>([])
+  const [filteredCities, setFilteredCities] = useState<City[]>([])
+  const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
+
+  const [formData, setFormData] = useState({
+    business_name: '',
+    owner_name: '',
+    email: '',
+    phone: '',
+    region_id: '',
+    city_id: '',
+    address: '',
+    package_plan: '2_months',
+    nni_image_url: '',
+    personal_image_url: '',
+    store_image_url: '',
+    payment_screenshot_url: ''
+  })
+
+  const [uploading, setUploading] = useState({
+    nni: false,
+    personal: false,
+    store: false,
+    payment: false
+  })
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    if (formData.region_id) {
+      const citiesInRegion = cities.filter(city => city.region_id === formData.region_id)
+      setFilteredCities(citiesInRegion)
+      if (!citiesInRegion.find(c => c.id === formData.city_id)) {
+        setFormData(prev => ({ ...prev, city_id: '' }))
+      }
+    } else {
+      setFilteredCities([])
+    }
+  }, [formData.region_id, cities, formData.city_id])
+
+  const fetchData = async () => {
+    try {
+      const supabase = createClient()
+
+      const { data: regionsData } = await supabase
+        .from('regions')
+        .select('*')
+        .eq('is_active', true)
+        .order('name')
+
+      const { data: citiesData } = await supabase
+        .from('cities')
+        .select('*')
+        .eq('is_active', true)
+        .order('name')
+
+      setRegions(regionsData || [])
+      setCities(citiesData || [])
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    }
+  }
+
+  const handleImageUpload = async (file: File, type: 'nni' | 'personal' | 'store' | 'payment') => {
+    setUploading(prev => ({ ...prev, [type]: true }))
+
+    try {
+      const supabase = createClient()
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
+      const filePath = `vendor-requests/${type}/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(filePath, file)
+
+      if (uploadError) throw uploadError
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('images')
+        .getPublicUrl(filePath)
+
+      const fieldMap = {
+        nni: 'nni_image_url',
+        personal: 'personal_image_url',
+        store: 'store_image_url',
+        payment: 'payment_screenshot_url'
+      }
+
+      setFormData(prev => ({ ...prev, [fieldMap[type]]: publicUrl }))
+      toast.success('Image uploaded successfully!')
+    } catch (error: unknown) {
+      console.error('Error uploading image:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload image'
+      toast.error(errorMessage)
+    } finally {
+      setUploading(prev => ({ ...prev, [type]: false }))
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // Validation
+    if (!formData.nni_image_url || !formData.personal_image_url ||
+        !formData.store_image_url || !formData.payment_screenshot_url) {
+      toast.error('Please upload all required images')
+      return
+    }
+
+    setSubmitting(true)
+
+    try {
+      const supabase = createClient()
+
+      const selectedPlan = PRICING_PLANS.find(p => p.id === formData.package_plan)
+
+      const { error } = await supabase
+        .from('vendor_requests')
+        .insert([{
+          business_name: formData.business_name,
+          owner_name: formData.owner_name,
+          email: formData.email,
+          phone: formData.phone,
+          region_id: formData.region_id || null,
+          city_id: formData.city_id || null,
+          address: formData.address || null,
+          package_plan: formData.package_plan,
+          package_price: selectedPlan?.price || 0,
+          nni_image_url: formData.nni_image_url,
+          personal_image_url: formData.personal_image_url,
+          store_image_url: formData.store_image_url,
+          payment_screenshot_url: formData.payment_screenshot_url,
+          status: 'pending'
+        }])
+
+      if (error) throw error
+
+      setSuccess(true)
+      toast.success('Application submitted successfully!')
+    } catch (error: unknown) {
+      console.error('Error submitting application:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to submit application'
+      toast.error(errorMessage)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const selectedPlan = PRICING_PLANS.find(p => p.id === formData.package_plan)
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-4">
+        <Toaster position="top-right" />
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="max-w-md w-full bg-gray-900 border border-green-500/20 rounded-2xl p-8 text-center"
+        >
+          <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-12 h-12 text-green-400" />
+          </div>
+          <h2 className="text-3xl font-bold text-green-400 mb-4">Application Submitted!</h2>
+          <p className="text-gray-300 mb-6">
+            Thank you for applying to join Rimmarsa! We&apos;ve received your application and will review it shortly.
+            You&apos;ll receive an email notification once your application is processed.
+          </p>
+          <div className="bg-gray-800/50 rounded-xl p-4 mb-6">
+            <p className="text-sm text-gray-400 mb-2">Application Details:</p>
+            <p className="text-white font-medium">{formData.business_name}</p>
+            <p className="text-gray-400 text-sm">{formData.email}</p>
+            <p className="text-yellow-400 font-semibold mt-2">
+              {selectedPlan?.name} - {selectedPlan?.price} MRU
+            </p>
+          </div>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-semibold rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition-all"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Link>
+        </motion.div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-12 px-4">
+      <Toaster position="top-right" />
+
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-8"
+        >
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent mb-2">
+            Become a Vendor
+          </h1>
+          <p className="text-gray-400">Join Mauritania&apos;s leading marketplace platform</p>
+          <div className="mt-4">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Progress Steps */}
+        <div className="flex items-center justify-center mb-8 gap-4">
+          {[1, 2, 3, 4].map((s) => (
+            <div key={s} className="flex items-center">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
+                  step >= s
+                    ? 'bg-yellow-500 text-black'
+                    : 'bg-gray-700 text-gray-400'
+                }`}
+              >
+                {s}
+              </div>
+              {s < 4 && (
+                <div
+                  className={`w-12 h-1 ${
+                    step > s ? 'bg-yellow-500' : 'bg-gray-700'
+                  }`}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Form */}
+        <motion.form
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onSubmit={handleSubmit}
+          className="bg-gray-900/50 backdrop-blur-xl border border-yellow-500/20 rounded-2xl p-8"
+        >
+          {/* Step 1: Business Information */}
+          {step === 1 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
+                <Store className="w-6 h-6" />
+                Business Information
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Business Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.business_name}
+                    onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    placeholder="Your business name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Owner Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.owner_name}
+                    onChange={(e) => setFormData({ ...formData, owner_name: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    placeholder="Full name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    placeholder="your@email.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                    <Phone className="w-4 h-4" />
+                    Phone Number *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    placeholder="+222 XX XX XX XX"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold rounded-xl transition-all"
+              >
+                Next: Location
+              </button>
+            </div>
+          )}
+
+          {/* Step 2: Location */}
+          {step === 2 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
+                <MapPin className="w-6 h-6" />
+                Location
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Region
+                  </label>
+                  <select
+                    value={formData.region_id}
+                    onChange={(e) => setFormData({ ...formData, region_id: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                  >
+                    <option value="">Select a region</option>
+                    {regions.map(region => (
+                      <option key={region.id} value={region.id}>
+                        {region.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    City
+                  </label>
+                  <select
+                    value={formData.city_id}
+                    onChange={(e) => setFormData({ ...formData, city_id: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    disabled={!formData.region_id}
+                  >
+                    <option value="">Select a city</option>
+                    {filteredCities.map(city => (
+                      <option key={city.id} value={city.id}>
+                        {city.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Address
+                </label>
+                <input
+                  type="text"
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                  placeholder="Street address"
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(3)}
+                  className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold rounded-xl transition-all"
+                >
+                  Next: Documents
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Documents */}
+          {step === 3 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
+                <Upload className="w-6 h-6" />
+                Upload Documents
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* National ID Image */}
+                <div className="bg-gray-800/30 rounded-xl p-6">
+                  <label className="block text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    National ID (NNI) *
+                  </label>
+                  {formData.nni_image_url ? (
+                    <div className="space-y-3">
+                      <img src={formData.nni_image_url} alt="NNI" className="w-full h-32 object-cover rounded-lg" />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, nni_image_url: '' })}
+                        className="w-full py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg transition-colors text-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                      <Upload className="w-8 h-8 text-gray-500 mb-2" />
+                      <span className="text-sm text-gray-400">
+                        {uploading.nni ? 'Uploading...' : 'Click to upload'}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) handleImageUpload(file, 'nni')
+                        }}
+                        className="hidden"
+                        disabled={uploading.nni}
+                      />
+                    </label>
+                  )}
+                </div>
+
+                {/* Personal Image */}
+                <div className="bg-gray-800/30 rounded-xl p-6">
+                  <label className="block text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Personal Photo *
+                  </label>
+                  {formData.personal_image_url ? (
+                    <div className="space-y-3">
+                      <img src={formData.personal_image_url} alt="Personal" className="w-full h-32 object-cover rounded-lg" />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, personal_image_url: '' })}
+                        className="w-full py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg transition-colors text-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                      <Upload className="w-8 h-8 text-gray-500 mb-2" />
+                      <span className="text-sm text-gray-400">
+                        {uploading.personal ? 'Uploading...' : 'Click to upload'}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) handleImageUpload(file, 'personal')
+                        }}
+                        className="hidden"
+                        disabled={uploading.personal}
+                      />
+                    </label>
+                  )}
+                </div>
+
+                {/* Store Image */}
+                <div className="bg-gray-800/30 rounded-xl p-6">
+                  <label className="block text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
+                    <Building2 className="w-4 h-4" />
+                    Store Photo *
+                  </label>
+                  {formData.store_image_url ? (
+                    <div className="space-y-3">
+                      <img src={formData.store_image_url} alt="Store" className="w-full h-32 object-cover rounded-lg" />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, store_image_url: '' })}
+                        className="w-full py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg transition-colors text-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                      <Upload className="w-8 h-8 text-gray-500 mb-2" />
+                      <span className="text-sm text-gray-400">
+                        {uploading.store ? 'Uploading...' : 'Click to upload'}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) handleImageUpload(file, 'store')
+                        }}
+                        className="hidden"
+                        disabled={uploading.store}
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(4)}
+                  disabled={!formData.nni_image_url || !formData.personal_image_url || !formData.store_image_url}
+                  className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next: Payment
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Pricing & Payment */}
+          {step === 4 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
+                <CreditCard className="w-6 h-6" />
+                Select Plan & Payment
+              </h2>
+
+              {/* Pricing Plans */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {PRICING_PLANS.map((plan) => (
+                  <button
+                    key={plan.id}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, package_plan: plan.id })}
+                    className={`relative p-6 rounded-xl border-2 transition-all text-left ${
+                      formData.package_plan === plan.id
+                        ? 'border-yellow-500 bg-yellow-500/10'
+                        : 'border-gray-700 bg-gray-800/30 hover:border-gray-600'
+                    }`}
+                  >
+                    {plan.savings && (
+                      <div className="absolute top-4 right-4 px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">
+                        {plan.savings}
+                      </div>
+                    )}
+                    <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+                    <p className="text-3xl font-bold text-yellow-400 mb-2">{plan.price} MRU</p>
+                    <p className="text-gray-400 text-sm mb-4">{plan.duration}</p>
+                    <ul className="space-y-2">
+                      {plan.features.map((feature, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </button>
+                ))}
+              </div>
+
+              {/* Payment Screenshot */}
+              <div className="bg-gray-800/30 rounded-xl p-6">
+                <label className="block text-sm font-medium text-gray-300 mb-3">
+                  Upload Payment Screenshot *
+                </label>
+                <p className="text-sm text-gray-400 mb-4">
+                  Please make payment to the account details provided and upload the screenshot here.
+                </p>
+                {formData.payment_screenshot_url ? (
+                  <div className="space-y-3">
+                    <img src={formData.payment_screenshot_url} alt="Payment" className="w-full h-48 object-cover rounded-lg" />
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, payment_screenshot_url: '' })}
+                      className="w-full py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg transition-colors text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                    <Upload className="w-12 h-12 text-gray-500 mb-2" />
+                    <span className="text-sm text-gray-400">
+                      {uploading.payment ? 'Uploading...' : 'Click to upload payment screenshot'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) handleImageUpload(file, 'payment')
+                      }}
+                      className="hidden"
+                      disabled={uploading.payment}
+                    />
+                  </label>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setStep(3)}
+                  className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting || !formData.payment_screenshot_url}
+                  className="flex-1 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submitting ? 'Submitting...' : 'Submit Application'}
+                </button>
+              </div>
+            </div>
+          )}
+        </motion.form>
+      </div>
+    </div>
+  )
+}

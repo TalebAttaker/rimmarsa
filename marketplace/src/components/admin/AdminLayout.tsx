@@ -16,7 +16,8 @@ import {
   X,
   ChevronRight,
   MapPin,
-  Building2
+  Building2,
+  UserPlus
 } from 'lucide-react'
 
 interface AdminLayoutProps {
@@ -25,6 +26,7 @@ interface AdminLayoutProps {
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/fassalapremierprojectbsk/dashboard' },
+  { icon: UserPlus, label: 'Vendor Requests', href: '/fassalapremierprojectbsk/vendor-requests' },
   { icon: Users, label: 'Vendors', href: '/fassalapremierprojectbsk/vendors' },
   { icon: Package, label: 'Products', href: '/fassalapremierprojectbsk/products' },
   { icon: Tags, label: 'Categories', href: '/fassalapremierprojectbsk/categories' },
