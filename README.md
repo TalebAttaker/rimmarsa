@@ -2,6 +2,8 @@
 
 A complete e-commerce ecosystem with public marketplace, vendor management, and referral system.
 
+**GitHub Repository:** https://github.com/TalebAttaker/rimmarsa
+
 ## 🏗️ Project Structure
 
 ```

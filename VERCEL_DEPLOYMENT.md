@@ -118,7 +118,7 @@ The marketplace is configured with:
 
 - **Vercel Dashboard:** https://vercel.com/dashboard
 - **Supabase Dashboard:** https://app.supabase.com
-- **GitHub Repository:** https://github.com/taharou7-max/rimmarsa
+- **GitHub Repository:** https://github.com/TalebAttaker/rimmarsa
 - **Vercel Docs:** https://vercel.com/docs
 
 ---
