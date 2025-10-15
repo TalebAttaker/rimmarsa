@@ -1,0 +1,12 @@
+node_modules
+.next
+.env*.local
+.vercel
+*.log
+.DS_Store
+coverage
+.git
+README.md
+setup-rimmarsa.sh
+setup-database.js
+supabase_migration.sql
