@@ -4,6 +4,18 @@ import Link from 'next/link'
 import Image from 'next/image'
 import WhatsAppButton from '@/components/WhatsAppButton'
 
+type VendorProfile = {
+  profile_image: string | null
+  store_name: string
+  vendor_name: string
+  total_products: number
+  city: string
+  state: string
+  whatsapp_number: string
+  description: string | null
+  member_since: string
+}
+
 export default async function ProductDetailPage({
   params,
 }: {
@@ -36,7 +48,7 @@ export default async function ProductDetailPage({
     .rpc('get_public_vendor_profile', {
       vendor_uuid: product.vendor_id,
     })
-    .single()
+    .single() as { data: VendorProfile | null }
 
   // Increment view count (fire and forget)
   supabase
@@ -116,7 +128,7 @@ export default async function ProductDetailPage({
             {/* Thumbnail Gallery */}
             {product.images && product.images.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
-                {product.images.slice(0, 4).map((img, idx) => (
+                {product.images.slice(0, 4).map((img: string, idx: number) => (
                   <div
                     key={idx}
                     className="aspect-square bg-white rounded-lg shadow overflow-hidden"

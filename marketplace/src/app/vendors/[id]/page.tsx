@@ -3,6 +3,18 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ProductGrid from '@/components/ProductGrid'
 
+type VendorProfile = {
+  profile_image: string | null
+  store_name: string
+  vendor_name: string
+  total_products: number
+  city: string
+  state: string
+  whatsapp_number: string
+  description: string | null
+  member_since: string
+}
+
 export default async function VendorProfilePage({
   params,
 }: {
@@ -16,7 +28,7 @@ export default async function VendorProfilePage({
     .rpc('get_public_vendor_profile', {
       vendor_uuid: id,
     })
-    .single()
+    .single() as { data: VendorProfile | null }
 
   if (!vendorProfile) {
     notFound()

@@ -44,9 +44,6 @@ export default function ProductGrid({ products }: ProductGridProps) {
                 📍 {product.city}
               </span>
             </div>
-            <div className="mt-2 text-xs text-gray-400">
-              {product.state}
-            </div>
           </div>
         </Link>
       ))}
