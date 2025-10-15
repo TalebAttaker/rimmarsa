@@ -6,14 +6,15 @@ import ProductGrid from '@/components/ProductGrid'
 export default async function VendorProfilePage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const supabase = await createClient()
 
   // Fetch vendor profile using database function
   const { data: vendorProfile } = await supabase
     .rpc('get_public_vendor_profile', {
-      vendor_uuid: params.id,
+      vendor_uuid: id,
     })
     .single()
 
@@ -25,14 +26,14 @@ export default async function VendorProfilePage({
   const { data: products } = await supabase
     .from('products')
     .select('*')
-    .eq('vendor_id', params.id)
+    .eq('vendor_id', id)
     .eq('is_active', true)
     .order('created_at', { ascending: false })
 
   // Get vendor stats
   const { data: stats } = await supabase
     .rpc('get_vendor_stats', {
-      vendor_uuid: params.id,
+      vendor_uuid: id,
     })
     .single()
 
