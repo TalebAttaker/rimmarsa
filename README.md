@@ -1,77 +1,61 @@
-# Rimmarsa
+# Rimmarsa - Multi-Vendor E-Commerce Platform
 
-Welcome to the Rimmarsa project!
+A complete e-commerce ecosystem with public marketplace, vendor management, and referral system.
 
-## Project Status
-
-🚧 **In Development** - Project structure initialized, waiting for requirements.
-
-## Directory Structure
+## 🏗️ Project Structure
 
 ```
 rimmarsa/
-├── MCP_SETUP.md          # MCP configuration guide for Supabase
-├── README.md             # This file
-├── .gitignore           # Git ignore rules
-└── .git/                # Git repository
+├── backend/              # Node.js + Express + TypeScript + Prisma
+├── marketplace/          # Next.js 14 public marketplace
+├── admin-dashboard/      # React admin panel
+├── vendor-dashboard/     # React vendor panel
+├── mobile-app/          # React Native (future)
+└── docs/                # Documentation
 ```
 
-## Getting Started
+## 🎯 Features
 
-This project is separate from the telebac project and has its own:
-- Git repository
-- Supabase project configuration
-- MCP server setup
+- **Multi-Vendor Marketplace** with category filtering
+- **Referral System** - 20% commission + 20% discount
+- **Admin Dashboard** - Complete vendor & product management
+- **Vendor Dashboard** - Product management + referral tracking
+- **WhatsApp Integration** - Direct contact with vendors
+- **Secure Authentication** - JWT with refresh tokens
+- **File Upload** - Cloudinary/S3 integration
 
-### Prerequisites
+## 🛠️ Tech Stack
 
-- Node.js 18 or higher
-- Supabase account
-- Claude Code with MCP support
+### Backend
+- Node.js + Express.js
+- TypeScript
+- PostgreSQL + Prisma ORM
+- JWT Authentication
+- Redis (caching)
+- Multer + Cloudinary
 
-### Configuration
+### Frontend (Marketplace)
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS + shadcn/ui
+- Zustand (state)
+- React Hook Form + Zod
 
-See [MCP_SETUP.md](./MCP_SETUP.md) for detailed instructions on:
-- Configuring Supabase MCP server
-- Switching between rimmarsa and telebac projects
-- Environment variable setup
+### Dashboards
+- React 18 + Vite
+- TypeScript
+- shadcn/ui + Radix UI
+- TanStack Table
+- Recharts
 
-## Project Information
+## 📦 Getting Started
 
-- **Created:** January 15, 2025
-- **Location:** `/home/taleb/rimmarsa`
-- **Git Repository:** Initialized, ready for GitHub
-- **Supabase MCP:** Configured with dedicated access token
+See individual README files in each directory for setup instructions.
 
-## Related Projects
+## 🔐 Environment Variables
 
-This project is maintained separately from:
-- **Telebac** (`/home/taleb/telebac`) - Educational platform
+Required environment variables are documented in `.env.example` files in each directory.
 
-Both projects can coexist and you can switch between them as needed.
+## 📄 License
 
-## Development Workflow
-
-1. Navigate to project: `cd /home/taleb/rimmarsa`
-2. Ensure MCP is configured for rimmarsa (see MCP_SETUP.md)
-3. Start building!
-
-## Next Steps
-
-Waiting for project requirements to:
-- [ ] Define project purpose and features
-- [ ] Set up Next.js or chosen framework
-- [ ] Configure Supabase database schema
-- [ ] Implement core functionality
-- [ ] Deploy to production
-
-## Switching Back to Telebac
-
-To return to the telebac project:
-1. Navigate to telebac: `cd /home/taleb/telebac`
-2. If using single MCP: Switch Supabase token in Claude config
-3. Continue telebac development
-
----
-
-**Ready to build!** 🚀
+All rights reserved.
