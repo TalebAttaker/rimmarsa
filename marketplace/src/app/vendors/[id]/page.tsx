@@ -172,7 +172,7 @@ export default async function VendorProfilePage({
               <div className="text-6xl mb-4">📦</div>
               <h3 className="text-xl font-semibold mb-2">No products yet</h3>
               <p className="text-gray-600">
-                This vendor hasn't listed any products yet. Check back soon!
+                This vendor hasn&apos;t listed any products yet. Check back soon!
               </p>
             </div>
           )}
