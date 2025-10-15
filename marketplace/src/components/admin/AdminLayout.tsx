@@ -14,7 +14,9 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  MapPin,
+  Building2
 } from 'lucide-react'
 
 interface AdminLayoutProps {
@@ -26,6 +28,8 @@ const menuItems = [
   { icon: Users, label: 'Vendors', href: '/fassalapremierprojectbsk/vendors' },
   { icon: Package, label: 'Products', href: '/fassalapremierprojectbsk/products' },
   { icon: Tags, label: 'Categories', href: '/fassalapremierprojectbsk/categories' },
+  { icon: MapPin, label: 'Regions', href: '/fassalapremierprojectbsk/regions' },
+  { icon: Building2, label: 'Cities', href: '/fassalapremierprojectbsk/cities' },
   { icon: DollarSign, label: 'Referrals', href: '/fassalapremierprojectbsk/referrals' },
   { icon: Settings, label: 'Settings', href: '/fassalapremierprojectbsk/settings' },
 ]
