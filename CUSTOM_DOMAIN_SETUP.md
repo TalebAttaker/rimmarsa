@@ -132,10 +132,42 @@ Enter `rimmarsa.com` and check if the A record shows Vercel's IP globally.
 ## Expected Result
 
 After setup:
-- ✅ https://rimmarsa.com → Your marketplace (SSL secured)
-- ✅ https://www.rimmarsa.com → Redirects to rimmarsa.com (or vice versa)
+- ✅ https://rimmarsa.com → Redirects to www.rimmarsa.com
+- ✅ https://www.rimmarsa.com → Your marketplace (SSL secured)
 - ✅ http://rimmarsa.com → Auto-redirects to HTTPS
 - ✅ Free SSL certificate auto-renewed by Vercel
+
+## Check DNS Propagation Status
+
+Run this command to check if your domain is live:
+
+```bash
+bash check-domain.sh
+```
+
+Or check manually:
+```bash
+curl -I https://rimmarsa.com | grep -i server
+```
+
+If you see `x-vercel`, it's working! ✅
+If you see `DPS`, DNS is still propagating ⏳
+
+---
+
+## Current Status
+
+**Date Configured:** October 15, 2025
+
+**DNS Records Added:**
+- ✅ A Record: `@` → `76.76.21.21`
+- ✅ CNAME Record: `www` → `cname.vercel-dns.com`
+
+**Domains in Vercel:**
+- ✅ rimmarsa.com (redirects to www)
+- ✅ www.rimmarsa.com (primary)
+
+**Status:** Waiting for DNS propagation (typically 30-60 minutes)
 
 ---
 
