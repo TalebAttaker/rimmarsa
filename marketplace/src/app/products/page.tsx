@@ -20,8 +20,9 @@ interface SearchParams {
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: SearchParams
+  searchParams: Promise<SearchParams>
 }) {
+  const params = await searchParams
   const supabase = await createClient()
 
   // Fetch all categories for filter
@@ -39,30 +40,30 @@ export default async function ProductsPage({
     .order('created_at', { ascending: false })
 
   // Apply filters
-  if (searchParams.category) {
-    query = query.eq('category_id', searchParams.category)
+  if (params.category) {
+    query = query.eq('category_id', params.category)
   }
 
-  if (searchParams.state) {
-    query = query.eq('state', searchParams.state)
+  if (params.state) {
+    query = query.eq('state', params.state)
   }
 
-  if (searchParams.city) {
-    query = query.eq('city', searchParams.city)
+  if (params.city) {
+    query = query.eq('city', params.city)
   }
 
-  if (searchParams.search) {
+  if (params.search) {
     query = query.or(
-      `name.ilike.%${searchParams.search}%,description.ilike.%${searchParams.search}%`
+      `name.ilike.%${params.search}%,description.ilike.%${params.search}%`
     )
   }
 
-  if (searchParams.minPrice) {
-    query = query.gte('price', parseFloat(searchParams.minPrice))
+  if (params.minPrice) {
+    query = query.gte('price', parseFloat(params.minPrice))
   }
 
-  if (searchParams.maxPrice) {
-    query = query.lte('price', parseFloat(searchParams.maxPrice))
+  if (params.maxPrice) {
+    query = query.lte('price', parseFloat(params.maxPrice))
   }
 
   const { data: products, count } = await supabase
@@ -121,7 +122,7 @@ export default async function ProductsPage({
                 categories={categories || []}
                 states={uniqueStates}
                 cities={uniqueCities}
-                searchParams={searchParams}
+                searchParams={params}
               />
             </Suspense>
           </aside>
