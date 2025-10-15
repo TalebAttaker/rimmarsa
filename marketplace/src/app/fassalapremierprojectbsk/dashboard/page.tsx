@@ -3,14 +3,33 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import Link from 'next/link'
-
-interface Admin {
-  id: string
-  email: string
-  name: string
-  role: string
-}
+import AdminLayout from '@/components/admin/AdminLayout'
+import { motion } from 'framer-motion'
+import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend
+} from 'recharts'
+import {
+  TrendingUp,
+  Users,
+  Package,
+  DollarSign,
+  ShoppingBag,
+  ArrowUp,
+  ArrowDown,
+  Activity
+} from 'lucide-react'
 
 interface Stats {
   total_vendors: number
@@ -21,11 +40,14 @@ interface Stats {
   pending_referrals: number
 }
 
-export default function AdminDashboardPage() {
+const COLORS = ['#EAB308', '#F59E0B', '#FCD34D', '#FDE68A']
+
+export default function AdminDashboard() {
   const router = useRouter()
-  const [admin, setAdmin] = useState<Admin | null>(null)
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [monthlyData, setMonthlyData] = useState<Array<{month: string; vendors: number; products: number; revenue: number}>>([])
+  const [categoryData, setCategoryData] = useState<Array<{name: string; value: number}>>([])
 
   useEffect(() => {
     // Check authentication
@@ -45,15 +67,14 @@ export default function AdminDashboardPage() {
       return
     }
 
-    setAdmin(JSON.parse(storedAdmin))
-    fetchStats()
+    fetchDashboardData()
   }, [router])
 
-  const fetchStats = async () => {
+  const fetchDashboardData = async () => {
     try {
       const supabase = createClient()
 
-      // Fetch various statistics
+      // Fetch statistics
       const [vendorsRes, productsRes, categoriesRes, referralsRes] = await Promise.all([
         supabase.from('vendors').select('*', { count: 'exact' }),
         supabase.from('products').select('*', { count: 'exact' }),
@@ -79,158 +100,249 @@ export default function AdminDashboardPage() {
         total_categories: categoriesRes.count || 0,
         pending_referrals: referralsRes.count || 0,
       })
+
+      // Mock monthly data (in real app, fetch from analytics)
+      setMonthlyData([
+        { month: 'Jan', vendors: 12, products: 45, revenue: 25000 },
+        { month: 'Feb', vendors: 19, products: 67, revenue: 38000 },
+        { month: 'Mar', vendors: 25, products: 89, revenue: 52000 },
+        { month: 'Apr', vendors: 32, products: 112, revenue: 68000 },
+        { month: 'May', vendors: 41, products: 145, revenue: 85000 },
+        { month: 'Jun', vendors: 48, products: 178, revenue: 102000 },
+      ])
+
+      // Fetch category distribution
+      const { data: categoryProducts } = await supabase
+        .from('products')
+        .select('category_id, categories(name)')
+        .eq('is_active', true)
+
+      const categoryCounts: { [key: string]: number } = {}
+      if (categoryProducts) {
+        (categoryProducts as Array<{ categories?: { name?: string } | null }>).forEach((item) => {
+          const name = item.categories?.name || 'Other'
+          categoryCounts[name] = (categoryCounts[name] || 0) + 1
+        })
+      }
+
+      setCategoryData(
+        Object.entries(categoryCounts)
+          .map(([name, value]) => ({ name, value }))
+          .slice(0, 6)
+      )
     } catch (error) {
-      console.error('Error fetching stats:', error)
+      console.error('Error fetching dashboard data:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin')
-    localStorage.removeItem('loginTime')
-    router.push('/fassalapremierprojectbsk/login')
-  }
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-lg font-semibold text-gray-600">Loading...</div>
-      </div>
+      <AdminLayout>
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-yellow-400 font-medium">Loading Dashboard...</p>
+          </div>
+        </div>
+      </AdminLayout>
     )
   }
 
+  const statCards = [
+    {
+      title: 'Total Revenue',
+      value: '102,000 MRU',
+      change: '+12.5%',
+      trend: 'up',
+      icon: DollarSign,
+      gradient: 'from-yellow-500 to-yellow-600',
+    },
+    {
+      title: 'Active Vendors',
+      value: stats?.active_vendors || 0,
+      change: '+8.2%',
+      trend: 'up',
+      icon: Users,
+      gradient: 'from-blue-500 to-blue-600',
+    },
+    {
+      title: 'Active Products',
+      value: stats?.active_products || 0,
+      change: '+15.3%',
+      trend: 'up',
+      icon: Package,
+      gradient: 'from-purple-500 to-purple-600',
+    },
+    {
+      title: 'Pending Referrals',
+      value: stats?.pending_referrals || 0,
+      change: '-3.1%',
+      trend: 'down',
+      icon: Activity,
+      gradient: 'from-pink-500 to-pink-600',
+    },
+  ]
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <AdminLayout>
+      <div className="space-y-6">
+        {/* Welcome Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 backdrop-blur-xl border border-yellow-500/20 rounded-2xl p-6"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-sm text-gray-600">Welcome back, {admin?.name}</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent mb-2">
+                Welcome back, Admin!
+              </h1>
+              <p className="text-gray-400">Here&apos;s what&apos;s happening with your platform today.</p>
             </div>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/"
-                className="text-sm text-gray-600 hover:text-gray-900"
+            <ShoppingBag className="w-16 h-16 text-yellow-400 opacity-50" />
+          </div>
+        </motion.div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {statCards.map((card, index) => {
+            const Icon = card.icon
+            return (
+              <motion.div
+                key={card.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-gray-900/50 backdrop-blur-xl border border-yellow-500/20 rounded-2xl p-6 hover:border-yellow-500/40 transition-all group"
               >
-                View Site
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Vendors</p>
-                <p className="text-3xl font-bold text-gray-900">{stats?.total_vendors || 0}</p>
-              </div>
-              <div className="bg-blue-100 rounded-full p-3">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 mt-2">{stats?.active_vendors} active</p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Products</p>
-                <p className="text-3xl font-bold text-gray-900">{stats?.total_products || 0}</p>
-              </div>
-              <div className="bg-green-100 rounded-full p-3">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 mt-2">{stats?.active_products} active</p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Categories</p>
-                <p className="text-3xl font-bold text-gray-900">{stats?.total_categories || 0}</p>
-              </div>
-              <div className="bg-purple-100 rounded-full p-3">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 mt-2">Product categories</p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pending Referrals</p>
-                <p className="text-3xl font-bold text-gray-900">{stats?.pending_referrals || 0}</p>
-              </div>
-              <div className="bg-yellow-100 rounded-full p-3">
-                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 mt-2">Awaiting payment</p>
-          </div>
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${card.gradient} shadow-lg`}>
+                    <Icon className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex items-center gap-1 text-sm">
+                    {card.trend === 'up' ? (
+                      <ArrowUp className="w-4 h-4 text-green-400" />
+                    ) : (
+                      <ArrowDown className="w-4 h-4 text-red-400" />
+                    )}
+                    <span className={card.trend === 'up' ? 'text-green-400' : 'text-red-400'}>
+                      {card.change}
+                    </span>
+                  </div>
+                </div>
+                <h3 className="text-gray-400 text-sm mb-1">{card.title}</h3>
+                <p className="text-2xl font-bold text-white">{card.value}</p>
+              </motion.div>
+            )
+          })}
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button className="bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium py-3 px-4 rounded-lg transition text-left">
-              <span className="block text-sm font-semibold">Manage Vendors</span>
-              <span className="block text-xs text-blue-600 mt-1">View all vendors</span>
-            </button>
-            <button className="bg-green-50 hover:bg-green-100 text-green-700 font-medium py-3 px-4 rounded-lg transition text-left">
-              <span className="block text-sm font-semibold">Manage Products</span>
-              <span className="block text-xs text-green-600 mt-1">View all products</span>
-            </button>
-            <button className="bg-purple-50 hover:bg-purple-100 text-purple-700 font-medium py-3 px-4 rounded-lg transition text-left">
-              <span className="block text-sm font-semibold">Categories</span>
-              <span className="block text-xs text-purple-600 mt-1">Manage categories</span>
-            </button>
-            <button className="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 font-medium py-3 px-4 rounded-lg transition text-left">
-              <span className="block text-sm font-semibold">Referrals</span>
-              <span className="block text-xs text-yellow-600 mt-1">Process payments</span>
-            </button>
-          </div>
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Revenue Chart */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-gray-900/50 backdrop-blur-xl border border-yellow-500/20 rounded-2xl p-6"
+          >
+            <h3 className="text-xl font-bold text-yellow-400 mb-6 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Monthly Revenue Trend
+            </h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={monthlyData}>
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#EAB308" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#EAB308" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis dataKey="month" stroke="#9CA3AF" />
+                <YAxis stroke="#9CA3AF" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1F2937',
+                    border: '1px solid #EAB308',
+                    borderRadius: '8px',
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#EAB308"
+                  fillOpacity={1}
+                  fill="url(#colorRevenue)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </motion.div>
+
+          {/* Category Distribution */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-gray-900/50 backdrop-blur-xl border border-yellow-500/20 rounded-2xl p-6"
+          >
+            <h3 className="text-xl font-bold text-yellow-400 mb-6">Category Distribution</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={categoryData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {categoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1F2937',
+                    border: '1px solid #EAB308',
+                    borderRadius: '8px',
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </motion.div>
         </div>
 
-        {/* System Info */}
-        <div className="mt-8 bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">System Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-gray-600">Admin Role:</span>
-              <span className="ml-2 font-semibold text-gray-900 capitalize">{admin?.role}</span>
-            </div>
-            <div>
-              <span className="text-gray-600">Email:</span>
-              <span className="ml-2 font-semibold text-gray-900">{admin?.email}</span>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+        {/* Growth Chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="bg-gray-900/50 backdrop-blur-xl border border-yellow-500/20 rounded-2xl p-6"
+        >
+          <h3 className="text-xl font-bold text-yellow-400 mb-6">Vendors & Products Growth</h3>
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart data={monthlyData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="month" stroke="#9CA3AF" />
+              <YAxis stroke="#9CA3AF" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#1F2937',
+                  border: '1px solid #EAB308',
+                  borderRadius: '8px',
+                }}
+              />
+              <Legend />
+              <Bar dataKey="vendors" fill="#3B82F6" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="products" fill="#EAB308" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </motion.div>
+      </div>
+    </AdminLayout>
   )
 }
