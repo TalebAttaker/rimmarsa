@@ -1,0 +1,1345 @@
+{
+  "project": "Vendor Mobile Application (APK)",
+  "version": "1.0.0",
+  "sprints": [
+    {
+      "sprint": 1,
+      "name": "Authentication & Core Infrastructure",
+      "duration": "1 week",
+      "tasks": [
+        {
+          "id": "TASK-001",
+          "title": "Set up project dependencies and Capacitor configuration",
+          "assignee": "devops",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Install all required npm packages, initialize Capacitor, configure capacitor.config.ts for Android platform, set up environment variables",
+          "acceptance_criteria": [
+            "All dependencies from package.json installed",
+            "Capacitor initialized with Android platform",
+            "Environment variables configured in .env file",
+            "Project builds successfully with npm run build"
+          ]
+        },
+        {
+          "id": "TASK-002",
+          "title": "Configure Supabase client with authentication",
+          "assignee": "backend",
+          "estimate_hours": 3,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-001"],
+          "description": "Set up Supabase client in lib/supabase.ts, configure authentication persistence for mobile, test connection to Supabase project",
+          "acceptance_criteria": [
+            "Supabase client initialized with correct credentials",
+            "Authentication persistence configured for localStorage",
+            "Connection test successful",
+            "TypeScript types generated from Supabase schema"
+          ]
+        },
+        {
+          "id": "TASK-003",
+          "title": "Create authentication context and hooks",
+          "assignee": "frontend",
+          "estimate_hours": 6,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-002"],
+          "description": "Build AuthContext provider, create useAuth hook with login/logout/register methods, implement session persistence",
+          "acceptance_criteria": [
+            "AuthContext provider wraps entire app",
+            "useAuth hook exposes user, login, logout, loading states",
+            "Session persists across app restarts",
+            "Automatic token refresh implemented"
+          ]
+        },
+        {
+          "id": "TASK-004",
+          "title": "Build Login page with form validation",
+          "assignee": "frontend",
+          "estimate_hours": 5,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-003"],
+          "description": "Create Login page component, implement email/password form with react-hook-form and Zod validation, add error handling and loading states",
+          "acceptance_criteria": [
+            "Login form renders with email and password fields",
+            "Form validation shows field-level errors",
+            "Successful login redirects to dashboard",
+            "Failed login shows error message",
+            "Loading state displays during API call"
+          ]
+        },
+        {
+          "id": "TASK-005",
+          "title": "Build Password Reset flow",
+          "assignee": "frontend",
+          "estimate_hours": 4,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-004"],
+          "description": "Create ForgotPassword page, implement password reset request form, create password reset confirmation page",
+          "acceptance_criteria": [
+            "Forgot password form accepts email input",
+            "Success message shown after reset email sent",
+            "Reset link opens app and shows password update form",
+            "New password saved successfully"
+          ]
+        },
+        {
+          "id": "TASK-006",
+          "title": "Implement protected route guards",
+          "assignee": "frontend",
+          "estimate_hours": 3,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-003"],
+          "description": "Create ProtectedRoute component that checks authentication status, redirect unauthenticated users to login, configure React Router routes",
+          "acceptance_criteria": [
+            "Unauthenticated users redirected to login page",
+            "Authenticated users can access protected pages",
+            "Return URL preserved for redirect after login",
+            "Loading state shown while checking auth status"
+          ]
+        },
+        {
+          "id": "TASK-007",
+          "title": "Set up Tailwind CSS with RTL support",
+          "assignee": "frontend",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-001"],
+          "description": "Configure Tailwind with custom theme for Rimmarsa branding, enable RTL variants, create base styles for mobile-first design",
+          "acceptance_criteria": [
+            "Tailwind configured with custom colors and fonts",
+            "RTL support enabled in tailwind.config.js",
+            "Base CSS includes mobile-first responsive utilities",
+            "Theme matches Rimmarsa brand guidelines"
+          ]
+        },
+        {
+          "id": "TASK-008",
+          "title": "Create reusable UI component library",
+          "assignee": "frontend",
+          "estimate_hours": 8,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-007"],
+          "description": "Build Button, Input, Select, Textarea, Modal, Card, Badge, Alert components with consistent styling and props interface",
+          "acceptance_criteria": [
+            "All components support size variants (sm, md, lg)",
+            "All components support color variants (primary, secondary, danger)",
+            "All components support disabled state",
+            "All components have TypeScript prop types",
+            "All components tested with RTL layout"
+          ]
+        },
+        {
+          "id": "TASK-009",
+          "title": "Set up React Router with page structure",
+          "assignee": "frontend",
+          "estimate_hours": 3,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-001"],
+          "description": "Configure React Router v7, create page components (Dashboard, Products, Profile, Referrals, Settings), set up navigation structure",
+          "acceptance_criteria": [
+            "All main routes configured (/dashboard, /products, /profile, etc.)",
+            "404 Not Found page created",
+            "Navigation between pages works smoothly",
+            "Browser back button functions correctly"
+          ]
+        },
+        {
+          "id": "TASK-010",
+          "title": "Create mobile-optimized layout with bottom navigation",
+          "assignee": "frontend",
+          "estimate_hours": 5,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-008", "TASK-009"],
+          "description": "Build Layout component with header, content area, and bottom navigation bar, implement responsive behavior, add page transitions",
+          "acceptance_criteria": [
+            "Bottom navigation shows on all main pages",
+            "Active route highlighted in navigation",
+            "Header shows page title and back button where appropriate",
+            "Layout is responsive from 320px to 768px",
+            "Smooth transitions between pages"
+          ]
+        }
+      ]
+    },
+    {
+      "sprint": 2,
+      "name": "Dashboard & Vendor Profile",
+      "duration": "1 week",
+      "tasks": [
+        {
+          "id": "TASK-011",
+          "title": "Fetch and display vendor profile data",
+          "assignee": "backend",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-002", "TASK-003"],
+          "description": "Create useVendor hook to fetch vendor profile from Supabase, handle loading and error states, cache data locally",
+          "acceptance_criteria": [
+            "Vendor profile fetched on app load",
+            "Profile data available via useVendor hook",
+            "Loading state while fetching",
+            "Error message if fetch fails"
+          ]
+        },
+        {
+          "id": "TASK-012",
+          "title": "Build Dashboard home page with statistics widgets",
+          "assignee": "frontend",
+          "estimate_hours": 8,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-011"],
+          "description": "Create Dashboard page with stat cards for total sales, active products, commission earned, subscription status, recent activity feed",
+          "acceptance_criteria": [
+            "Dashboard displays 4 main stat cards",
+            "Subscription status shows days until expiry",
+            "Active/inactive products count accurate",
+            "Total sales and commission formatted as currency",
+            "Visual warning if subscription expiring soon"
+          ]
+        },
+        {
+          "id": "TASK-013",
+          "title": "Calculate and display subscription status",
+          "assignee": "backend",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-011"],
+          "description": "Create useSubscription hook to fetch subscription history, calculate days until expiry, determine active/expired status",
+          "acceptance_criteria": [
+            "Subscription status correctly calculated (active/expired)",
+            "Days until expiry shown in dashboard",
+            "Warning shown when < 7 days remaining",
+            "Subscription history available for display"
+          ]
+        },
+        {
+          "id": "TASK-014",
+          "title": "Build vendor profile edit page",
+          "assignee": "frontend",
+          "estimate_hours": 6,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-011"],
+          "description": "Create Profile page with form to edit business name, owner name, phone, city, address, display referral code prominently",
+          "acceptance_criteria": [
+            "Form pre-populated with current vendor data",
+            "All fields validated before submission",
+            "Success message shown after update",
+            "Referral code displayed as read-only",
+            "Form supports RTL for Arabic input"
+          ]
+        },
+        {
+          "id": "TASK-015",
+          "title": "Implement logo upload to Supabase Storage",
+          "assignee": "backend",
+          "estimate_hours": 6,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-014"],
+          "description": "Create useImageUpload hook with image compression, upload to vendor-profiles bucket, update vendor logo_url in database",
+          "acceptance_criteria": [
+            "Image compressed to max 1MB before upload",
+            "Upload progress indicator shown",
+            "Success message after upload",
+            "Logo URL updated in vendor profile",
+            "Old logo replaced with new one"
+          ]
+        },
+        {
+          "id": "TASK-016",
+          "title": "Build store profile management page",
+          "assignee": "frontend",
+          "estimate_hours": 7,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-011"],
+          "description": "Create StoreProfile page to edit description, social links (WhatsApp, Facebook, Instagram), business hours",
+          "acceptance_criteria": [
+            "Store description supports multiline text",
+            "Social link fields with validation",
+            "Business hours input for each day of week",
+            "Form saves to store_profiles table",
+            "Creates store_profile if not exists"
+          ]
+        },
+        {
+          "id": "TASK-017",
+          "title": "Add banner image upload for store profile",
+          "assignee": "frontend",
+          "estimate_hours": 5,
+          "priority": "Low",
+          "status": "Not Started",
+          "dependencies": ["TASK-015", "TASK-016"],
+          "description": "Add banner image upload field to store profile page, upload to vendor-profiles bucket, display banner preview",
+          "acceptance_criteria": [
+            "Banner image upload button on store profile page",
+            "Image preview shown before upload",
+            "Banner displayed at top of store profile page",
+            "Banner optimized for mobile aspect ratio"
+          ]
+        },
+        {
+          "id": "TASK-018",
+          "title": "Fetch and display subscription history",
+          "assignee": "frontend",
+          "estimate_hours": 5,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-013"],
+          "description": "Create SubscriptionHistory page showing all past subscriptions, plan type, amount, start/end dates, status",
+          "acceptance_criteria": [
+            "Subscription history displayed in chronological order",
+            "Each entry shows plan type, dates, amount",
+            "Status badge (active, expired, cancelled)",
+            "Current subscription highlighted",
+            "Empty state if no history"
+          ]
+        }
+      ]
+    },
+    {
+      "sprint": 3,
+      "name": "Product Management",
+      "duration": "1.5 weeks",
+      "tasks": [
+        {
+          "id": "TASK-019",
+          "title": "Create useProducts hook for product CRUD operations",
+          "assignee": "backend",
+          "estimate_hours": 6,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-002"],
+          "description": "Build custom hook to fetch, create, update, delete products with RLS enforcement, handle pagination, implement optimistic updates",
+          "acceptance_criteria": [
+            "useProducts hook returns products array",
+            "fetchProducts method with pagination support",
+            "createProduct, updateProduct, deleteProduct methods",
+            "Optimistic updates for instant UI feedback",
+            "Error handling for all operations"
+          ]
+        },
+        {
+          "id": "TASK-020",
+          "title": "Build Products list page with grid layout",
+          "assignee": "frontend",
+          "estimate_hours": 7,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-019"],
+          "description": "Create Products page showing vendor's products in grid, display product image, name, price, status, add filter by active/inactive",
+          "acceptance_criteria": [
+            "Products displayed in responsive grid (2 columns mobile, 3 tablet)",
+            "Each product card shows image, name, price, status badge",
+            "Filter toggle for active/inactive products",
+            "Empty state with 'Add Product' button",
+            "Pull-to-refresh functionality"
+          ]
+        },
+        {
+          "id": "TASK-021",
+          "title": "Fetch categories and cities for product form",
+          "assignee": "backend",
+          "estimate_hours": 3,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-002"],
+          "description": "Create useCategories and useCities hooks to fetch dropdown data, cache locally, support bilingual display",
+          "acceptance_criteria": [
+            "Categories fetched with English and Arabic names",
+            "Cities fetched with region information",
+            "Data cached in memory to reduce API calls",
+            "Hooks return loading and error states"
+          ]
+        },
+        {
+          "id": "TASK-022",
+          "title": "Build Add Product form with validation",
+          "assignee": "frontend",
+          "estimate_hours": 8,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-019", "TASK-021"],
+          "description": "Create AddProduct page with form fields: name, name_ar, description, price, category, city, stock quantity, implement Zod validation schema",
+          "acceptance_criteria": [
+            "All required fields validated before submission",
+            "Price field accepts decimal numbers",
+            "Category and city dropdowns populated from database",
+            "Arabic name field supports RTL input",
+            "Stock quantity only accepts positive integers",
+            "Form shows validation errors inline"
+          ]
+        },
+        {
+          "id": "TASK-023",
+          "title": "Implement Capacitor Camera plugin for product photos",
+          "assignee": "mobile",
+          "estimate_hours": 6,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-001"],
+          "description": "Configure Capacitor Camera plugin, add permissions for Android, create useCamera hook for capturing photos, handle camera/gallery selection",
+          "acceptance_criteria": [
+            "Camera plugin installed and configured",
+            "Android permissions requested correctly",
+            "User can choose camera or gallery",
+            "Photo returned as base64 or blob",
+            "Fallback to file picker if camera unavailable"
+          ]
+        },
+        {
+          "id": "TASK-024",
+          "title": "Build multi-image upload component with compression",
+          "assignee": "frontend",
+          "estimate_hours": 8,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-023"],
+          "description": "Create ImageUpload component supporting multiple images (up to 5), compress images client-side to max 1MB, show upload progress, allow image reordering and deletion",
+          "acceptance_criteria": [
+            "User can select up to 5 images",
+            "Images compressed before upload",
+            "Upload progress shown for each image",
+            "Thumbnails displayed after upload",
+            "User can reorder images by drag-and-drop",
+            "User can delete individual images"
+          ]
+        },
+        {
+          "id": "TASK-025",
+          "title": "Upload product images to Supabase Storage",
+          "assignee": "backend",
+          "estimate_hours": 5,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-024"],
+          "description": "Implement upload logic to product-images bucket with vendor-specific path, generate unique filenames, return public URLs array",
+          "acceptance_criteria": [
+            "Images uploaded to product-images/{vendorId}/ path",
+            "Unique filename generated for each image",
+            "Public URLs returned after upload",
+            "Failed uploads handled with retry option",
+            "Old images deleted when product updated"
+          ]
+        },
+        {
+          "id": "TASK-026",
+          "title": "Integrate image upload with product form",
+          "assignee": "frontend",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-022", "TASK-025"],
+          "description": "Add ImageUpload component to product form, validate at least one image required, store image URLs in product record",
+          "acceptance_criteria": [
+            "Image upload component renders in product form",
+            "Form validation requires at least 1 image",
+            "Image URLs saved to product.images array",
+            "Form shows loading state during upload",
+            "User can submit form only after images uploaded"
+          ]
+        },
+        {
+          "id": "TASK-027",
+          "title": "Build Edit Product page",
+          "assignee": "frontend",
+          "estimate_hours": 6,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-022", "TASK-026"],
+          "description": "Create EditProduct page pre-populated with existing product data, allow updating all fields including images, support image replacement",
+          "acceptance_criteria": [
+            "Form pre-filled with product data",
+            "Existing images displayed with delete option",
+            "User can add new images (up to 5 total)",
+            "Update saves changes to database",
+            "Success message after update"
+          ]
+        },
+        {
+          "id": "TASK-028",
+          "title": "Implement product delete functionality",
+          "assignee": "frontend",
+          "estimate_hours": 3,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-020"],
+          "description": "Add delete button to product card and detail page, show confirmation modal, soft delete by setting is_active=false (or hard delete if requested)",
+          "acceptance_criteria": [
+            "Delete button visible on product card",
+            "Confirmation modal asks 'Are you sure?'",
+            "Product deleted from database or marked inactive",
+            "Product removed from list immediately",
+            "Success toast notification shown"
+          ]
+        },
+        {
+          "id": "TASK-029",
+          "title": "Add toggle for product active/inactive status",
+          "assignee": "frontend",
+          "estimate_hours": 3,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-020"],
+          "description": "Add switch toggle to product card for quick enable/disable, update is_active field in database, reflect change in UI immediately",
+          "acceptance_criteria": [
+            "Toggle switch visible on each product card",
+            "Clicking toggle updates is_active status",
+            "Inactive products shown with grayed-out styling",
+            "Change reflected immediately without page refresh",
+            "Error message if update fails"
+          ]
+        },
+        {
+          "id": "TASK-030",
+          "title": "Build Product detail view page",
+          "assignee": "frontend",
+          "estimate_hours": 5,
+          "priority": "Low",
+          "status": "Not Started",
+          "dependencies": ["TASK-020"],
+          "description": "Create ProductDetail page showing full product info, image gallery, views count, created date, edit and delete buttons",
+          "acceptance_criteria": [
+            "Product detail displays all fields",
+            "Image gallery with swipe navigation",
+            "Views count displayed",
+            "Edit button navigates to edit page",
+            "Delete button triggers confirmation"
+          ]
+        }
+      ]
+    },
+    {
+      "sprint": 4,
+      "name": "Referrals & Subscriptions",
+      "duration": "1 week",
+      "tasks": [
+        {
+          "id": "TASK-031",
+          "title": "Create useReferrals hook to fetch referral data",
+          "assignee": "backend",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-002"],
+          "description": "Build hook to fetch referrals where vendor is referrer, calculate total commission earned, pending commission, referral count",
+          "acceptance_criteria": [
+            "useReferrals returns referrals array",
+            "Total commission earned calculated",
+            "Pending commission (status='pending') calculated",
+            "Referral count returned",
+            "Data refreshable via refetch method"
+          ]
+        },
+        {
+          "id": "TASK-032",
+          "title": "Build Referrals dashboard page",
+          "assignee": "frontend",
+          "estimate_hours": 7,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-031"],
+          "description": "Create Referrals page showing referral code prominently, total/pending commission stats, list of referred vendors with status",
+          "acceptance_criteria": [
+            "Referral code displayed large and bold at top",
+            "Copy button next to referral code",
+            "Stat cards for total/pending commission",
+            "List of referred vendors with join date",
+            "Commission status badge (pending/completed)",
+            "Empty state if no referrals yet"
+          ]
+        },
+        {
+          "id": "TASK-033",
+          "title": "Implement Capacitor Share plugin for referral sharing",
+          "assignee": "mobile",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-001"],
+          "description": "Install and configure Capacitor Share plugin, create useShare hook, implement share functionality with text and URL",
+          "acceptance_criteria": [
+            "Share plugin installed and configured",
+            "useShare hook exposes share method",
+            "Share dialog opens with message and referral code",
+            "Works with WhatsApp, SMS, email, etc.",
+            "Fallback to copy-to-clipboard if share unavailable"
+          ]
+        },
+        {
+          "id": "TASK-034",
+          "title": "Build referral code sharing feature with WhatsApp integration",
+          "assignee": "frontend",
+          "estimate_hours": 5,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-032", "TASK-033"],
+          "description": "Add share buttons to referrals page: WhatsApp direct link, native share dialog, copy to clipboard, pre-formatted share message",
+          "acceptance_criteria": [
+            "WhatsApp button opens WhatsApp with pre-filled message",
+            "Share button opens native share sheet",
+            "Copy button copies code to clipboard with toast notification",
+            "Share message includes referral code and benefits",
+            "All buttons styled consistently"
+          ]
+        },
+        {
+          "id": "TASK-035",
+          "title": "Display referral statistics and charts",
+          "assignee": "frontend",
+          "estimate_hours": 6,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-032"],
+          "description": "Add referral statistics section: total referrals this month, commission trend, top referred months, simple bar chart visualization",
+          "acceptance_criteria": [
+            "Monthly referral count displayed",
+            "Commission earned over time shown",
+            "Simple bar chart for visual representation",
+            "Data filterable by date range",
+            "Stats update when new referral added"
+          ]
+        },
+        {
+          "id": "TASK-036",
+          "title": "Create subscription expiry notification banner",
+          "assignee": "frontend",
+          "estimate_hours": 3,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-013"],
+          "description": "Build banner component shown when subscription < 7 days from expiry, display days remaining, add 'Renew' button (placeholder action)",
+          "acceptance_criteria": [
+            "Banner appears at top of dashboard when expiring soon",
+            "Shows exact days remaining",
+            "Dismissible with X button",
+            "Banner color based on urgency (yellow < 7 days, red < 3 days)",
+            "Renew button present (future functionality)"
+          ]
+        },
+        {
+          "id": "TASK-037",
+          "title": "Build Subscription details page",
+          "assignee": "frontend",
+          "estimate_hours": 5,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-013"],
+          "description": "Create Subscription page showing current plan, start/end dates, days remaining, subscription history, renewal button (placeholder)",
+          "acceptance_criteria": [
+            "Current subscription details displayed clearly",
+            "Progress bar showing subscription period",
+            "Days remaining shown prominently",
+            "Subscription history list below",
+            "Renewal button visible (future payment integration)"
+          ]
+        }
+      ]
+    },
+    {
+      "sprint": 5,
+      "name": "Settings, PWA & Offline Support",
+      "duration": "1 week",
+      "tasks": [
+        {
+          "id": "TASK-038",
+          "title": "Build Settings page with profile management",
+          "assignee": "frontend",
+          "estimate_hours": 5,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-011"],
+          "description": "Create Settings page with sections: account info, change password, notification preferences, language selection, logout button",
+          "acceptance_criteria": [
+            "Account info displayed (email, phone)",
+            "Change password form functional",
+            "Notification toggle switches",
+            "Language selector (English/Arabic)",
+            "Logout button clears session and redirects to login"
+          ]
+        },
+        {
+          "id": "TASK-039",
+          "title": "Implement change password functionality",
+          "assignee": "backend",
+          "estimate_hours": 4,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-003"],
+          "description": "Create change password form with current password verification, new password validation, update via Supabase Auth API",
+          "acceptance_criteria": [
+            "Current password verified before change",
+            "New password meets strength requirements",
+            "Password updated via Supabase Auth",
+            "Success message shown after update",
+            "Error handling for wrong current password"
+          ]
+        },
+        {
+          "id": "TASK-040",
+          "title": "Add language switching functionality (English/Arabic)",
+          "assignee": "frontend",
+          "estimate_hours": 6,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-007"],
+          "description": "Implement i18n with language context, create translation files for all UI strings, toggle RTL layout based on language, persist language preference",
+          "acceptance_criteria": [
+            "Language toggle switches between English and Arabic",
+            "All UI strings translated (no hardcoded English text)",
+            "RTL layout applied when Arabic selected",
+            "Language preference saved to localStorage",
+            "Language persists across app restarts"
+          ]
+        },
+        {
+          "id": "TASK-041",
+          "title": "Configure Vite PWA plugin with service worker",
+          "assignee": "devops",
+          "estimate_hours": 5,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-001"],
+          "description": "Install vite-plugin-pwa, configure workbox for caching strategy, generate service worker, add web manifest for installability",
+          "acceptance_criteria": [
+            "vite-plugin-pwa installed and configured",
+            "Service worker generated on build",
+            "Web manifest includes app name, icons, theme color",
+            "App installable on mobile browsers",
+            "PWA passes Lighthouse PWA audit"
+          ]
+        },
+        {
+          "id": "TASK-042",
+          "title": "Implement offline caching strategy",
+          "assignee": "backend",
+          "estimate_hours": 7,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-041"],
+          "description": "Configure workbox caching: cache-first for static assets, network-first for API calls with cache fallback, precache critical pages",
+          "acceptance_criteria": [
+            "Static assets (JS, CSS, images) cached on first load",
+            "API responses cached with expiration policy",
+            "App loads offline with cached data",
+            "Offline indicator shown in UI when no network",
+            "Stale data marked with timestamp in UI"
+          ]
+        },
+        {
+          "id": "TASK-043",
+          "title": "Implement offline mutation queue",
+          "assignee": "backend",
+          "estimate_hours": 8,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-042"],
+          "description": "Create mutation queue to store failed API calls offline, retry when connection restored, handle conflicts, show queue status in UI",
+          "acceptance_criteria": [
+            "Failed mutations stored in IndexedDB",
+            "Mutations retried automatically when online",
+            "User notified of pending offline changes",
+            "Conflicts detected and handled (last-write-wins or user prompt)",
+            "Queue cleared after successful sync"
+          ]
+        },
+        {
+          "id": "TASK-044",
+          "title": "Add network status indicator",
+          "assignee": "frontend",
+          "estimate_hours": 3,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-042"],
+          "description": "Create network status component using Capacitor Network plugin, show online/offline banner, disable write actions when offline",
+          "acceptance_criteria": [
+            "Network status banner appears when offline",
+            "Banner disappears when back online",
+            "Write actions (create, update, delete) disabled offline",
+            "Toast notification when connection restored",
+            "Automatic data sync when back online"
+          ]
+        },
+        {
+          "id": "TASK-045",
+          "title": "Implement notification preferences storage",
+          "assignee": "backend",
+          "estimate_hours": 4,
+          "priority": "Low",
+          "status": "Not Started",
+          "dependencies": ["TASK-038"],
+          "description": "Create preferences storage in localStorage, save notification settings, prepare for future push notification integration",
+          "acceptance_criteria": [
+            "Notification preferences saved to localStorage",
+            "Settings persist across sessions",
+            "Preferences include: product updates, subscription reminders, referral notifications",
+            "Settings retrievable via usePreferences hook"
+          ]
+        },
+        {
+          "id": "TASK-046",
+          "title": "Configure Capacitor Push Notifications plugin",
+          "assignee": "mobile",
+          "estimate_hours": 6,
+          "priority": "Low",
+          "status": "Not Started",
+          "dependencies": ["TASK-001", "TASK-045"],
+          "description": "Install push notification plugin, request permissions, register device token, prepare infrastructure for future notification sending",
+          "acceptance_criteria": [
+            "Push notification plugin installed",
+            "Permission requested on first app open",
+            "Device token registered (placeholder storage)",
+            "Notification received and displayed in foreground",
+            "Clicking notification navigates to relevant page"
+          ]
+        }
+      ]
+    },
+    {
+      "sprint": 6,
+      "name": "Android APK Build & Testing",
+      "duration": "1 week",
+      "tasks": [
+        {
+          "id": "TASK-047",
+          "title": "Set up Android Studio and SDK environment",
+          "assignee": "mobile",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Install Android Studio, configure Android SDK, set up emulators for testing, configure Gradle build system",
+          "acceptance_criteria": [
+            "Android Studio installed and configured",
+            "Android SDK 21+ installed (support Android 5.0+)",
+            "Emulators created for Android 8, 10, 13",
+            "Gradle builds successfully",
+            "Environment variables set (ANDROID_HOME)"
+          ]
+        },
+        {
+          "id": "TASK-048",
+          "title": "Initialize Capacitor Android platform",
+          "assignee": "mobile",
+          "estimate_hours": 3,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-047"],
+          "description": "Run npx cap add android, configure Android project settings, update AndroidManifest.xml with permissions, customize app icon and splash screen",
+          "acceptance_criteria": [
+            "Android platform added to project",
+            "AndroidManifest.xml includes camera, storage, network permissions",
+            "App icon set (all densities: mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi)",
+            "Splash screen configured with Rimmarsa branding",
+            "App name set to 'Rimmarsa Vendor'"
+          ]
+        },
+        {
+          "id": "TASK-049",
+          "title": "Configure app signing for release builds",
+          "assignee": "devops",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-048"],
+          "description": "Generate keystore for release signing, configure build.gradle with signing config, document keystore credentials securely",
+          "acceptance_criteria": [
+            "Release keystore generated and stored securely",
+            "build.gradle configured with signing config",
+            "Signing credentials documented (password, alias)",
+            "Test release build signs successfully",
+            "Keystore backed up to secure location"
+          ]
+        },
+        {
+          "id": "TASK-050",
+          "title": "Sync web assets and build debug APK",
+          "assignee": "mobile",
+          "estimate_hours": 3,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-048"],
+          "description": "Run npm run build && npx cap sync android, build debug APK using Gradle, test APK installation on emulator and physical device",
+          "acceptance_criteria": [
+            "Web assets built successfully",
+            "Assets synced to android/app/src/main/assets/public",
+            "Debug APK built successfully",
+            "APK installs on Android emulator",
+            "APK runs on physical Android device"
+          ]
+        },
+        {
+          "id": "TASK-051",
+          "title": "Test camera functionality on physical Android device",
+          "assignee": "qa",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-050"],
+          "description": "Install APK on physical device, test camera capture for product photos, test gallery selection, verify image upload works",
+          "acceptance_criteria": [
+            "Camera opens when 'Take Photo' button clicked",
+            "Photo captured successfully",
+            "Gallery opens when 'Choose from Gallery' clicked",
+            "Selected image displayed in product form",
+            "Image uploads to Supabase Storage"
+          ]
+        },
+        {
+          "id": "TASK-052",
+          "title": "Test native share functionality",
+          "assignee": "qa",
+          "estimate_hours": 3,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-050"],
+          "description": "Test referral code sharing via native share sheet, verify WhatsApp integration, test copy-to-clipboard fallback",
+          "acceptance_criteria": [
+            "Share button opens native share dialog",
+            "WhatsApp appears in share options",
+            "Referral message pre-filled correctly",
+            "Copy button copies code to clipboard",
+            "Toast notification shown after copy"
+          ]
+        },
+        {
+          "id": "TASK-053",
+          "title": "Test offline functionality and sync",
+          "assignee": "qa",
+          "estimate_hours": 5,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-050"],
+          "description": "Disable device network, test app loads with cached data, test offline indicator appears, enable network and verify sync works",
+          "acceptance_criteria": [
+            "App loads offline with cached product list",
+            "Offline banner displayed when no network",
+            "Write actions disabled offline",
+            "Failed mutations queued in IndexedDB",
+            "Mutations retry automatically when back online"
+          ]
+        },
+        {
+          "id": "TASK-054",
+          "title": "Perform comprehensive UI testing on multiple devices",
+          "assignee": "qa",
+          "estimate_hours": 6,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-050"],
+          "description": "Test on devices with different screen sizes, Android versions, test RTL layout with Arabic, verify responsive design, test all user flows",
+          "acceptance_criteria": [
+            "Tested on small (5 inch), medium (6 inch), large (7+ inch) screens",
+            "Tested on Android 8, 10, 13",
+            "Arabic RTL layout renders correctly",
+            "All buttons and inputs tappable (min 44x44px touch target)",
+            "No UI overflow or text clipping",
+            "All critical user flows tested end-to-end"
+          ]
+        },
+        {
+          "id": "TASK-055",
+          "title": "Conduct performance testing and optimization",
+          "assignee": "qa",
+          "estimate_hours": 5,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-050"],
+          "description": "Run Lighthouse performance audit, measure app startup time, test image loading performance, identify and fix performance bottlenecks",
+          "acceptance_criteria": [
+            "Lighthouse performance score > 90",
+            "App startup time < 3 seconds",
+            "Images load progressively (lazy loading)",
+            "No memory leaks detected",
+            "Smooth scrolling (60fps) on product list"
+          ]
+        },
+        {
+          "id": "TASK-056",
+          "title": "Fix bugs discovered during testing",
+          "assignee": "frontend",
+          "estimate_hours": 10,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-051", "TASK-052", "TASK-053", "TASK-054"],
+          "description": "Triage all bugs from QA testing, prioritize critical and high bugs, fix issues, retest fixes on devices",
+          "acceptance_criteria": [
+            "All critical bugs fixed",
+            "All high priority bugs fixed",
+            "Medium/low bugs documented for future sprints",
+            "Fixes verified by QA on devices",
+            "No regression bugs introduced"
+          ]
+        },
+        {
+          "id": "TASK-057",
+          "title": "Build and sign release APK",
+          "assignee": "devops",
+          "estimate_hours": 3,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-049", "TASK-056"],
+          "description": "Build release APK with production environment variables, sign with release keystore, optimize with zipalign, generate final APK for distribution",
+          "acceptance_criteria": [
+            "Production environment variables configured",
+            "Release APK built successfully",
+            "APK signed with release keystore",
+            "APK optimized with zipalign",
+            "Final APK tested on device (installs and runs)"
+          ]
+        },
+        {
+          "id": "TASK-058",
+          "title": "Prepare Google Play Store listing",
+          "assignee": "product",
+          "estimate_hours": 6,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-057"],
+          "description": "Create app description (English/Arabic), take screenshots (phone and tablet), design feature graphic, write release notes, prepare privacy policy",
+          "acceptance_criteria": [
+            "App description written in English and Arabic",
+            "Screenshots captured (8 screenshots minimum)",
+            "Feature graphic designed (1024x500px)",
+            "Privacy policy published and linked",
+            "Release notes written for version 1.0.0"
+          ]
+        },
+        {
+          "id": "TASK-059",
+          "title": "Upload APK to Google Play Console (internal testing)",
+          "assignee": "devops",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-057", "TASK-058"],
+          "description": "Create app in Google Play Console, upload signed APK, configure internal testing track, invite testers, monitor for crashes",
+          "acceptance_criteria": [
+            "App created in Google Play Console",
+            "APK uploaded to internal testing track",
+            "Test users invited via email",
+            "No crashes reported in first 24 hours",
+            "Feedback collected from internal testers"
+          ]
+        }
+      ]
+    },
+    {
+      "sprint": 7,
+      "name": "Polish, Documentation & Deployment",
+      "duration": "1 week",
+      "tasks": [
+        {
+          "id": "TASK-060",
+          "title": "Implement error tracking with Sentry",
+          "assignee": "devops",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Install Sentry SDK for React and Capacitor, configure error tracking, set up source maps upload, create error boundaries",
+          "acceptance_criteria": [
+            "Sentry SDK installed and initialized",
+            "Errors automatically sent to Sentry",
+            "Source maps uploaded for production builds",
+            "Error boundaries wrap main app sections",
+            "Sentry alerts configured for critical errors"
+          ]
+        },
+        {
+          "id": "TASK-061",
+          "title": "Add analytics tracking (events and screen views)",
+          "assignee": "frontend",
+          "estimate_hours": 5,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Integrate analytics library (Plausible/Google Analytics), track page views, track key user actions (product created, referral shared), set up custom events",
+          "acceptance_criteria": [
+            "Analytics library integrated",
+            "Page views tracked automatically",
+            "Custom events tracked (product_created, referral_shared, etc.)",
+            "User properties set (vendor_id, subscription_status)",
+            "Analytics dashboard shows real-time data"
+          ]
+        },
+        {
+          "id": "TASK-062",
+          "title": "Implement loading skeletons for all pages",
+          "assignee": "frontend",
+          "estimate_hours": 5,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Create skeleton components for cards, lists, forms, add loading states to all pages, improve perceived performance",
+          "acceptance_criteria": [
+            "Skeleton components created for common layouts",
+            "Loading skeletons shown while fetching data",
+            "Skeletons match final content layout",
+            "Smooth transition from skeleton to content",
+            "No layout shift when content loads"
+          ]
+        },
+        {
+          "id": "TASK-063",
+          "title": "Add empty states for all list pages",
+          "assignee": "frontend",
+          "estimate_hours": 4,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Design and implement empty state components for products, referrals, subscription history, include helpful CTA buttons",
+          "acceptance_criteria": [
+            "Empty state shown when no data available",
+            "Friendly illustration or icon included",
+            "Helpful message explaining what to do",
+            "CTA button to create first item (e.g., 'Add Your First Product')",
+            "Empty states support RTL layout"
+          ]
+        },
+        {
+          "id": "TASK-064",
+          "title": "Improve form validation error messages",
+          "assignee": "frontend",
+          "estimate_hours": 3,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Review all form error messages for clarity, translate to Arabic, ensure user-friendly language, add field-level and form-level errors",
+          "acceptance_criteria": [
+            "All error messages translated to English and Arabic",
+            "Error messages are specific and actionable",
+            "Field-level errors appear below fields",
+            "Form-level errors appear at top of form",
+            "Errors clear when field is corrected"
+          ]
+        },
+        {
+          "id": "TASK-065",
+          "title": "Add pull-to-refresh on all list pages",
+          "assignee": "frontend",
+          "estimate_hours": 4,
+          "priority": "Low",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Implement pull-to-refresh gesture on products list, referrals list, subscription history, trigger data refetch",
+          "acceptance_criteria": [
+            "Pull-down gesture triggers refresh",
+            "Loading spinner shown during refresh",
+            "Data refetched from server",
+            "List updates with new data",
+            "Works smoothly on all pages"
+          ]
+        },
+        {
+          "id": "TASK-066",
+          "title": "Optimize images for faster loading",
+          "assignee": "frontend",
+          "estimate_hours": 4,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Implement lazy loading for images, use responsive images with srcset, add blur placeholder while loading, optimize logo and static assets",
+          "acceptance_criteria": [
+            "Images lazy load as user scrolls",
+            "Blur placeholder shown while loading",
+            "Responsive images serve appropriate size",
+            "Static assets minified and compressed",
+            "Lighthouse performance score improved"
+          ]
+        },
+        {
+          "id": "TASK-067",
+          "title": "Write user documentation and help section",
+          "assignee": "product",
+          "estimate_hours": 8,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Create user guide for vendor app: how to add products, manage profile, share referral code, view subscription, troubleshooting FAQs",
+          "acceptance_criteria": [
+            "User guide written in English and Arabic",
+            "Step-by-step instructions with screenshots",
+            "FAQ section answers common questions",
+            "Troubleshooting guide for common issues",
+            "Help content accessible within app"
+          ]
+        },
+        {
+          "id": "TASK-068",
+          "title": "Write technical documentation (README, deployment guide)",
+          "assignee": "devops",
+          "estimate_hours": 6,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Document project setup, build process, deployment steps, environment variables, troubleshooting, contribution guidelines",
+          "acceptance_criteria": [
+            "README.md includes project overview and setup instructions",
+            "DEPLOYMENT.md documents build and release process",
+            "Environment variables documented",
+            "Troubleshooting section for common dev issues",
+            "Code comments added to complex functions"
+          ]
+        },
+        {
+          "id": "TASK-069",
+          "title": "Conduct accessibility audit",
+          "assignee": "qa",
+          "estimate_hours": 5,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Run Lighthouse accessibility audit, test with screen reader, verify color contrast ratios, ensure keyboard navigation, fix accessibility issues",
+          "acceptance_criteria": [
+            "Lighthouse accessibility score > 90",
+            "All interactive elements have aria-labels",
+            "Color contrast meets WCAG AA standards",
+            "App navigable with keyboard (TalkBack on Android)",
+            "Form inputs properly labeled"
+          ]
+        },
+        {
+          "id": "TASK-070",
+          "title": "Perform security audit and penetration testing",
+          "assignee": "security",
+          "estimate_hours": 6,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Review authentication implementation, test RLS policies, check for XSS vulnerabilities, verify secure storage, test API security",
+          "acceptance_criteria": [
+            "No hardcoded secrets in code",
+            "RLS policies enforce vendor data isolation",
+            "No XSS vulnerabilities found",
+            "Sensitive data not logged or exposed",
+            "HTTPS enforced for all API calls"
+          ]
+        },
+        {
+          "id": "TASK-071",
+          "title": "Optimize bundle size and code splitting",
+          "assignee": "frontend",
+          "estimate_hours": 5,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Analyze bundle size, implement code splitting for routes, tree-shake unused code, lazy load heavy components, reduce initial load time",
+          "acceptance_criteria": [
+            "Bundle size analyzed with webpack-bundle-analyzer",
+            "Route-based code splitting implemented",
+            "Initial bundle < 500KB gzipped",
+            "Unused dependencies removed",
+            "Lighthouse performance score improved"
+          ]
+        },
+        {
+          "id": "TASK-072",
+          "title": "Conduct final end-to-end testing on production build",
+          "assignee": "qa",
+          "estimate_hours": 8,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-057"],
+          "description": "Test all user flows on production APK, verify all features work, check for regressions, test edge cases, document any final issues",
+          "acceptance_criteria": [
+            "All critical user flows tested (authentication, product CRUD, referrals)",
+            "Edge cases tested (empty states, error states, slow network)",
+            "No critical or high bugs found",
+            "All features working as specified",
+            "Test report documented"
+          ]
+        },
+        {
+          "id": "TASK-073",
+          "title": "Deploy web version to production (Vercel/Netlify)",
+          "assignee": "devops",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-072"],
+          "description": "Configure deployment pipeline, set production environment variables, deploy to Vercel/Netlify, configure custom domain if available, verify deployment",
+          "acceptance_criteria": [
+            "Web app deployed to production URL",
+            "Production environment variables configured",
+            "Custom domain configured (if available)",
+            "HTTPS enabled",
+            "Deployment verified and accessible"
+          ]
+        },
+        {
+          "id": "TASK-074",
+          "title": "Submit APK to Google Play Store for production release",
+          "assignee": "devops",
+          "estimate_hours": 4,
+          "priority": "High",
+          "status": "Not Started",
+          "dependencies": ["TASK-059", "TASK-072"],
+          "description": "Promote app from internal testing to production track, complete store listing, submit for review, monitor approval status",
+          "acceptance_criteria": [
+            "App promoted to production track",
+            "Store listing complete with all required assets",
+            "App submitted for Google review",
+            "No policy violations found",
+            "App approved and published (or timeline communicated)"
+          ]
+        },
+        {
+          "id": "TASK-075",
+          "title": "Create post-launch monitoring dashboard",
+          "assignee": "devops",
+          "estimate_hours": 5,
+          "priority": "Medium",
+          "status": "Not Started",
+          "dependencies": ["TASK-074"],
+          "description": "Set up monitoring for app crashes, API errors, performance metrics, user analytics, configure alerts for critical issues",
+          "acceptance_criteria": [
+            "Sentry dashboard shows real-time errors",
+            "Analytics dashboard shows user activity",
+            "Performance metrics tracked (API latency, page load time)",
+            "Alerts configured for critical errors (> 5% error rate)",
+            "Daily/weekly reports automated"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_tasks": 75,
+  "estimated_hours": 371,
+  "estimated_weeks": 9.3,
+  "team_roles": {
+    "frontend": "React/TypeScript developer responsible for UI components, pages, state management, and user interactions",
+    "backend": "Backend developer responsible for Supabase integration, API hooks, data fetching, and business logic",
+    "mobile": "Mobile developer responsible for Capacitor configuration, native plugin integration, and APK build process",
+    "devops": "DevOps engineer responsible for build pipeline, deployment, environment configuration, and infrastructure",
+    "qa": "Quality assurance engineer responsible for testing, bug reporting, device testing, and quality validation",
+    "security": "Security engineer responsible for security audits, vulnerability assessment, and compliance verification",
+    "product": "Product manager responsible for documentation, user guides, store listing, and product requirements"
+  },
+  "notes": [
+    "Tasks are organized into 7 sprints for phased development",
+    "Dependencies are clearly marked to ensure proper task sequencing",
+    "Estimate hours are realistic and include buffer for unknowns",
+    "Critical path: Authentication → Products → Referrals → APK Build → Testing",
+    "Parallel work possible on UI components and backend integration",
+    "QA testing integrated throughout development, not just at end",
+    "Regular testing on physical devices recommended from Sprint 3 onwards",
+    "Security review required before production deployment (TASK-070)",
+    "Documentation should be updated continuously, not just at end"
+  ]
+}

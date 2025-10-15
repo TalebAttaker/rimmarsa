@@ -1,0 +1,901 @@
+{
+  "project": "Rimmarsa Admin Dashboard",
+  "version": "1.0.0",
+  "created": "2025-10-15",
+  "total_estimated_hours": 48,
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Install and configure shadcn/ui components",
+      "description": "Initialize shadcn/ui and install all required UI components (button, input, table, dialog, form, select, badge, card, alert, toast, dropdown-menu, checkbox)",
+      "assignee": "frontend",
+      "estimate_hours": 1,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "shadcn/ui is initialized with components.json",
+        "All required components are installed in src/components/ui/",
+        "Components render without errors",
+        "Tailwind configuration is updated properly"
+      ],
+      "technical_notes": "Run: npx shadcn@latest init && npx shadcn@latest add button input table dialog form select badge card alert toast dropdown-menu checkbox"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Install additional npm dependencies",
+      "description": "Install react-hook-form, zod, lucide-react, date-fns, clsx, tailwind-merge, and @hookform/resolvers",
+      "assignee": "frontend",
+      "estimate_hours": 0.5,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "All dependencies are installed and listed in package.json",
+        "No installation errors",
+        "Project builds successfully"
+      ],
+      "technical_notes": "Run: npm install react-hook-form zod @hookform/resolvers lucide-react date-fns clsx tailwind-merge"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Create utility functions and helpers",
+      "description": "Create lib/utils.ts with cn() function for className merging, date formatting helpers, and validation schemas",
+      "assignee": "frontend",
+      "estimate_hours": 1,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-002"],
+      "acceptance_criteria": [
+        "cn() function works for merging Tailwind classes",
+        "Date formatting functions handle timestamps correctly",
+        "Zod schemas are exported for forms"
+      ],
+      "technical_notes": "Use clsx and tailwind-merge for cn() utility"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Create admin seed data in database",
+      "description": "Create SQL migration or manual insert to add first admin user to the admins table with bcrypt hashed password",
+      "assignee": "database",
+      "estimate_hours": 0.5,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "At least one admin user exists in admins table",
+        "Password is hashed with bcrypt (12 rounds)",
+        "Admin can be queried by email",
+        "Login credentials are documented"
+      ],
+      "technical_notes": "Use Supabase SQL Editor to run: INSERT INTO admins (email, password_hash, name) VALUES ('admin@rimmarsa.com', crypt('password', gen_salt('bf', 12)), 'Admin User');"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Implement authentication utility functions",
+      "description": "Create lib/auth.ts with functions for admin login (password verification), session management, and logout",
+      "assignee": "backend",
+      "estimate_hours": 2,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-004"],
+      "acceptance_criteria": [
+        "loginAdmin() function queries admins table and verifies password",
+        "Password comparison uses bcrypt or Supabase auth",
+        "Session object structure is defined (AdminSession interface)",
+        "logoutAdmin() clears session from storage",
+        "getAdminSession() retrieves current session"
+      ],
+      "technical_notes": "Note: bcrypt password hashing in client is not secure. Consider using Supabase Edge Function for password verification or store hash comparison logic server-side."
+    },
+    {
+      "id": "TASK-006",
+      "title": "Create AuthContext and provider",
+      "description": "Implement contexts/AuthContext.tsx with admin authentication state, login/logout functions, and session management",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-005"],
+      "acceptance_criteria": [
+        "AuthContext provides admin state and auth functions",
+        "useAuth hook is exported for consuming components",
+        "Session is stored in localStorage",
+        "Session expiry is checked (24 hours)",
+        "AuthProvider wraps the app in App.tsx"
+      ],
+      "technical_notes": "Store session as: { id, email, name, role, expiresAt }"
+    },
+    {
+      "id": "TASK-007",
+      "title": "Build LoginForm component",
+      "description": "Create components/auth/LoginForm.tsx with email/password inputs, validation, and submission handling",
+      "assignee": "frontend",
+      "estimate_hours": 3,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-001", "TASK-003", "TASK-006"],
+      "acceptance_criteria": [
+        "Form has email and password inputs",
+        "Password field has show/hide toggle",
+        "Form validates inputs (required, email format, min length)",
+        "Submit button shows loading state during API call",
+        "Error messages display inline for validation errors",
+        "Toast notification shows on login failure",
+        "Uses react-hook-form with Zod validation"
+      ],
+      "technical_notes": "Use shadcn/ui form components and react-hook-form"
+    },
+    {
+      "id": "TASK-008",
+      "title": "Create LoginPage",
+      "description": "Build pages/LoginPage.tsx with centered card layout containing LoginForm",
+      "assignee": "frontend",
+      "estimate_hours": 1,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-007"],
+      "acceptance_criteria": [
+        "Page has centered card layout with gradient background",
+        "Logo/brand name displays at top",
+        "LoginForm is rendered inside card",
+        "Redirects to /dashboard on successful login",
+        "Redirects to /dashboard if already logged in"
+      ],
+      "technical_notes": "Check for existing session in useEffect and redirect"
+    },
+    {
+      "id": "TASK-009",
+      "title": "Implement ProtectedRoute component",
+      "description": "Create components/layout/ProtectedRoute.tsx to wrap protected routes and check authentication",
+      "assignee": "frontend",
+      "estimate_hours": 1,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-006"],
+      "acceptance_criteria": [
+        "Component checks for valid admin session",
+        "Redirects to /login if no session or expired",
+        "Allows rendering of children if authenticated",
+        "Shows loading spinner during session check"
+      ],
+      "technical_notes": "Use useAuth hook to access session state"
+    },
+    {
+      "id": "TASK-010",
+      "title": "Build Sidebar component",
+      "description": "Create components/layout/Sidebar.tsx with navigation links and responsive behavior",
+      "assignee": "frontend",
+      "estimate_hours": 3,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-001"],
+      "acceptance_criteria": [
+        "Sidebar displays nav items: Dashboard, Cities, Vendors, Logout",
+        "Icons from lucide-react are used",
+        "Active route is highlighted",
+        "Logout triggers auth logout function",
+        "Responsive: fixed on desktop, collapsible on tablet, overlay on mobile",
+        "Mobile hamburger menu toggles sidebar"
+      ],
+      "technical_notes": "Nav items: LayoutDashboard, MapPin, Store, LogOut icons"
+    },
+    {
+      "id": "TASK-011",
+      "title": "Build Header component",
+      "description": "Create components/layout/Header.tsx with platform branding and admin profile dropdown",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "Medium",
+      "status": "Not Started",
+      "dependencies": ["TASK-001", "TASK-006"],
+      "acceptance_criteria": [
+        "Header shows platform name/logo on left",
+        "Current page title displays in center",
+        "Admin name and avatar/icon display on right",
+        "Dropdown menu has logout option",
+        "Dropdown triggers logout on click"
+      ],
+      "technical_notes": "Use shadcn/ui dropdown-menu component"
+    },
+    {
+      "id": "TASK-012",
+      "title": "Create DashboardLayout component",
+      "description": "Build components/layout/DashboardLayout.tsx that combines Sidebar, Header, and main content area",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-010", "TASK-011"],
+      "acceptance_criteria": [
+        "Layout has fixed sidebar on left (desktop)",
+        "Header is fixed at top",
+        "Main content area scrolls independently",
+        "Responsive layout adjusts for tablet and mobile",
+        "Layout accepts children prop for page content"
+      ],
+      "technical_notes": "Use CSS Grid or Flexbox for layout structure"
+    },
+    {
+      "id": "TASK-013",
+      "title": "Set up routing with React Router",
+      "description": "Configure React Router in App.tsx with routes for login, dashboard pages, and protected routes",
+      "assignee": "frontend",
+      "estimate_hours": 1.5,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-008", "TASK-009", "TASK-012"],
+      "acceptance_criteria": [
+        "Routes: /, /login, /dashboard, /cities, /vendors, /vendors/:id",
+        "Root route (/) redirects to /login or /dashboard based on auth",
+        "Protected routes wrapped with ProtectedRoute",
+        "404 page for unknown routes",
+        "Navigation works without page reload"
+      ],
+      "technical_notes": "Use createBrowserRouter or BrowserRouter with Routes"
+    },
+    {
+      "id": "TASK-014",
+      "title": "Create placeholder DashboardPage",
+      "description": "Build pages/DashboardPage.tsx with basic layout and welcome message (detailed stats are future enhancement)",
+      "assignee": "frontend",
+      "estimate_hours": 1,
+      "priority": "Low",
+      "status": "Not Started",
+      "dependencies": ["TASK-012"],
+      "acceptance_criteria": [
+        "Page renders inside DashboardLayout",
+        "Welcome message displays admin name",
+        "Quick action cards/links to Cities and Vendors pages",
+        "Page is accessible at /dashboard route"
+      ],
+      "technical_notes": "Keep simple for now - full dashboard analytics is Phase 2"
+    },
+    {
+      "id": "TASK-015",
+      "title": "Implement useCities custom hook",
+      "description": "Create hooks/useCities.ts with functions to fetch, create, update, delete cities from Supabase",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "Hook exposes: cities state, loading state, error state",
+        "Functions: fetchCities(), createCity(), updateCity(), deleteCity(), toggleActive()",
+        "Fetch includes filtering by search term and active status",
+        "All functions handle errors and update state appropriately",
+        "Success operations refetch cities list"
+      ],
+      "technical_notes": "Query cities table with .from('cities').select('*')"
+    },
+    {
+      "id": "TASK-016",
+      "title": "Build CitiesTable component",
+      "description": "Create components/cities/CitiesTable.tsx using TanStack Table to display cities with sorting, filtering, and actions",
+      "assignee": "frontend",
+      "estimate_hours": 4,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-001", "TASK-015"],
+      "acceptance_criteria": [
+        "Table columns: Name (FR), Name (AR), Region (FR), Region (AR), Status, Actions",
+        "Sortable by name and region columns",
+        "Search filter input above table",
+        "Active/Inactive status filter dropdown",
+        "Row actions: Edit button, Delete button, Toggle Active switch",
+        "Pagination: 20 items per page (client-side for now)",
+        "Empty state shows 'No cities found' with Add City button",
+        "Loading skeleton shows while fetching"
+      ],
+      "technical_notes": "Use TanStack Table v8 with shadcn/ui table component"
+    },
+    {
+      "id": "TASK-017",
+      "title": "Build CityForm component",
+      "description": "Create components/cities/CityForm.tsx with form for adding/editing cities",
+      "assignee": "frontend",
+      "estimate_hours": 3,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-001", "TASK-003", "TASK-015"],
+      "acceptance_criteria": [
+        "Form fields: City Name (FR), City Name (AR), Region (FR), Region (AR), Order Index, Active Status",
+        "Validates: Name (FR) required/max 255, Name (AR) required/max 255, Order Index >= 0",
+        "Arabic input fields support RTL text direction",
+        "Form handles both add and edit modes",
+        "Cancel and Save buttons",
+        "Shows loading state on submit",
+        "Displays validation errors inline",
+        "Success toast on save",
+        "Rendered in modal/dialog"
+      ],
+      "technical_notes": "Use react-hook-form with Zod validation schema"
+    },
+    {
+      "id": "TASK-018",
+      "title": "Build CityDeleteDialog component",
+      "description": "Create components/cities/CityDeleteDialog.tsx with confirmation dialog for deleting cities",
+      "assignee": "frontend",
+      "estimate_hours": 1,
+      "priority": "Medium",
+      "status": "Not Started",
+      "dependencies": ["TASK-001", "TASK-015"],
+      "acceptance_criteria": [
+        "Dialog shows warning message",
+        "Displays city name to confirm deletion",
+        "Cancel and Delete buttons",
+        "Delete button is red/destructive style",
+        "Shows loading state during deletion",
+        "Closes dialog on successful deletion",
+        "Shows error toast if deletion fails"
+      ],
+      "technical_notes": "Use shadcn/ui dialog component with alert variant"
+    },
+    {
+      "id": "TASK-019",
+      "title": "Create CitiesPage",
+      "description": "Build pages/CitiesPage.tsx that integrates CitiesTable, CityForm, and manages city CRUD operations",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-016", "TASK-017", "TASK-018"],
+      "acceptance_criteria": [
+        "Page renders inside DashboardLayout",
+        "Page title: 'Cities & Regions'",
+        "Add City button at top right",
+        "CitiesTable displays below",
+        "Add City button opens CityForm modal in add mode",
+        "Edit action opens CityForm modal in edit mode with city data",
+        "Delete action opens CityDeleteDialog",
+        "Toggle active calls toggleActive() function",
+        "All operations show appropriate loading/success/error states"
+      ],
+      "technical_notes": "Manage modal open/close state and selected city for edit/delete"
+    },
+    {
+      "id": "TASK-020",
+      "title": "Implement useVendors custom hook",
+      "description": "Create hooks/useVendors.ts with functions to fetch, create, update vendors and manage subscriptions",
+      "assignee": "frontend",
+      "estimate_hours": 3,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "Hook exposes: vendors state, loading state, error state",
+        "Functions: fetchVendors(), getVendorById(), createVendor(), updateVendor(), toggleVerified(), toggleActive()",
+        "Fetch includes filtering by search, status, verified, city",
+        "fetchVendors includes subscription data in query",
+        "All functions handle errors and update state",
+        "Success operations refetch vendors list"
+      ],
+      "technical_notes": "Query with: .from('vendors').select('*, subscription_history(*)')"
+    },
+    {
+      "id": "TASK-021",
+      "title": "Build VendorsTable component",
+      "description": "Create components/vendors/VendorsTable.tsx using TanStack Table to display vendors with filtering and actions",
+      "assignee": "frontend",
+      "estimate_hours": 5,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-001", "TASK-020"],
+      "acceptance_criteria": [
+        "Table columns: Business Name, Owner, Email, Phone, City, Status, Verified, Actions",
+        "Sortable by business name and created date",
+        "Search filter (business name, email, phone)",
+        "Filter dropdowns: Status (active/inactive), Verified (yes/no), City (from cities table)",
+        "Row actions: View Details, Edit, Verify/Unverify toggle, Activate/Deactivate toggle",
+        "Status badges: Active (green), Inactive (gray)",
+        "Verified shows blue checkmark icon",
+        "Pagination: 20 items per page",
+        "Empty state: 'No vendors found'",
+        "Loading skeleton while fetching"
+      ],
+      "technical_notes": "Fetch cities list for city filter dropdown"
+    },
+    {
+      "id": "TASK-022",
+      "title": "Build VendorForm component",
+      "description": "Create components/vendors/VendorForm.tsx with form for adding/editing vendors",
+      "assignee": "frontend",
+      "estimate_hours": 4,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-001", "TASK-003", "TASK-020"],
+      "acceptance_criteria": [
+        "Form fields: Business Name, Owner Name, Email, Phone, City (dropdown), Address, Active, Verified",
+        "Validates: Business Name required/max 255, Owner Name required/max 255, Email valid format, Phone Mauritanian format",
+        "City dropdown populated from cities table",
+        "Phone field has format hint (+222 XX XX XX XX)",
+        "Form handles both add and edit modes",
+        "Cancel and Save buttons",
+        "Shows loading state on submit",
+        "Displays validation errors inline",
+        "Success toast on save",
+        "Rendered in modal/dialog"
+      ],
+      "technical_notes": "Phone regex: /^\\+222\\d{8}$/"
+    },
+    {
+      "id": "TASK-023",
+      "title": "Create VendorsPage",
+      "description": "Build pages/VendorsPage.tsx that integrates VendorsTable, VendorForm, and manages vendor operations",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-021", "TASK-022"],
+      "acceptance_criteria": [
+        "Page renders inside DashboardLayout",
+        "Page title: 'Vendors'",
+        "Add Vendor button at top right",
+        "VendorsTable displays below filters",
+        "Add Vendor button opens VendorForm modal in add mode",
+        "Edit action opens VendorForm modal in edit mode",
+        "View Details navigates to /vendors/:id",
+        "Toggle actions call appropriate functions",
+        "All operations show loading/success/error states"
+      ],
+      "technical_notes": "Use React Router Link for View Details navigation"
+    },
+    {
+      "id": "TASK-024",
+      "title": "Build VendorDetails component",
+      "description": "Create components/vendors/VendorDetails.tsx to display vendor information, stats, and related data",
+      "assignee": "frontend",
+      "estimate_hours": 4,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-001", "TASK-020"],
+      "acceptance_criteria": [
+        "Header card: Business name, verified badge, status badge, Edit/Delete buttons",
+        "Information card: Owner, Email (copy), Phone (copy), City, Address, Referral Code (copy), Created, Updated",
+        "Statistics cards row: Total Products, Total Sales, Referral Earnings, Commission Rate",
+        "Uses shadcn/ui card and badge components",
+        "Copy buttons use clipboard API and show toast confirmation",
+        "All data fetched from vendor object"
+      ],
+      "technical_notes": "Use lucide-react Copy icon for copy buttons"
+    },
+    {
+      "id": "TASK-025",
+      "title": "Implement subscription management functions",
+      "description": "Add createSubscription() and fetchSubscriptionHistory() to useVendors hook or create separate useSubscriptions hook",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-020"],
+      "acceptance_criteria": [
+        "createSubscription() inserts into subscription_history table",
+        "Function accepts: vendor_id, plan_type, amount, start_date, end_date",
+        "fetchSubscriptionHistory() queries subscription_history for specific vendor",
+        "Returns subscriptions ordered by created_at DESC",
+        "Functions handle errors appropriately",
+        "Success operations show toast notifications"
+      ],
+      "technical_notes": "Query: .from('subscription_history').select('*').eq('vendor_id', id)"
+    },
+    {
+      "id": "TASK-026",
+      "title": "Build SubscriptionForm component",
+      "description": "Create components/vendors/SubscriptionForm.tsx with form for creating vendor subscriptions",
+      "assignee": "frontend",
+      "estimate_hours": 4,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-001", "TASK-003", "TASK-025"],
+      "acceptance_criteria": [
+        "Form fields: Plan Type (select: Monthly/Quarterly/Annual), Amount, Start Date, End Date, Referral Code (optional)",
+        "Validates: Amount > 0, End Date after Start Date, Referral Code exists (if provided)",
+        "Auto-calculates and displays 20% discount if valid referral code entered",
+        "Shows: Original Amount, Discount Amount, Final Amount, Commission to Referrer",
+        "Date pickers for start/end dates",
+        "Cancel and Create Subscription buttons",
+        "Shows loading state on submit",
+        "Validation errors inline",
+        "Success toast and close modal on save",
+        "Rendered in modal/dialog"
+      ],
+      "technical_notes": "Verify referral code by querying vendors table for matching referral_code"
+    },
+    {
+      "id": "TASK-027",
+      "title": "Build SubscriptionHistory component",
+      "description": "Create components/vendors/SubscriptionHistory.tsx to display table of vendor's subscription history",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "Medium",
+      "status": "Not Started",
+      "dependencies": ["TASK-001", "TASK-025"],
+      "acceptance_criteria": [
+        "Table columns: Plan Type, Amount, Start Date, End Date, Status, Created Date",
+        "Status badges: Active (green), Expired (red), Cancelled (gray)",
+        "Sortable by created date and end date",
+        "No pagination (show all for single vendor)",
+        "Empty state: 'No subscription history'",
+        "Dates formatted in readable format (use date-fns)"
+      ],
+      "technical_notes": "Use date-fns format() for date display"
+    },
+    {
+      "id": "TASK-028",
+      "title": "Fetch and display referral data for vendor",
+      "description": "Add fetchReferrals() to useVendors hook and create component to display referrals earned by vendor",
+      "assignee": "frontend",
+      "estimate_hours": 3,
+      "priority": "Medium",
+      "status": "Not Started",
+      "dependencies": ["TASK-020"],
+      "acceptance_criteria": [
+        "fetchReferrals() queries referrals table where referrer_id = vendor_id",
+        "Returns: referred vendor name, commission amount, status, created date",
+        "Component displays referrals in table or list format",
+        "Shows: Referred Vendor, Commission Earned, Status (pending/paid), Date",
+        "Total referral count and total earnings displayed at top",
+        "Empty state: 'No referrals yet'"
+      ],
+      "technical_notes": "Query: .from('referrals').select('*, referred_vendor:vendors(business_name)').eq('referrer_id', id)"
+    },
+    {
+      "id": "TASK-029",
+      "title": "Create VendorDetailPage",
+      "description": "Build pages/VendorDetailPage.tsx that integrates all vendor detail components",
+      "assignee": "frontend",
+      "estimate_hours": 3,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-024", "TASK-026", "TASK-027", "TASK-028"],
+      "acceptance_criteria": [
+        "Page renders inside DashboardLayout",
+        "Fetches vendor data by ID from route params",
+        "Shows loading state while fetching",
+        "Displays VendorDetails component",
+        "Displays Statistics cards",
+        "Subscription section with Add Subscription button and SubscriptionHistory",
+        "Referrals section with referral data",
+        "Add Subscription opens SubscriptionForm modal",
+        "Back button navigates to /vendors",
+        "404 state if vendor not found"
+      ],
+      "technical_notes": "Use useParams() to get vendor ID from route"
+    },
+    {
+      "id": "TASK-030",
+      "title": "Implement toast notification system",
+      "description": "Set up toast notifications for success/error messages across the application",
+      "assignee": "frontend",
+      "estimate_hours": 1.5,
+      "priority": "Medium",
+      "status": "Not Started",
+      "dependencies": ["TASK-001"],
+      "acceptance_criteria": [
+        "Toast provider is added to App.tsx",
+        "Toast notifications show for: login success/error, CRUD success/error, copy actions",
+        "Toasts auto-dismiss after 3-5 seconds",
+        "Error toasts are red, success toasts are green",
+        "Toasts are accessible and announced to screen readers"
+      ],
+      "technical_notes": "Use shadcn/ui toast component with useToast hook"
+    },
+    {
+      "id": "TASK-031",
+      "title": "Add loading states and skeletons",
+      "description": "Implement loading skeletons for tables and forms throughout the application",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "Medium",
+      "status": "Not Started",
+      "dependencies": ["TASK-001"],
+      "acceptance_criteria": [
+        "Table skeleton shows placeholder rows while loading",
+        "Form fields show skeleton while data loads (edit mode)",
+        "Page content shows skeleton before data loads",
+        "Loading spinners on buttons during submission",
+        "Smooth transition from skeleton to actual content"
+      ],
+      "technical_notes": "Create reusable Skeleton components or use shadcn/ui skeleton"
+    },
+    {
+      "id": "TASK-032",
+      "title": "Implement error boundaries and error handling",
+      "description": "Add error boundary component and standardize error handling across the app",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "Medium",
+      "status": "Not Started",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "Error boundary catches uncaught errors and displays fallback UI",
+        "Standardized error messages for common scenarios (network, auth, validation)",
+        "API errors are parsed and displayed appropriately",
+        "Network timeout errors show retry option",
+        "401 errors redirect to login page"
+      ],
+      "technical_notes": "Create ErrorBoundary component and wrap App content"
+    },
+    {
+      "id": "TASK-033",
+      "title": "Add search debouncing for filters",
+      "description": "Implement debounced search for city and vendor table search inputs to improve performance",
+      "assignee": "frontend",
+      "estimate_hours": 1,
+      "priority": "Low",
+      "status": "Not Started",
+      "dependencies": ["TASK-016", "TASK-021"],
+      "acceptance_criteria": [
+        "Search inputs debounce by 300ms",
+        "API calls only fire after user stops typing",
+        "Loading indicator shows during search",
+        "Debounce cleanup on component unmount"
+      ],
+      "technical_notes": "Use useDebouncedValue hook or implement custom debounce"
+    },
+    {
+      "id": "TASK-034",
+      "title": "Add responsive design polish",
+      "description": "Ensure all pages and components are fully responsive and work well on mobile, tablet, and desktop",
+      "assignee": "frontend",
+      "estimate_hours": 3,
+      "priority": "Medium",
+      "status": "Not Started",
+      "dependencies": ["TASK-012", "TASK-019", "TASK-023", "TASK-029"],
+      "acceptance_criteria": [
+        "All pages tested on mobile (375px), tablet (768px), desktop (1280px)",
+        "Tables scroll horizontally on mobile or use card layout",
+        "Forms are usable on mobile devices",
+        "Sidebar collapses on mobile with hamburger menu",
+        "Touch targets are at least 44x44px on mobile",
+        "Text is readable on all screen sizes"
+      ],
+      "technical_notes": "Use Tailwind responsive utilities (sm:, md:, lg:, xl:)"
+    },
+    {
+      "id": "TASK-035",
+      "title": "Implement accessibility improvements",
+      "description": "Add ARIA labels, keyboard navigation, and improve accessibility across the application",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "Low",
+      "status": "Not Started",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "All interactive elements are keyboard accessible",
+        "Modal dialogs trap focus and can be closed with Escape",
+        "ARIA labels on icon buttons and form controls",
+        "Form validation errors are announced to screen readers",
+        "Color contrast meets WCAG AA standards",
+        "Skip to content link added for keyboard users"
+      ],
+      "technical_notes": "Test with keyboard navigation only and screen reader"
+    },
+    {
+      "id": "TASK-036",
+      "title": "Add environment variable validation",
+      "description": "Validate required environment variables on app startup and show helpful error if missing",
+      "assignee": "frontend",
+      "estimate_hours": 0.5,
+      "priority": "Medium",
+      "status": "Not Started",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "Check for VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY on load",
+        "Show clear error message if variables are missing",
+        "Error message includes instructions to create .env file",
+        "App does not crash, shows error UI instead"
+      ],
+      "technical_notes": "Check in lib/supabase.ts or create config validation file"
+    },
+    {
+      "id": "TASK-037",
+      "title": "Add Arabic/RTL text support",
+      "description": "Ensure Arabic text inputs work correctly with RTL direction",
+      "assignee": "frontend",
+      "estimate_hours": 1,
+      "priority": "Low",
+      "status": "Not Started",
+      "dependencies": ["TASK-017", "TASK-022"],
+      "acceptance_criteria": [
+        "Arabic input fields (name_ar, region_ar) have dir='rtl' attribute",
+        "Text alignment is correct for Arabic fields",
+        "Mixed LTR/RTL content displays correctly in tables",
+        "Placeholder text works in RTL inputs"
+      ],
+      "technical_notes": "Add dir='rtl' to Arabic input fields and test with Arabic text"
+    },
+    {
+      "id": "TASK-038",
+      "title": "Create development documentation",
+      "description": "Document setup instructions, component structure, and common tasks in README.md",
+      "assignee": "frontend",
+      "estimate_hours": 1.5,
+      "priority": "Low",
+      "status": "Not Started",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "README includes installation steps",
+        "Environment variable setup documented",
+        "Development server commands documented",
+        "Component structure explained",
+        "Common tasks documented (add feature, add route, etc.)",
+        "Troubleshooting section added"
+      ],
+      "technical_notes": "Update /home/taleb/rimmarsa/admin-dashboard/README.md"
+    },
+    {
+      "id": "TASK-039",
+      "title": "Manual testing and bug fixes",
+      "description": "Perform comprehensive manual testing of all features and fix discovered bugs",
+      "assignee": "qa",
+      "estimate_hours": 4,
+      "priority": "High",
+      "status": "Not Started",
+      "dependencies": ["TASK-019", "TASK-023", "TASK-029", "TASK-030", "TASK-031", "TASK-032"],
+      "acceptance_criteria": [
+        "Login flow tested (success, failure, session expiry)",
+        "All city CRUD operations tested",
+        "All vendor CRUD operations tested",
+        "Subscription creation tested with and without referral code",
+        "All filters and search tested",
+        "Responsive design tested on multiple devices",
+        "Browser testing: Chrome, Firefox, Safari",
+        "All discovered bugs are documented and fixed"
+      ],
+      "technical_notes": "Create test checklist and document results"
+    },
+    {
+      "id": "TASK-040",
+      "title": "Performance optimization",
+      "description": "Optimize bundle size, lazy load routes, and improve overall performance",
+      "assignee": "frontend",
+      "estimate_hours": 2,
+      "priority": "Low",
+      "status": "Not Started",
+      "dependencies": ["TASK-039"],
+      "acceptance_criteria": [
+        "Route-based code splitting implemented with React.lazy()",
+        "Large dependencies are lazy loaded when needed",
+        "Bundle size analyzed and optimized",
+        "Initial page load < 2 seconds on 3G",
+        "Table data loads < 1 second",
+        "Lighthouse performance score > 80"
+      ],
+      "technical_notes": "Use React.lazy() for route components and analyze with Vite build stats"
+    }
+  ],
+  "phases": {
+    "phase_1": {
+      "name": "Foundation and Authentication",
+      "tasks": ["TASK-001", "TASK-002", "TASK-003", "TASK-004", "TASK-005", "TASK-006", "TASK-007", "TASK-008", "TASK-009"],
+      "total_hours": 12,
+      "description": "Set up project dependencies, implement authentication system, and create login flow"
+    },
+    "phase_2": {
+      "name": "Dashboard Layout and Navigation",
+      "tasks": ["TASK-010", "TASK-011", "TASK-012", "TASK-013", "TASK-014"],
+      "total_hours": 9.5,
+      "description": "Build dashboard layout with sidebar, header, and routing structure"
+    },
+    "phase_3": {
+      "name": "Cities Management",
+      "tasks": ["TASK-015", "TASK-016", "TASK-017", "TASK-018", "TASK-019"],
+      "total_hours": 12,
+      "description": "Implement complete CRUD functionality for cities and regions"
+    },
+    "phase_4": {
+      "name": "Vendors Management - Basic",
+      "tasks": ["TASK-020", "TASK-021", "TASK-022", "TASK-023"],
+      "total_hours": 14,
+      "description": "Implement vendor listing, filtering, and basic CRUD operations"
+    },
+    "phase_5": {
+      "name": "Vendors Management - Advanced",
+      "tasks": ["TASK-024", "TASK-025", "TASK-026", "TASK-027", "TASK-028", "TASK-029"],
+      "total_hours": 18,
+      "description": "Implement vendor detail page, subscription management, and referral tracking"
+    },
+    "phase_6": {
+      "name": "Polish and Optimization",
+      "tasks": ["TASK-030", "TASK-031", "TASK-032", "TASK-033", "TASK-034", "TASK-035", "TASK-036", "TASK-037", "TASK-038"],
+      "total_hours": 14,
+      "description": "Add loading states, error handling, accessibility, responsive design, and documentation"
+    },
+    "phase_7": {
+      "name": "Testing and Deployment",
+      "tasks": ["TASK-039", "TASK-040"],
+      "total_hours": 6,
+      "description": "Comprehensive testing, bug fixes, and performance optimization"
+    }
+  },
+  "milestones": [
+    {
+      "name": "Authentication Complete",
+      "tasks": ["TASK-001", "TASK-002", "TASK-003", "TASK-004", "TASK-005", "TASK-006", "TASK-007", "TASK-008", "TASK-009"],
+      "target_date": "Day 3"
+    },
+    {
+      "name": "Dashboard Layout Complete",
+      "tasks": ["TASK-010", "TASK-011", "TASK-012", "TASK-013", "TASK-014"],
+      "target_date": "Day 5"
+    },
+    {
+      "name": "Cities Management Complete",
+      "tasks": ["TASK-015", "TASK-016", "TASK-017", "TASK-018", "TASK-019"],
+      "target_date": "Day 8"
+    },
+    {
+      "name": "Vendors Management Complete",
+      "tasks": ["TASK-020", "TASK-021", "TASK-022", "TASK-023", "TASK-024", "TASK-025", "TASK-026", "TASK-027", "TASK-028", "TASK-029"],
+      "target_date": "Day 14"
+    },
+    {
+      "name": "Production Ready",
+      "tasks": ["TASK-030", "TASK-031", "TASK-032", "TASK-033", "TASK-034", "TASK-035", "TASK-036", "TASK-037", "TASK-038", "TASK-039", "TASK-040"],
+      "target_date": "Day 18"
+    }
+  ],
+  "team_roles": {
+    "frontend": {
+      "tasks": 33,
+      "estimated_hours": 72.5,
+      "description": "React developer responsible for UI components, forms, tables, and client-side logic"
+    },
+    "backend": {
+      "tasks": 1,
+      "estimated_hours": 2,
+      "description": "Backend developer responsible for authentication utilities and API integration"
+    },
+    "database": {
+      "tasks": 1,
+      "estimated_hours": 0.5,
+      "description": "Database administrator responsible for seeding admin data and schema changes"
+    },
+    "qa": {
+      "tasks": 1,
+      "estimated_hours": 4,
+      "description": "QA engineer responsible for manual testing and bug reporting"
+    }
+  },
+  "technical_stack": {
+    "frontend": "React 18.3.1 + TypeScript 5.9.3",
+    "build_tool": "Vite 7.1.7",
+    "routing": "React Router DOM 7.9.4",
+    "styling": "Tailwind CSS 4.1.14",
+    "ui_components": "shadcn/ui",
+    "tables": "TanStack Table 8.21.3",
+    "forms": "React Hook Form + Zod",
+    "backend": "Supabase (PostgreSQL + Auth + Storage)",
+    "icons": "lucide-react",
+    "date_handling": "date-fns"
+  },
+  "deployment_considerations": [
+    "Build production bundle with: npm run build",
+    "Test production build locally with: npm run preview",
+    "Deploy to Vercel or Netlify for static hosting",
+    "Configure environment variables in hosting platform",
+    "Set up custom domain (optional)",
+    "Enable HTTPS in production",
+    "Configure CORS settings in Supabase",
+    "Set up error monitoring (Sentry - future enhancement)",
+    "Configure CDN for static assets"
+  ],
+  "future_enhancements": [
+    "Dashboard analytics with charts (vendor growth, subscription revenue)",
+    "Export functionality (CSV, PDF reports)",
+    "Email notifications for subscription expiry",
+    "SMS notifications for vendors",
+    "Audit log for admin actions",
+    "Role-based access control (super admin, admin, viewer)",
+    "Bulk operations (bulk delete, bulk activate)",
+    "Advanced search with multiple filters",
+    "Dark mode support",
+    "Multi-language UI (French, Arabic)",
+    "Password reset functionality",
+    "Two-factor authentication",
+    "API rate limiting",
+    "Automated testing (unit, integration, e2e)"
+  ]
+}
