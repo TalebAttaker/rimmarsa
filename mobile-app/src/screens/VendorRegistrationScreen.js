@@ -26,8 +26,8 @@ export default function VendorRegistrationScreen({ navigation }) {
   const [formData, setFormData] = useState({
     business_name: '',
     owner_name: '',
-    email: '',
     phone: '',
+    password: '',
     whatsapp_number: '',
     region_id: '',
     city_id: '',
@@ -38,6 +38,8 @@ export default function VendorRegistrationScreen({ navigation }) {
     store_image_url: '',
     payment_screenshot_url: '',
   });
+
+  const [passwordError, setPasswordError] = useState('');
 
   const [uploadProgress, setUploadProgress] = useState({
     nni: 0,
@@ -222,6 +224,29 @@ export default function VendorRegistrationScreen({ navigation }) {
     return buffer;
   };
 
+  const validatePassword = (password) => {
+    // Password must contain both numbers and letters (like 23343534Aa)
+    const hasNumbers = /\d/.test(password);
+    const hasLetters = /[a-zA-Z]/.test(password);
+    const minLength = password.length >= 8;
+
+    if (!minLength) {
+      setPasswordError('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
+      return false;
+    }
+    if (!hasNumbers) {
+      setPasswordError('كلمة المرور يجب أن تحتوي على أرقام');
+      return false;
+    }
+    if (!hasLetters) {
+      setPasswordError('كلمة المرور يجب أن تحتوي على حروف');
+      return false;
+    }
+
+    setPasswordError('');
+    return true;
+  };
+
   const handleSubmit = async () => {
     // Validation
     if (
@@ -234,17 +259,28 @@ export default function VendorRegistrationScreen({ navigation }) {
       return;
     }
 
+    // Validate password
+    if (!formData.password || !validatePassword(formData.password)) {
+      Alert.alert('خطأ', 'يرجى إدخال كلمة مرور صحيحة (يجب أن تحتوي على أرقام وحروف)');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const selectedPlan = PRICING_PLANS.find((p) => p.id === formData.package_plan);
 
+      // Generate email from phone: remove +, spaces, -, () and add @rimmarsa.com
+      const cleanPhone = formData.phone.replace(/[\s+\-()]/g, '');
+      const generatedEmail = `${cleanPhone}@rimmarsa.com`;
+
       const { error } = await supabase.from('vendor_requests').insert([
         {
           business_name: formData.business_name,
           owner_name: formData.owner_name,
-          email: formData.email,
+          email: generatedEmail,
           phone: formData.phone,
+          password: formData.password,
           whatsapp_number: formData.whatsapp_number || null,
           region_id: formData.region_id || null,
           city_id: formData.city_id || null,
@@ -261,7 +297,7 @@ export default function VendorRegistrationScreen({ navigation }) {
 
       if (error) throw error;
 
-      await AsyncStorage.setItem('vendor_registration_email', formData.email);
+      await AsyncStorage.setItem('vendor_registration_phone', formData.phone);
 
       Alert.alert(
         'نجح',
@@ -391,17 +427,6 @@ export default function VendorRegistrationScreen({ navigation }) {
 
             <TextInput
               style={styles.input}
-              placeholder="البريد الإلكتروني *"
-              placeholderTextColor="#9CA3AF"
-              keyboardType="email-address"
-              value={formData.email}
-              onChangeText={(text) =>
-                setFormData({ ...formData, email: text })
-              }
-            />
-
-            <TextInput
-              style={styles.input}
               placeholder="رقم الهاتف *"
               placeholderTextColor="#9CA3AF"
               keyboardType="phone-pad"
@@ -410,6 +435,31 @@ export default function VendorRegistrationScreen({ navigation }) {
                 setFormData({ ...formData, phone: text })
               }
             />
+
+            <TextInput
+              style={[
+                styles.input,
+                passwordError ? styles.inputError : null,
+              ]}
+              placeholder="كلمة المرور * (يجب أن تحتوي على أرقام وحروف)"
+              placeholderTextColor="#9CA3AF"
+              secureTextEntry
+              value={formData.password}
+              onChangeText={(text) => {
+                setFormData({ ...formData, password: text });
+                if (text) {
+                  validatePassword(text);
+                } else {
+                  setPasswordError('');
+                }
+              }}
+            />
+            {passwordError ? (
+              <Text style={styles.errorText}>{passwordError}</Text>
+            ) : null}
+            <Text style={styles.helperText}>
+              مثال: 23343534Aa (8 أحرف على الأقل، أرقام وحروف)
+            </Text>
 
             <TextInput
               style={styles.input}
@@ -669,6 +719,23 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: '#334155',
+    textAlign: 'right',
+  },
+  inputError: {
+    borderColor: '#EF4444',
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 12,
+    marginTop: -8,
+    marginBottom: 8,
+    textAlign: 'right',
+  },
+  helperText: {
+    color: '#6B7280',
+    fontSize: 12,
+    marginTop: -8,
+    marginBottom: 12,
     textAlign: 'right',
   },
   label: {

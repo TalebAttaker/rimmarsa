@@ -38,7 +38,7 @@ interface City {
 interface PendingRequest {
   id: string
   business_name: string
-  email: string
+  email: string | null
   phone: string
   whatsapp_number: string | null
   status: string
@@ -74,13 +74,13 @@ export default function VendorRegistrationPage() {
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(true)
   const [pendingRequest, setPendingRequest] = useState<PendingRequest | null>(null)
-  const [emailToCheck, setEmailToCheck] = useState('')
+  const [passwordError, setPasswordError] = useState('')
 
   const [formData, setFormData] = useState({
     business_name: '',
     owner_name: '',
-    email: '',
     phone: '',
+    password: '',
     whatsapp_number: '',
     region_id: '',
     city_id: '',
@@ -109,7 +109,7 @@ export default function VendorRegistrationPage() {
   useEffect(() => {
     const initialize = async () => {
       await fetchData()
-      checkInitialEmail()
+      checkInitialPhone()
     }
     initialize()
   }, [])
@@ -126,24 +126,23 @@ export default function VendorRegistrationPage() {
     }
   }, [formData.region_id, cities, formData.city_id])
 
-  const checkInitialEmail = () => {
-    // Check if there's an email in localStorage from previous attempt
-    const storedEmail = localStorage.getItem('vendor_registration_email')
-    if (storedEmail) {
-      setEmailToCheck(storedEmail)
-      checkExistingRequest(storedEmail)
+  const checkInitialPhone = () => {
+    // Check if there's a phone in localStorage from previous attempt
+    const storedPhone = localStorage.getItem('vendor_registration_phone')
+    if (storedPhone) {
+      checkExistingRequest(storedPhone)
     } else {
       setLoading(false)
     }
   }
 
-  const checkExistingRequest = async (email: string) => {
+  const checkExistingRequest = async (phone: string) => {
     try {
       const supabase = createClient()
       const { data, error } = await supabase
         .from('vendor_requests')
         .select('*')
-        .eq('email', email)
+        .eq('phone', phone)
         .eq('status', 'pending')
         .maybeSingle()
 
@@ -194,24 +193,56 @@ export default function VendorRegistrationPage() {
     }
   }
 
-  const handleEmailBlur = async () => {
-    if (formData.email) {
-      // Save email to localStorage
-      localStorage.setItem('vendor_registration_email', formData.email)
+  const validatePassword = (password: string): boolean => {
+    // Password must contain both numbers and letters (like 23343534Aa)
+    const hasNumbers = /\d/.test(password)
+    const hasLetters = /[a-zA-Z]/.test(password)
+    const minLength = password.length >= 8
+
+    if (!minLength) {
+      setPasswordError('كلمة المرور يجب أن تكون 8 أحرف على الأقل')
+      return false
+    }
+    if (!hasNumbers) {
+      setPasswordError('كلمة المرور يجب أن تحتوي على أرقام')
+      return false
+    }
+    if (!hasLetters) {
+      setPasswordError('كلمة المرور يجب أن تحتوي على حروف')
+      return false
+    }
+
+    setPasswordError('')
+    return true
+  }
+
+  const handlePhoneBlur = async () => {
+    if (formData.phone) {
+      // Save phone to localStorage
+      localStorage.setItem('vendor_registration_phone', formData.phone)
 
       // Check for existing pending request
       const supabase = createClient()
       const { data, error } = await supabase
         .from('vendor_requests')
         .select('*')
-        .eq('email', formData.email)
+        .eq('phone', formData.phone)
         .eq('status', 'pending')
         .maybeSingle()
 
       if (data && !error) {
         setPendingRequest(data)
-        toast.error('You already have a pending registration request!')
+        toast.error('لديك بالفعل طلب تسجيل قيد الانتظار!')
       }
+    }
+  }
+
+  const handlePasswordChange = (password: string) => {
+    setFormData({ ...formData, password })
+    if (password) {
+      validatePassword(password)
+    } else {
+      setPasswordError('')
     }
   }
 
@@ -281,7 +312,12 @@ export default function VendorRegistrationPage() {
     // Validation
     if (!formData.nni_image_url || !formData.personal_image_url ||
         !formData.store_image_url || !formData.payment_screenshot_url) {
-      toast.error('Please upload all required images')
+      toast.error('يرجى تحميل جميع الصور المطلوبة')
+      return
+    }
+
+    if (!formData.password || !validatePassword(formData.password)) {
+      toast.error('يرجى إدخال كلمة مرور صحيحة (يجب أن تحتوي على أرقام وحروف)')
       return
     }
 
@@ -290,29 +326,34 @@ export default function VendorRegistrationPage() {
     try {
       const supabase = createClient()
 
-      // Check again for duplicate request
+      // Check again for duplicate request using phone
       const { data: existingData } = await supabase
         .from('vendor_requests')
         .select('id')
-        .eq('email', formData.email)
+        .eq('phone', formData.phone)
         .eq('status', 'pending')
         .maybeSingle()
 
       if (existingData) {
-        toast.error('You already have a pending registration request!')
+        toast.error('لديك بالفعل طلب تسجيل قيد الانتظار!')
         setSubmitting(false)
         return
       }
 
       const selectedPlan = PRICING_PLANS.find(p => p.id === formData.package_plan)
 
+      // Generate email from phone: remove +, spaces, and add @rimmarsa.com
+      const cleanPhone = formData.phone.replace(/[\s+\-()]/g, '')
+      const generatedEmail = `${cleanPhone}@rimmarsa.com`
+
       const { error } = await supabase
         .from('vendor_requests')
         .insert([{
           business_name: formData.business_name,
           owner_name: formData.owner_name,
-          email: formData.email,
+          email: generatedEmail,
           phone: formData.phone,
+          password: formData.password, // Will be hashed by admin when creating account
           whatsapp_number: formData.whatsapp_number || null,
           region_id: formData.region_id || null,
           city_id: formData.city_id || null,
@@ -329,11 +370,11 @@ export default function VendorRegistrationPage() {
       if (error) throw error
 
       setSuccess(true)
-      localStorage.setItem('vendor_registration_email', formData.email)
-      toast.success('Application submitted successfully!')
+      localStorage.setItem('vendor_registration_phone', formData.phone)
+      toast.success('تم إرسال الطلب بنجاح!')
     } catch (error: unknown) {
       console.error('Error submitting application:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to submit application'
+      const errorMessage = error instanceof Error ? error.message : 'فشل في إرسال الطلب'
       toast.error(errorMessage)
     } finally {
       setSubmitting(false)
@@ -381,9 +422,6 @@ export default function VendorRegistrationPage() {
                 <span className="font-semibold text-white">العمل:</span> {pendingRequest.business_name}
               </p>
               <p className="text-sm text-gray-400">
-                <span className="font-semibold text-white">البريد الإلكتروني:</span> {pendingRequest.email}
-              </p>
-              <p className="text-sm text-gray-400">
                 <span className="font-semibold text-white">الهاتف:</span> {pendingRequest.phone}
               </p>
               {pendingRequest.whatsapp_number && (
@@ -414,11 +452,11 @@ export default function VendorRegistrationPage() {
             <button
               onClick={() => {
                 setPendingRequest(null)
-                localStorage.removeItem('vendor_registration_email')
+                localStorage.removeItem('vendor_registration_phone')
               }}
               className="w-full px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-all"
             >
-              التسجيل ببريد إلكتروني مختلف
+              التسجيل برقم هاتف مختلف
             </button>
             <Link
               href="/"
@@ -453,7 +491,7 @@ export default function VendorRegistrationPage() {
           <div className="bg-gray-800/50 rounded-xl p-4 mb-6">
             <p className="text-sm text-gray-400 mb-2">تفاصيل الطلب:</p>
             <p className="text-white font-medium">{formData.business_name}</p>
-            <p className="text-gray-400 text-sm">{formData.email}</p>
+            <p className="text-gray-400 text-sm">{formData.phone}</p>
             <p className="text-yellow-400 font-semibold mt-2">
               {selectedPlan?.name} - {selectedPlan?.price} أوقية
             </p>
@@ -567,22 +605,6 @@ export default function VendorRegistrationPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    البريد الإلكتروني *
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    onBlur={handleEmailBlur}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
-                    placeholder="your@email.com"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
                     <Phone className="w-4 h-4" />
                     رقم الهاتف *
                   </label>
@@ -591,9 +613,36 @@ export default function VendorRegistrationPage() {
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onBlur={handlePhoneBlur}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
                     placeholder="+222 XX XX XX XX"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    كلمة المرور *
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={(e) => handlePasswordChange(e.target.value)}
+                    className={`w-full px-4 py-3 bg-gray-800 border rounded-xl text-white focus:outline-none transition-colors ${
+                      passwordError ? 'border-red-500' : 'border-gray-700 focus:border-yellow-500'
+                    }`}
+                    placeholder="يجب أن تحتوي على أرقام وحروف"
+                  />
+                  {passwordError && (
+                    <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {passwordError}
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    مثال: 23343534Aa (8 أحرف على الأقل، أرقام وحروف)
+                  </p>
                 </div>
 
                 <div className="md:col-span-2">
