@@ -65,9 +65,10 @@ export default function SignupPage() {
           router.push('/login')
         }, 2000)
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Signup error:', error)
-      toast.error(error.message || 'فشل إنشاء الحساب')
+      const errorMessage = error instanceof Error ? error.message : 'فشل إنشاء الحساب'
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }

@@ -43,9 +43,10 @@ export default function LoginPage() {
           router.push('/')
         }, 500)
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error)
-      toast.error(error.message || 'فشل تسجيل الدخول')
+      const errorMessage = error instanceof Error ? error.message : 'فشل تسجيل الدخول'
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
