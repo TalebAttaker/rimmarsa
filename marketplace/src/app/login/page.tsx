@@ -53,7 +53,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900" dir="rtl">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" dir="rtl">
       <Toaster position="top-center" />
 
       {/* Animated Background */}
@@ -69,7 +69,7 @@ export default function LoginPage() {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full blur-3xl opacity-30"
+          className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full blur-3xl opacity-30"
         />
         <motion.div
           animate={{
@@ -82,7 +82,7 @@ export default function LoginPage() {
             ease: "easeInOut",
             delay: 1
           }}
-          className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full blur-3xl opacity-20"
+          className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-secondary-400 to-secondary-600 rounded-full blur-3xl opacity-20"
         />
         <motion.div
           animate={{
@@ -95,7 +95,7 @@ export default function LoginPage() {
             ease: "easeInOut",
             delay: 2
           }}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full blur-3xl opacity-25"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full blur-3xl opacity-25"
         />
       </div>
 
@@ -116,7 +116,7 @@ export default function LoginPage() {
                 className="inline-flex items-center gap-3 mb-6 cursor-pointer"
               >
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 flex items-center justify-center shadow-2xl shadow-yellow-500/50">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center shadow-2xl shadow-primary-500/50">
                     <ShoppingBag className="w-8 h-8 text-white" />
                   </div>
                   <motion.div
@@ -129,10 +129,10 @@ export default function LoginPage() {
                       repeat: Infinity,
                       ease: "easeInOut"
                     }}
-                    className="absolute inset-0 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 blur-xl"
+                    className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 blur-xl"
                   />
                 </div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-400 via-primary-300 to-primary-400 bg-clip-text text-transparent">
                   ريمارسا
                 </h1>
               </motion.div>
@@ -143,9 +143,9 @@ export default function LoginPage() {
               transition={{ delay: 0.3 }}
               className="flex items-center justify-center gap-2 mb-2"
             >
-              <Sparkles className="w-5 h-5 text-yellow-400" />
+              <Sparkles className="w-5 h-5 text-secondary-400" />
               <p className="text-xl font-semibold text-white">مرحباً بعودتك!</p>
-              <Sparkles className="w-5 h-5 text-yellow-400" />
+              <Sparkles className="w-5 h-5 text-secondary-400" />
             </motion.div>
             <p className="text-gray-400">سجّل دخولك لمتابعة التسوق</p>
           </div>
@@ -169,13 +169,13 @@ export default function LoginPage() {
                     البريد الإلكتروني
                   </label>
                   <div className="relative group">
-                    <Mail className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-yellow-400 transition-colors" />
+                    <Mail className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary-400 transition-colors" />
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="example@email.com"
-                      className="w-full pr-12 pl-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all"
+                      className="w-full pr-12 pl-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-400/50 transition-all"
                       dir="ltr"
                     />
                   </div>
@@ -187,18 +187,18 @@ export default function LoginPage() {
                     كلمة المرور
                   </label>
                   <div className="relative group">
-                    <Lock className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-yellow-400 transition-colors" />
+                    <Lock className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary-400 transition-colors" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pr-12 pl-12 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all"
+                      className="w-full pr-12 pl-12 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-400/50 transition-all"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-yellow-400 transition-colors"
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary-400 transition-colors"
                     >
                       {showPassword ? (
                         <EyeOff className="w-5 h-5" />
@@ -213,7 +213,7 @@ export default function LoginPage() {
                 <div className="text-left">
                   <Link
                     href="/forgot-password"
-                    className="text-sm text-yellow-400 hover:text-yellow-300 transition-colors"
+                    className="text-sm text-secondary-400 hover:text-secondary-300 transition-colors"
                   >
                     نسيت كلمة المرور؟
                   </Link>
@@ -228,15 +228,15 @@ export default function LoginPage() {
                   className="w-full relative group overflow-hidden py-4 rounded-2xl font-bold text-lg shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {/* Gradient Background */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 group-hover:from-yellow-500 group-hover:via-orange-500 group-hover:to-yellow-400 transition-all duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 group-hover:from-primary-600 group-hover:via-primary-700 group-hover:to-primary-600 transition-all duration-300" />
 
                   {/* Glossy Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent" />
 
                   {/* Button Content */}
-                  <span className="relative flex items-center justify-center gap-2 text-gray-900">
+                  <span className="relative flex items-center justify-center gap-2 text-white">
                     {loading ? (
-                      <div className="w-6 h-6 border-3 border-gray-900 border-t-transparent rounded-full animate-spin" />
+                      <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <>
                         تسجيل الدخول
@@ -262,7 +262,7 @@ export default function LoginPage() {
                     ليس لديك حساب؟{' '}
                     <Link
                       href="/signup"
-                      className="text-yellow-400 hover:text-yellow-300 font-semibold transition-colors"
+                      className="text-secondary-400 hover:text-secondary-300 font-semibold transition-colors"
                     >
                       سجّل الآن
                     </Link>
@@ -272,7 +272,7 @@ export default function LoginPage() {
             </div>
 
             {/* Glow Effect */}
-            <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-yellow-400/20 to-purple-500/20 blur-2xl" />
+            <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-primary-400/20 to-secondary-500/20 blur-2xl" />
           </motion.div>
 
           {/* Vendor Login Link */}
@@ -284,7 +284,7 @@ export default function LoginPage() {
           >
             <Link
               href="/vendor/login"
-              className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-yellow-400 transition-colors"
+              className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-primary-400 transition-colors"
             >
               <ShoppingBag className="w-4 h-4" />
               تسجيل دخول البائعين

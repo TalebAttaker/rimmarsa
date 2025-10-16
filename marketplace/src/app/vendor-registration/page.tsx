@@ -388,7 +388,7 @@ export default function VendorRegistrationPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-400">جاري التحميل...</p>
         </div>
       </div>
@@ -403,17 +403,17 @@ export default function VendorRegistrationPage() {
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="max-w-md w-full bg-gray-900 border border-yellow-500/20 rounded-2xl p-8"
+          className="max-w-md w-full bg-gray-900 border border-primary-500/20 rounded-2xl p-8"
         >
-          <div className="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Clock className="w-12 h-12 text-yellow-400" />
+          <div className="w-20 h-20 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Clock className="w-12 h-12 text-primary-400" />
           </div>
 
-          <h2 className="text-3xl font-bold text-yellow-400 text-center mb-4">الطلب قيد الانتظار</h2>
+          <h2 className="text-3xl font-bold text-primary-400 text-center mb-4">الطلب قيد الانتظار</h2>
 
           <div className="bg-gray-800/50 rounded-xl p-6 mb-6 space-y-3">
             <div className="flex items-center gap-2 text-gray-300">
-              <AlertCircle className="w-5 h-5 text-yellow-400" />
+              <AlertCircle className="w-5 h-5 text-secondary-400" />
               <p className="text-sm">لديك بالفعل طلب تسجيل قيد الانتظار.</p>
             </div>
 
@@ -437,9 +437,9 @@ export default function VendorRegistrationPage() {
               </p>
             </div>
 
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mt-4">
-              <p className="text-sm text-yellow-200 font-medium text-center">
-                الحالة: <span className="text-yellow-400 font-bold uppercase">{pendingRequest.status === 'pending' ? 'قيد الانتظار' : pendingRequest.status}</span>
+            <div className="bg-primary-500/10 border border-primary-500/30 rounded-lg p-4 mt-4">
+              <p className="text-sm text-primary-200 font-medium text-center">
+                الحالة: <span className="text-primary-400 font-bold uppercase">{pendingRequest.status === 'pending' ? 'قيد الانتظار' : pendingRequest.status}</span>
               </p>
             </div>
           </div>
@@ -460,7 +460,7 @@ export default function VendorRegistrationPage() {
             </button>
             <Link
               href="/"
-              className="block text-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-semibold rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition-all"
+              className="block text-center px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all"
             >
               العودة إلى الصفحة الرئيسية
             </Link>
@@ -492,13 +492,13 @@ export default function VendorRegistrationPage() {
             <p className="text-sm text-gray-400 mb-2">تفاصيل الطلب:</p>
             <p className="text-white font-medium">{formData.business_name}</p>
             <p className="text-gray-400 text-sm">{formData.phone}</p>
-            <p className="text-yellow-400 font-semibold mt-2">
+            <p className="text-primary-400 font-semibold mt-2">
               {selectedPlan?.name} - {selectedPlan?.price} أوقية
             </p>
           </div>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-semibold rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all"
           >
             <ArrowLeft className="w-4 h-4" />
             العودة إلى الصفحة الرئيسية
@@ -520,14 +520,14 @@ export default function VendorRegistrationPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-400 to-primary-300 bg-clip-text text-transparent mb-2">
             كن بائعاً
           </h1>
           <p className="text-gray-400">انضم إلى منصة السوق الرائدة في موريتانيا</p>
           <div className="mt-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition-colors"
+              className="inline-flex items-center gap-2 text-secondary-400 hover:text-secondary-300 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               العودة إلى الصفحة الرئيسية
@@ -542,7 +542,7 @@ export default function VendorRegistrationPage() {
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
                   step >= s
-                    ? 'bg-yellow-500 text-black'
+                    ? 'bg-primary-500 text-white'
                     : 'bg-gray-700 text-gray-400'
                 }`}
               >
@@ -551,7 +551,7 @@ export default function VendorRegistrationPage() {
               {s < 4 && (
                 <div
                   className={`w-12 h-1 ${
-                    step > s ? 'bg-yellow-500' : 'bg-gray-700'
+                    step > s ? 'bg-primary-500' : 'bg-gray-700'
                   }`}
                 />
               )}
@@ -564,12 +564,12 @@ export default function VendorRegistrationPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           onSubmit={handleSubmit}
-          className="bg-gray-900/50 backdrop-blur-xl border border-yellow-500/20 rounded-2xl p-8"
+          className="bg-gray-900/50 backdrop-blur-xl border border-primary-500/20 rounded-2xl p-8"
         >
           {/* Step 1: Business Information */}
           {step === 1 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
+              <h2 className="text-2xl font-bold text-primary-400 flex items-center gap-2 mb-6">
                 <Store className="w-6 h-6" />
                 معلومات العمل
               </h2>
@@ -584,7 +584,7 @@ export default function VendorRegistrationPage() {
                     required
                     value={formData.business_name}
                     onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-primary-500 transition-colors"
                     placeholder="اسم عملك التجاري"
                   />
                 </div>
@@ -598,7 +598,7 @@ export default function VendorRegistrationPage() {
                     required
                     value={formData.owner_name}
                     onChange={(e) => setFormData({ ...formData, owner_name: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-primary-500 transition-colors"
                     placeholder="الاسم الكامل"
                   />
                 </div>
@@ -614,7 +614,7 @@ export default function VendorRegistrationPage() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     onBlur={handlePhoneBlur}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-primary-500 transition-colors"
                     placeholder="+222 XX XX XX XX"
                   />
                 </div>
@@ -630,7 +630,7 @@ export default function VendorRegistrationPage() {
                     value={formData.password}
                     onChange={(e) => handlePasswordChange(e.target.value)}
                     className={`w-full px-4 py-3 bg-gray-800 border rounded-xl text-white focus:outline-none transition-colors ${
-                      passwordError ? 'border-red-500' : 'border-gray-700 focus:border-yellow-500'
+                      passwordError ? 'border-red-500' : 'border-gray-700 focus:border-primary-500'
                     }`}
                     placeholder="يجب أن تحتوي على أرقام وحروف"
                   />
@@ -655,7 +655,7 @@ export default function VendorRegistrationPage() {
                     required
                     value={formData.whatsapp_number}
                     onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-primary-500 transition-colors"
                     placeholder="+222 XX XX XX XX"
                   />
                   <p className="text-xs text-gray-500 mt-1">
@@ -667,7 +667,7 @@ export default function VendorRegistrationPage() {
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold rounded-xl transition-all"
+                className="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl transition-all"
               >
                 التالي: الموقع
               </button>
@@ -677,7 +677,7 @@ export default function VendorRegistrationPage() {
           {/* Step 2: Location */}
           {step === 2 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
+              <h2 className="text-2xl font-bold text-primary-400 flex items-center gap-2 mb-6">
                 <MapPin className="w-6 h-6" />
                 الموقع
               </h2>
@@ -690,7 +690,7 @@ export default function VendorRegistrationPage() {
                   <select
                     value={formData.region_id}
                     onChange={(e) => setFormData({ ...formData, region_id: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-primary-500 transition-colors"
                   >
                     <option value="">اختر منطقة</option>
                     {regions.map(region => (
@@ -708,7 +708,7 @@ export default function VendorRegistrationPage() {
                   <select
                     value={formData.city_id}
                     onChange={(e) => setFormData({ ...formData, city_id: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors disabled:opacity-50"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-primary-500 transition-colors disabled:opacity-50"
                     disabled={!formData.region_id}
                   >
                     <option value="">اختر مدينة</option>
@@ -732,7 +732,7 @@ export default function VendorRegistrationPage() {
                   type="text"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-primary-500 transition-colors"
                   placeholder="عنوان الشارع"
                 />
               </div>
@@ -748,7 +748,7 @@ export default function VendorRegistrationPage() {
                 <button
                   type="button"
                   onClick={() => setStep(3)}
-                  className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold rounded-xl transition-all"
+                  className="flex-1 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl transition-all"
                 >
                   التالي: المستندات
                 </button>
@@ -759,7 +759,7 @@ export default function VendorRegistrationPage() {
           {/* Step 3: Documents */}
           {step === 3 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
+              <h2 className="text-2xl font-bold text-primary-400 flex items-center gap-2 mb-6">
                 <Upload className="w-6 h-6" />
                 تحميل المستندات
               </h2>
@@ -784,7 +784,7 @@ export default function VendorRegistrationPage() {
                     </div>
                   ) : (
                     <div>
-                      <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                      <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
                         <Upload className="w-8 h-8 text-gray-500 mb-2" />
                         <span className="text-sm text-gray-400">
                           {uploading.nni ? `جاري التحميل... ${uploadProgress.nni}%` : 'انقر للتحميل'}
@@ -803,7 +803,7 @@ export default function VendorRegistrationPage() {
                       {uploading.nni && (
                         <div className="mt-2 bg-gray-700 rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-full transition-all duration-300"
+                            className="bg-gradient-to-r from-primary-500 to-primary-600 h-full transition-all duration-300"
                             style={{ width: `${uploadProgress.nni}%` }}
                           />
                         </div>
@@ -831,7 +831,7 @@ export default function VendorRegistrationPage() {
                     </div>
                   ) : (
                     <div>
-                      <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                      <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
                         <Upload className="w-8 h-8 text-gray-500 mb-2" />
                         <span className="text-sm text-gray-400">
                           {uploading.personal ? `جاري التحميل... ${uploadProgress.personal}%` : 'انقر للتحميل'}
@@ -850,7 +850,7 @@ export default function VendorRegistrationPage() {
                       {uploading.personal && (
                         <div className="mt-2 bg-gray-700 rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-full transition-all duration-300"
+                            className="bg-gradient-to-r from-primary-500 to-primary-600 h-full transition-all duration-300"
                             style={{ width: `${uploadProgress.personal}%` }}
                           />
                         </div>
@@ -878,7 +878,7 @@ export default function VendorRegistrationPage() {
                     </div>
                   ) : (
                     <div>
-                      <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                      <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
                         <Upload className="w-12 h-12 text-gray-500 mb-2" />
                         <span className="text-sm text-gray-400">
                           {uploading.store ? `جاري التحميل... ${uploadProgress.store}%` : 'انقر لتحميل صورة المتجر'}
@@ -897,7 +897,7 @@ export default function VendorRegistrationPage() {
                       {uploading.store && (
                         <div className="mt-2 bg-gray-700 rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-full transition-all duration-300"
+                            className="bg-gradient-to-r from-primary-500 to-primary-600 h-full transition-all duration-300"
                             style={{ width: `${uploadProgress.store}%` }}
                           />
                         </div>
@@ -919,7 +919,7 @@ export default function VendorRegistrationPage() {
                   type="button"
                   onClick={() => setStep(4)}
                   disabled={!formData.nni_image_url || !formData.personal_image_url || !formData.store_image_url}
-                  className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   التالي: الدفع
                 </button>
@@ -930,7 +930,7 @@ export default function VendorRegistrationPage() {
           {/* Step 4: Pricing & Payment */}
           {step === 4 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
+              <h2 className="text-2xl font-bold text-primary-400 flex items-center gap-2 mb-6">
                 <CreditCard className="w-6 h-6" />
                 اختيار الخطة والدفع
               </h2>
@@ -944,7 +944,7 @@ export default function VendorRegistrationPage() {
                     onClick={() => setFormData({ ...formData, package_plan: plan.id })}
                     className={`relative p-6 rounded-xl border-2 transition-all text-left ${
                       formData.package_plan === plan.id
-                        ? 'border-yellow-500 bg-yellow-500/10'
+                        ? 'border-primary-500 bg-primary-500/10'
                         : 'border-gray-700 bg-gray-800/30 hover:border-gray-600'
                     }`}
                   >
@@ -954,7 +954,7 @@ export default function VendorRegistrationPage() {
                       </div>
                     )}
                     <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
-                    <p className="text-3xl font-bold text-yellow-400 mb-2">{plan.price} أوقية</p>
+                    <p className="text-3xl font-bold text-primary-400 mb-2">{plan.price} أوقية</p>
                     <p className="text-gray-400 text-sm mb-4">{plan.duration}</p>
                     <ul className="space-y-2">
                       {plan.features.map((feature, i) => (
@@ -989,7 +989,7 @@ export default function VendorRegistrationPage() {
                   </div>
                 ) : (
                   <div>
-                    <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                    <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
                       <Upload className="w-12 h-12 text-gray-500 mb-2" />
                       <span className="text-sm text-gray-400">
                         {uploading.payment ? `جاري التحميل... ${uploadProgress.payment}%` : 'انقر لتحميل لقطة شاشة الدفع'}
@@ -1008,7 +1008,7 @@ export default function VendorRegistrationPage() {
                     {uploading.payment && (
                       <div className="mt-2 bg-gray-700 rounded-full h-2 overflow-hidden">
                         <div
-                          className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-full transition-all duration-300"
+                          className="bg-gradient-to-r from-primary-500 to-primary-600 h-full transition-all duration-300"
                           style={{ width: `${uploadProgress.payment}%` }}
                         />
                       </div>
