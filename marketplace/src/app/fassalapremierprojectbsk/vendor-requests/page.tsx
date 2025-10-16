@@ -20,7 +20,8 @@ import {
   Shield,
   User,
   Building2,
-  ZoomIn
+  ZoomIn,
+  Download
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -547,12 +548,12 @@ export default function VendorRequestsPage() {
                         <Shield className="w-4 h-4" />
                         البطاقة الوطنية
                       </p>
-                      <div className="relative group cursor-pointer" onClick={() => setZoomedImage(selectedRequest.nni_image_url)}>
-                        <img src={selectedRequest.nni_image_url} alt="NNI" className="w-full h-48 object-cover rounded-lg" />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center">
-                          <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-gray-800 p-3 rounded-full">
-                            <ZoomIn className="w-5 h-5" />
-                          </button>
+                      <div className="relative group cursor-pointer overflow-hidden rounded-lg" onClick={() => setZoomedImage(selectedRequest.nni_image_url)}>
+                        <img src={selectedRequest.nni_image_url} alt="NNI" className="w-full h-48 object-cover rounded-lg transition-transform group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center pointer-events-none">
+                          <div className="bg-white/90 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ZoomIn className="w-5 h-5 text-gray-800" />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -561,12 +562,12 @@ export default function VendorRequestsPage() {
                         <User className="w-4 h-4" />
                         الصورة الشخصية
                       </p>
-                      <div className="relative group cursor-pointer" onClick={() => setZoomedImage(selectedRequest.personal_image_url)}>
-                        <img src={selectedRequest.personal_image_url} alt="Personal" className="w-full h-48 object-cover rounded-lg" />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center">
-                          <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-gray-800 p-3 rounded-full">
-                            <ZoomIn className="w-5 h-5" />
-                          </button>
+                      <div className="relative group cursor-pointer overflow-hidden rounded-lg" onClick={() => setZoomedImage(selectedRequest.personal_image_url)}>
+                        <img src={selectedRequest.personal_image_url} alt="Personal" className="w-full h-48 object-cover rounded-lg transition-transform group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center pointer-events-none">
+                          <div className="bg-white/90 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ZoomIn className="w-5 h-5 text-gray-800" />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -575,12 +576,12 @@ export default function VendorRequestsPage() {
                         <Building2 className="w-4 h-4" />
                         صورة المتجر
                       </p>
-                      <div className="relative group cursor-pointer" onClick={() => setZoomedImage(selectedRequest.store_image_url)}>
-                        <img src={selectedRequest.store_image_url} alt="Store" className="w-full h-48 object-cover rounded-lg" />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center">
-                          <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-gray-800 p-3 rounded-full">
-                            <ZoomIn className="w-5 h-5" />
-                          </button>
+                      <div className="relative group cursor-pointer overflow-hidden rounded-lg" onClick={() => setZoomedImage(selectedRequest.store_image_url)}>
+                        <img src={selectedRequest.store_image_url} alt="Store" className="w-full h-48 object-cover rounded-lg transition-transform group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center pointer-events-none">
+                          <div className="bg-white/90 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ZoomIn className="w-5 h-5 text-gray-800" />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -589,12 +590,12 @@ export default function VendorRequestsPage() {
                         <CreditCard className="w-4 h-4" />
                         إثبات الدفع
                       </p>
-                      <div className="relative group cursor-pointer" onClick={() => setZoomedImage(selectedRequest.payment_screenshot_url)}>
-                        <img src={selectedRequest.payment_screenshot_url} alt="Payment" className="w-full h-48 object-cover rounded-lg" />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center">
-                          <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-gray-800 p-3 rounded-full">
-                            <ZoomIn className="w-5 h-5" />
-                          </button>
+                      <div className="relative group cursor-pointer overflow-hidden rounded-lg" onClick={() => setZoomedImage(selectedRequest.payment_screenshot_url)}>
+                        <img src={selectedRequest.payment_screenshot_url} alt="Payment" className="w-full h-48 object-cover rounded-lg transition-transform group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center pointer-events-none">
+                          <div className="bg-white/90 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ZoomIn className="w-5 h-5 text-gray-800" />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -698,12 +699,27 @@ export default function VendorRequestsPage() {
             className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[60] p-4"
             onClick={() => setZoomedImage(null)}
           >
-            <button
-              onClick={() => setZoomedImage(null)}
-              className="absolute top-4 left-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
+            <div className="absolute top-4 left-4 flex gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setZoomedImage(null)
+                }}
+                className="p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+                title="إغلاق"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <a
+                href={zoomedImage}
+                download
+                onClick={(e) => e.stopPropagation()}
+                className="p-3 bg-yellow-500/80 hover:bg-yellow-500 rounded-full text-black transition-colors"
+                title="تحميل الصورة"
+              >
+                <Download className="w-6 h-6" />
+              </a>
+            </div>
             <img
               src={zoomedImage}
               alt="Zoomed"
