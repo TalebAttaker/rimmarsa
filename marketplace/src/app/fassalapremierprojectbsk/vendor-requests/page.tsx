@@ -21,7 +21,8 @@ import {
   User,
   Building2,
   ZoomIn,
-  Download
+  Download,
+  KeyRound
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -60,6 +61,8 @@ export default function VendorRequestsPage() {
   const [rejectionReason, setRejectionReason] = useState('')
   const [processing, setProcessing] = useState(false)
   const [zoomedImage, setZoomedImage] = useState<string | null>(null)
+  const [showPasswordResetModal, setShowPasswordResetModal] = useState(false)
+  const [newPassword, setNewPassword] = useState('')
 
   useEffect(() => {
     // Check authentication
@@ -269,6 +272,66 @@ export default function VendorRequestsPage() {
       '2_months': 'شهرين'
     }
     return plans[plan] || plan
+  }
+
+  const handleDownloadImage = async (imageUrl: string) => {
+    try {
+      const response = await fetch(imageUrl)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `vendor-document-${Date.now()}.jpg`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+      toast.success('تم تحميل الصورة بنجاح')
+    } catch (error) {
+      console.error('Error downloading image:', error)
+      toast.error('فشل تحميل الصورة')
+    }
+  }
+
+  const handleResetPassword = async () => {
+    if (!selectedRequest || !newPassword.trim()) {
+      toast.error('يرجى إدخال كلمة المرور الجديدة')
+      return
+    }
+
+    // Validate password format (at least 8 chars, contains numbers and letters)
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+    if (!passwordRegex.test(newPassword)) {
+      toast.error('كلمة المرور يجب أن تحتوي على 8 أحرف على الأقل، وتحتوي على أرقام وحروف')
+      return
+    }
+
+    setProcessing(true)
+
+    try {
+      const supabase = createClient()
+
+      const { error } = await supabase
+        .from('vendor_requests')
+        .update({
+          password: newPassword,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', selectedRequest.id)
+
+      if (error) throw error
+
+      toast.success('تم تحديث كلمة المرور بنجاح')
+      setShowPasswordResetModal(false)
+      setNewPassword('')
+      fetchRequests()
+    } catch (error: unknown) {
+      console.error('Error resetting password:', error)
+      const errorMessage = error instanceof Error ? error.message : 'فشل تحديث كلمة المرور'
+      toast.error(errorMessage)
+    } finally {
+      setProcessing(false)
+    }
   }
 
   if (loading) {
@@ -604,25 +667,34 @@ export default function VendorRequestsPage() {
 
                 {/* Actions */}
                 {selectedRequest.status === 'pending' && (
-                  <div className="flex gap-3">
+                  <div className="space-y-3">
                     <button
-                      onClick={() => {
-                        setShowRejectModal(true)
-                      }}
-                      disabled={processing}
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500/20 text-red-400 hover:bg-red-500/30 font-semibold rounded-xl transition-colors disabled:opacity-50"
+                      onClick={() => setShowPasswordResetModal(true)}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 font-semibold rounded-xl transition-colors"
                     >
-                      <XCircle className="w-5 h-5" />
-                      رفض
+                      <KeyRound className="w-5 h-5" />
+                      إعادة تعيين كلمة المرور
                     </button>
-                    <button
-                      onClick={() => handleApprove(selectedRequest)}
-                      disabled={processing}
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
-                    >
-                      <CheckCircle className="w-5 h-5" />
-                      {processing ? 'جاري المعالجة...' : 'الموافقة وإنشاء حساب البائع'}
-                    </button>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          setShowRejectModal(true)
+                        }}
+                        disabled={processing}
+                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500/20 text-red-400 hover:bg-red-500/30 font-semibold rounded-xl transition-colors disabled:opacity-50"
+                      >
+                        <XCircle className="w-5 h-5" />
+                        رفض
+                      </button>
+                      <button
+                        onClick={() => handleApprove(selectedRequest)}
+                        disabled={processing}
+                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
+                      >
+                        <CheckCircle className="w-5 h-5" />
+                        {processing ? 'جاري المعالجة...' : 'الموافقة وإنشاء حساب البائع'}
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -710,15 +782,16 @@ export default function VendorRequestsPage() {
               >
                 <X className="w-6 h-6" />
               </button>
-              <a
-                href={zoomedImage}
-                download
-                onClick={(e) => e.stopPropagation()}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleDownloadImage(zoomedImage)
+                }}
                 className="p-3 bg-yellow-500/80 hover:bg-yellow-500 rounded-full text-black transition-colors"
                 title="تحميل الصورة"
               >
                 <Download className="w-6 h-6" />
-              </a>
+              </button>
             </div>
             <img
               src={zoomedImage}
@@ -726,6 +799,66 @@ export default function VendorRequestsPage() {
               className="max-w-full max-h-full object-contain rounded-lg"
               onClick={(e) => e.stopPropagation()}
             />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Password Reset Modal */}
+      <AnimatePresence>
+        {showPasswordResetModal && selectedRequest && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4"
+            onClick={() => setShowPasswordResetModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gray-900 border border-blue-500/20 rounded-2xl p-6 w-full max-w-md"
+            >
+              <h2 className="text-2xl font-bold text-blue-400 mb-4 flex items-center gap-2">
+                <KeyRound className="w-6 h-6" />
+                إعادة تعيين كلمة المرور
+              </h2>
+              <p className="text-gray-300 mb-4">
+                قم بتعيين كلمة مرور جديدة للبائع: {selectedRequest.business_name}
+              </p>
+              <div className="mb-4">
+                <label className="block text-gray-400 text-sm mb-2">كلمة المرور الجديدة</label>
+                <input
+                  type="text"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-blue-500 transition-colors"
+                  placeholder="أدخل كلمة المرور الجديدة..."
+                />
+                <p className="text-xs text-gray-500 mt-2">
+                  يجب أن تحتوي على 8 أحرف على الأقل، وتحتوي على أرقام وحروف (مثال: 23343534Aa)
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowPasswordResetModal(false)
+                    setNewPassword('')
+                  }}
+                  className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors"
+                >
+                  إلغاء
+                </button>
+                <button
+                  onClick={handleResetPassword}
+                  disabled={processing || !newPassword.trim()}
+                  className="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {processing ? 'جاري التحديث...' : 'تحديث كلمة المرور'}
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
