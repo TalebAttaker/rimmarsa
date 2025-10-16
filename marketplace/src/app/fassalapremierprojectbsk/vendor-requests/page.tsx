@@ -244,20 +244,26 @@ export default function VendorRequestsPage() {
       rejected: XCircle
     }
 
+    const labels = {
+      pending: 'قيد الانتظار',
+      approved: 'موافق عليه',
+      rejected: 'مرفوض'
+    }
+
     const Icon = icons[status as keyof typeof icons]
 
     return (
       <span className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium ${styles[status as keyof typeof styles]}`}>
         <Icon className="w-4 h-4" />
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {labels[status as keyof typeof labels] || status}
       </span>
     )
   }
 
   const getPlanDisplay = (plan: string) => {
     const plans: { [key: string]: string } = {
-      '1_month': '1 Month',
-      '2_months': '2 Months'
+      '1_month': 'شهر واحد',
+      '2_months': 'شهرين'
     }
     return plans[plan] || plan
   }
@@ -268,7 +274,7 @@ export default function VendorRequestsPage() {
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-yellow-400 font-medium">Loading Vendor Requests...</p>
+            <p className="text-yellow-400 font-medium">جاري تحميل طلبات البائعين...</p>
           </div>
         </div>
       </AdminLayout>
@@ -291,15 +297,15 @@ export default function VendorRequestsPage() {
               <UserPlus className="w-8 h-8 text-purple-400" />
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-purple-200 bg-clip-text text-transparent">
-                  Vendor Requests
+                  طلبات البائعين
                 </h1>
-                <p className="text-gray-400">Review and manage vendor registration applications</p>
+                <p className="text-gray-400">مراجعة وإدارة طلبات تسجيل البائعين</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <p className="text-2xl font-bold text-yellow-400">{requests.filter(r => r.status === 'pending').length}</p>
-                <p className="text-sm text-gray-400">Pending</p>
+                <p className="text-sm text-gray-400">قيد الانتظار</p>
               </div>
             </div>
           </div>
@@ -317,7 +323,7 @@ export default function VendorRequestsPage() {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search by business, owner, email, or phone..."
+                placeholder="البحث بالاسم التجاري، المالك، البريد الإلكتروني، أو الهاتف..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500 transition-colors"
@@ -329,10 +335,10 @@ export default function VendorRequestsPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
               >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
+                <option value="all">جميع الحالات</option>
+                <option value="pending">قيد الانتظار</option>
+                <option value="approved">موافق عليه</option>
+                <option value="rejected">مرفوض</option>
               </select>
             </div>
           </div>
@@ -349,13 +355,13 @@ export default function VendorRequestsPage() {
             <table className="w-full">
               <thead className="bg-gray-800/50 border-b border-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Business</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Contact</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Location</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Plan</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Date</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">Actions</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">العمل التجاري</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">معلومات الاتصال</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">الموقع</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">الخطة</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">الحالة</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">التاريخ</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">الإجراءات</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
@@ -386,7 +392,7 @@ export default function VendorRequestsPage() {
                           <p className="text-gray-500">{request.regions?.name}</p>
                         </div>
                       ) : (
-                        <span className="text-gray-500 text-sm">Not specified</span>
+                        <span className="text-gray-500 text-sm">غير محدد</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -408,7 +414,7 @@ export default function VendorRequestsPage() {
                           setShowDetailsModal(true)
                         }}
                         className="p-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded-lg transition-colors"
-                        title="View Details"
+                        title="عرض التفاصيل"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
@@ -421,7 +427,7 @@ export default function VendorRequestsPage() {
             {filteredRequests.length === 0 && (
               <div className="py-12 text-center">
                 <AlertCircle className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400">No vendor requests found</p>
+                <p className="text-gray-400">لا توجد طلبات بائعين</p>
               </div>
             )}
           </div>
@@ -446,7 +452,7 @@ export default function VendorRequestsPage() {
               className="bg-gray-900 border border-yellow-500/20 rounded-2xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto"
             >
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-yellow-400">Vendor Request Details</h2>
+                <h2 className="text-2xl font-bold text-yellow-400">تفاصيل طلب البائع</h2>
                 <button
                   onClick={() => setShowDetailsModal(false)}
                   className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
@@ -460,23 +466,23 @@ export default function VendorRequestsPage() {
                 <div className="bg-gray-800/30 rounded-xl p-6">
                   <h3 className="text-lg font-semibold text-green-400 flex items-center gap-2 mb-4">
                     <Store className="w-5 h-5" />
-                    Business Information
+                    معلومات العمل التجاري
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-gray-400 text-sm mb-1">Business Name</p>
+                      <p className="text-gray-400 text-sm mb-1">اسم العمل</p>
                       <p className="text-white font-medium">{selectedRequest.business_name}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400 text-sm mb-1">Owner Name</p>
+                      <p className="text-gray-400 text-sm mb-1">اسم المالك</p>
                       <p className="text-white font-medium">{selectedRequest.owner_name}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400 text-sm mb-1">Email</p>
+                      <p className="text-gray-400 text-sm mb-1">البريد الإلكتروني</p>
                       <p className="text-white font-medium">{selectedRequest.email}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400 text-sm mb-1">Phone</p>
+                      <p className="text-gray-400 text-sm mb-1">الهاتف</p>
                       <p className="text-white font-medium">{selectedRequest.phone}</p>
                     </div>
                   </div>
@@ -487,24 +493,24 @@ export default function VendorRequestsPage() {
                   <div className="bg-gray-800/30 rounded-xl p-6">
                     <h3 className="text-lg font-semibold text-purple-400 flex items-center gap-2 mb-4">
                       <MapPin className="w-5 h-5" />
-                      Location
+                      الموقع
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
                       {selectedRequest.cities && (
                         <>
                           <div>
-                            <p className="text-gray-400 text-sm mb-1">City</p>
+                            <p className="text-gray-400 text-sm mb-1">المدينة</p>
                             <p className="text-white font-medium">{selectedRequest.cities.name}</p>
                           </div>
                           <div>
-                            <p className="text-gray-400 text-sm mb-1">Region</p>
+                            <p className="text-gray-400 text-sm mb-1">المنطقة</p>
                             <p className="text-white font-medium">{selectedRequest.regions?.name}</p>
                           </div>
                         </>
                       )}
                       {selectedRequest.address && (
                         <div className="col-span-2">
-                          <p className="text-gray-400 text-sm mb-1">Address</p>
+                          <p className="text-gray-400 text-sm mb-1">العنوان</p>
                           <p className="text-white font-medium">{selectedRequest.address}</p>
                         </div>
                       )}
@@ -516,49 +522,49 @@ export default function VendorRequestsPage() {
                 <div className="bg-gray-800/30 rounded-xl p-6">
                   <h3 className="text-lg font-semibold text-yellow-400 flex items-center gap-2 mb-4">
                     <CreditCard className="w-5 h-5" />
-                    Subscription Plan
+                    خطة الاشتراك
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-gray-400 text-sm mb-1">Plan</p>
+                      <p className="text-gray-400 text-sm mb-1">الخطة</p>
                       <p className="text-white font-medium">{getPlanDisplay(selectedRequest.package_plan)}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400 text-sm mb-1">Price</p>
-                      <p className="text-yellow-400 font-bold text-xl">{selectedRequest.package_price} MRU</p>
+                      <p className="text-gray-400 text-sm mb-1">السعر</p>
+                      <p className="text-yellow-400 font-bold text-xl">{selectedRequest.package_price} أوقية</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Images */}
                 <div className="bg-gray-800/30 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-blue-400 mb-4">Uploaded Documents</h3>
+                  <h3 className="text-lg font-semibold text-blue-400 mb-4">المستندات المرفوعة</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-gray-400 text-sm mb-2 flex items-center gap-2">
                         <Shield className="w-4 h-4" />
-                        National ID
+                        البطاقة الوطنية
                       </p>
                       <img src={selectedRequest.nni_image_url} alt="NNI" className="w-full h-48 object-cover rounded-lg" />
                     </div>
                     <div>
                       <p className="text-gray-400 text-sm mb-2 flex items-center gap-2">
                         <User className="w-4 h-4" />
-                        Personal Photo
+                        الصورة الشخصية
                       </p>
                       <img src={selectedRequest.personal_image_url} alt="Personal" className="w-full h-48 object-cover rounded-lg" />
                     </div>
                     <div>
                       <p className="text-gray-400 text-sm mb-2 flex items-center gap-2">
                         <Building2 className="w-4 h-4" />
-                        Store Photo
+                        صورة المتجر
                       </p>
                       <img src={selectedRequest.store_image_url} alt="Store" className="w-full h-48 object-cover rounded-lg" />
                     </div>
                     <div>
                       <p className="text-gray-400 text-sm mb-2 flex items-center gap-2">
                         <CreditCard className="w-4 h-4" />
-                        Payment Screenshot
+                        إثبات الدفع
                       </p>
                       <img src={selectedRequest.payment_screenshot_url} alt="Payment" className="w-full h-48 object-cover rounded-lg" />
                     </div>
@@ -576,7 +582,7 @@ export default function VendorRequestsPage() {
                       className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500/20 text-red-400 hover:bg-red-500/30 font-semibold rounded-xl transition-colors disabled:opacity-50"
                     >
                       <XCircle className="w-5 h-5" />
-                      Reject
+                      رفض
                     </button>
                     <button
                       onClick={() => handleApprove(selectedRequest)}
@@ -584,14 +590,14 @@ export default function VendorRequestsPage() {
                       className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
                     >
                       <CheckCircle className="w-5 h-5" />
-                      {processing ? 'Processing...' : 'Approve & Create Vendor'}
+                      {processing ? 'جاري المعالجة...' : 'الموافقة وإنشاء حساب البائع'}
                     </button>
                   </div>
                 )}
 
                 {selectedRequest.status === 'rejected' && selectedRequest.rejection_reason && (
                   <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-                    <p className="text-red-400 font-semibold mb-2">Rejection Reason:</p>
+                    <p className="text-red-400 font-semibold mb-2">سبب الرفض:</p>
                     <p className="text-gray-300">{selectedRequest.rejection_reason}</p>
                   </div>
                 )}
@@ -618,16 +624,16 @@ export default function VendorRequestsPage() {
               onClick={(e) => e.stopPropagation()}
               className="bg-gray-900 border border-red-500/20 rounded-2xl p-6 w-full max-w-md"
             >
-              <h2 className="text-2xl font-bold text-red-400 mb-4">Reject Application</h2>
+              <h2 className="text-2xl font-bold text-red-400 mb-4">رفض الطلب</h2>
               <p className="text-gray-300 mb-4">
-                Please provide a reason for rejecting {selectedRequest.business_name}&apos;s application:
+                يرجى تقديم سبب رفض طلب {selectedRequest.business_name}:
               </p>
               <textarea
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={4}
                 className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-red-500 transition-colors resize-none mb-4"
-                placeholder="Enter rejection reason..."
+                placeholder="أدخل سبب الرفض..."
               />
               <div className="flex gap-3">
                 <button
@@ -637,14 +643,14 @@ export default function VendorRequestsPage() {
                   }}
                   className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors"
                 >
-                  Cancel
+                  إلغاء
                 </button>
                 <button
                   onClick={handleReject}
                   disabled={processing || !rejectionReason.trim()}
                   className="flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {processing ? 'Rejecting...' : 'Confirm Rejection'}
+                  {processing ? 'جاري الرفض...' : 'تأكيد الرفض'}
                 </button>
               </div>
             </motion.div>

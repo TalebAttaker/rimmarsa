@@ -143,7 +143,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-yellow-400 font-medium">Loading Dashboard...</p>
+            <p className="text-yellow-400 font-medium">جاري تحميل لوحة التحكم...</p>
           </div>
         </div>
       </AdminLayout>
@@ -152,15 +152,15 @@ export default function AdminDashboard() {
 
   const statCards = [
     {
-      title: 'Total Revenue',
-      value: '102,000 MRU',
+      title: 'إجمالي الإيرادات',
+      value: '102,000 أوقية',
       change: '+12.5%',
       trend: 'up',
       icon: DollarSign,
       gradient: 'from-yellow-500 to-yellow-600',
     },
     {
-      title: 'Active Vendors',
+      title: 'البائعون النشطون',
       value: stats?.active_vendors || 0,
       change: '+8.2%',
       trend: 'up',
@@ -168,7 +168,7 @@ export default function AdminDashboard() {
       gradient: 'from-blue-500 to-blue-600',
     },
     {
-      title: 'Active Products',
+      title: 'المنتجات النشطة',
       value: stats?.active_products || 0,
       change: '+15.3%',
       trend: 'up',
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
       gradient: 'from-purple-500 to-purple-600',
     },
     {
-      title: 'Pending Referrals',
+      title: 'الإحالات المعلقة',
       value: stats?.pending_referrals || 0,
       change: '-3.1%',
       trend: 'down',
@@ -197,9 +197,9 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent mb-2">
-                Welcome back, Admin!
+                مرحباً بك، المسؤول!
               </h1>
-              <p className="text-gray-400">Here&apos;s what&apos;s happening with your platform today.</p>
+              <p className="text-gray-400">إليك ما يحدث على منصتك اليوم</p>
             </div>
             <ShoppingBag className="w-16 h-16 text-yellow-400 opacity-50" />
           </div>
@@ -250,7 +250,7 @@ export default function AdminDashboard() {
           >
             <h3 className="text-xl font-bold text-yellow-400 mb-6 flex items-center gap-2">
               <TrendingUp className="w-5 h-5" />
-              Monthly Revenue Trend
+              اتجاه الإيرادات الشهرية
             </h3>
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={monthlyData}>
@@ -288,7 +288,7 @@ export default function AdminDashboard() {
             transition={{ delay: 0.5 }}
             className="bg-gray-900/50 backdrop-blur-xl border border-yellow-500/20 rounded-2xl p-6"
           >
-            <h3 className="text-xl font-bold text-yellow-400 mb-6">Category Distribution</h3>
+            <h3 className="text-xl font-bold text-yellow-400 mb-6">توزيع الفئات</h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -323,7 +323,7 @@ export default function AdminDashboard() {
           transition={{ delay: 0.6 }}
           className="bg-gray-900/50 backdrop-blur-xl border border-yellow-500/20 rounded-2xl p-6"
         >
-          <h3 className="text-xl font-bold text-yellow-400 mb-6">Vendors & Products Growth</h3>
+          <h3 className="text-xl font-bold text-yellow-400 mb-6">نمو البائعين والمنتجات</h3>
           <ResponsiveContainer width="100%" height={350}>
             <BarChart data={monthlyData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />

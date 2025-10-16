@@ -25,15 +25,15 @@ interface AdminLayoutProps {
 }
 
 const menuItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/fassalapremierprojectbsk/dashboard' },
-  { icon: UserPlus, label: 'Vendor Requests', href: '/fassalapremierprojectbsk/vendor-requests' },
-  { icon: Users, label: 'Vendors', href: '/fassalapremierprojectbsk/vendors' },
-  { icon: Package, label: 'Products', href: '/fassalapremierprojectbsk/products' },
-  { icon: Tags, label: 'Categories', href: '/fassalapremierprojectbsk/categories' },
-  { icon: MapPin, label: 'Regions', href: '/fassalapremierprojectbsk/regions' },
-  { icon: Building2, label: 'Cities', href: '/fassalapremierprojectbsk/cities' },
-  { icon: DollarSign, label: 'Referrals', href: '/fassalapremierprojectbsk/referrals' },
-  { icon: Settings, label: 'Settings', href: '/fassalapremierprojectbsk/settings' },
+  { icon: LayoutDashboard, label: 'لوحة التحكم', href: '/fassalapremierprojectbsk/dashboard' },
+  { icon: UserPlus, label: 'طلبات البائعين', href: '/fassalapremierprojectbsk/vendor-requests' },
+  { icon: Users, label: 'البائعون', href: '/fassalapremierprojectbsk/vendors' },
+  { icon: Package, label: 'المنتجات', href: '/fassalapremierprojectbsk/products' },
+  { icon: Tags, label: 'التصنيفات', href: '/fassalapremierprojectbsk/categories' },
+  { icon: MapPin, label: 'المناطق', href: '/fassalapremierprojectbsk/regions' },
+  { icon: Building2, label: 'المدن', href: '/fassalapremierprojectbsk/cities' },
+  { icon: DollarSign, label: 'الإحالات', href: '/fassalapremierprojectbsk/referrals' },
+  { icon: Settings, label: 'الإعدادات', href: '/fassalapremierprojectbsk/settings' },
 ]
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
@@ -48,12 +48,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black" dir="rtl">
       {/* Sidebar */}
       <motion.aside
         initial={{ x: 0 }}
-        animate={{ x: sidebarOpen ? 0 : -280 }}
-        className="fixed left-0 top-0 h-full w-72 bg-gradient-to-b from-gray-900/95 to-black/95 backdrop-blur-xl border-r border-yellow-500/20 z-50"
+        animate={{ x: sidebarOpen ? 0 : 280 }}
+        className="fixed right-0 top-0 h-full w-72 bg-gradient-to-b from-gray-900/95 to-black/95 backdrop-blur-xl border-l border-yellow-500/20 z-50"
       >
         {/* Logo */}
         <div className="p-6 border-b border-yellow-500/20">
@@ -63,9 +63,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
-                Rimmarsa
+                ريمارسا
               </h1>
-              <p className="text-xs text-gray-400">Admin Portal</p>
+              <p className="text-xs text-gray-400">لوحة الإدارة</p>
             </div>
           </div>
         </div>
@@ -88,7 +88,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 >
                   <Icon className="w-5 h-5" />
                   <span className="font-medium">{item.label}</span>
-                  {isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
+                  {isActive && <ChevronRight className="w-4 h-4 mr-auto rotate-180" />}
                 </motion.div>
               </Link>
             )
@@ -104,13 +104,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 hover:from-red-500/30 hover:to-red-600/30 border border-red-500/30 transition-all"
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-medium">Logout</span>
+            <span className="font-medium">تسجيل الخروج</span>
           </motion.button>
         </div>
       </motion.aside>
 
       {/* Main Content */}
-      <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-72' : 'ml-0'}`}>
+      <div className={`transition-all duration-300 ${sidebarOpen ? 'mr-72' : 'mr-0'}`}>
         {/* Top Bar */}
         <header className="bg-gray-900/50 backdrop-blur-xl border-b border-yellow-500/20 sticky top-0 z-40">
           <div className="px-6 py-4 flex items-center justify-between">
@@ -123,8 +123,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm font-medium text-yellow-400">Super Admin</p>
-                <p className="text-xs text-gray-400">Administrator</p>
+                <p className="text-sm font-medium text-yellow-400">المسؤول الرئيسي</p>
+                <p className="text-xs text-gray-400">مدير النظام</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center font-bold text-black shadow-lg shadow-yellow-500/50">
                 SA
