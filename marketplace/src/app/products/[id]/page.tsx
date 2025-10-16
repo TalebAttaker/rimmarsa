@@ -113,7 +113,7 @@ export default function ProductDetailPage() {
         })
         .single()
 
-      setVendor(vendorData)
+      setVendor(vendorData as VendorProfile | null)
 
       // Increment view count
       await supabase

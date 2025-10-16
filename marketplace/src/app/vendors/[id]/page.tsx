@@ -85,7 +85,7 @@ export default function VendorProfilePage() {
         return
       }
 
-      setVendor(vendorData)
+      setVendor(vendorData as VendorProfile)
 
       // Fetch vendor's products
       const { data: productsData } = await supabase
