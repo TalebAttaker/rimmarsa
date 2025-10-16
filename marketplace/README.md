@@ -93,7 +93,10 @@ See `/docs/DATABASE.md` in the project root for full schema documentation.
 ✅ Homepage with hero section
 ✅ Categories grid
 ✅ Recent products display
-✅ Supabase integration
+✅ Vendor registration system with approval workflow
+✅ Location filtering (regions and cities)
+✅ Vendor profiles and product browsing
+✅ Supabase integration with RLS policies
 ✅ TypeScript types
 ✅ Responsive design
 
