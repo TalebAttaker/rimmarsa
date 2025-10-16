@@ -354,7 +354,7 @@ export default function VendorRegistrationPage() {
           email: generatedEmail,
           phone: formData.phone,
           password: formData.password, // Will be hashed by admin when creating account
-          whatsapp_number: formData.whatsapp_number || null,
+          whatsapp_number: formData.whatsapp_number,
           region_id: formData.region_id || null,
           city_id: formData.city_id || null,
           address: formData.address || null,
@@ -648,17 +648,18 @@ export default function VendorRegistrationPage() {
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
                     <MessageCircle className="w-4 h-4" />
-                    رقم الواتساب
+                    رقم الواتساب *
                   </label>
                   <input
                     type="tel"
+                    required
                     value={formData.whatsapp_number}
                     onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
-                    placeholder="+222 XX XX XX XX (اختياري)"
+                    placeholder="+222 XX XX XX XX"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    قدم رقم الواتساب إذا كان مختلفاً عن رقم الهاتف
+                    مطلوب للتواصل معك عند الموافقة على الطلب
                   </p>
                 </div>
               </div>
