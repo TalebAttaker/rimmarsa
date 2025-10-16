@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Provider as PaperProvider } from 'react-native-paper';
 import HomeScreen from './src/screens/HomeScreen';
 import VendorRegistrationScreen from './src/screens/VendorRegistrationScreen';
+import VendorLoginScreen from './src/screens/vendor/VendorLoginScreen';
+import VendorNavigator from './src/navigation/VendorNavigator';
 
 const Stack = createStackNavigator();
 
@@ -75,6 +77,16 @@ export default function App() {
             name="VendorRegistration"
             component={VendorRegistrationScreen}
             options={{ title: 'تسجيل البائع' }}
+          />
+          <Stack.Screen
+            name="VendorLogin"
+            component={VendorLoginScreen}
+            options={{ title: 'تسجيل دخول البائع', headerShown: false }}
+          />
+          <Stack.Screen
+            name="VendorDashboard"
+            component={VendorNavigator}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>
