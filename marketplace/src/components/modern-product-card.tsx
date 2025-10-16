@@ -86,21 +86,21 @@ export default function ModernProductCard({
           {/* Content */}
           <div className="p-5">
             {/* Product Name */}
-            <h3 className="font-bold text-lg text-gray-800 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
+            <h3 className="font-bold text-lg text-gray-800 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors duration-300">
               {name}
             </h3>
 
             {/* Description */}
             <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-              {description || 'No description available'}
+              {description || 'لا يوجد وصف متاح'}
             </p>
 
             {/* Footer */}
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
               {/* Price */}
               <div>
-                <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  {price.toLocaleString()} <span className="text-sm">MRU</span>
+                <div className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
+                  {price.toLocaleString()} <span className="text-sm">أوقية</span>
                 </div>
               </div>
 
@@ -116,7 +116,7 @@ export default function ModernProductCard({
 
           {/* Animated Border on Hover */}
           <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-[2px]">
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-primary-500 via-primary-600 to-secondary-500 p-[2px]">
               <div className="absolute inset-0 rounded-3xl bg-white" />
             </div>
           </div>

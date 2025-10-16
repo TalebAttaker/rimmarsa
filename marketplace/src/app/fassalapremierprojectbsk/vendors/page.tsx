@@ -43,7 +43,7 @@ interface Vendor {
   owner_name: string
   email: string
   phone: string
-  nni?: string
+  nni_image_url?: string | null
   logo_url?: string
   personal_picture_url?: string
   promo_code?: string
@@ -74,7 +74,7 @@ export default function VendorsPage() {
     owner_name: '',
     email: '',
     phone: '',
-    nni: '',
+    nni_image_url: '',
     logo_url: '',
     personal_picture_url: '',
     promo_code: '',
@@ -115,8 +115,7 @@ export default function VendorsPage() {
       vendor.business_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       vendor.owner_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       vendor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      vendor.phone.includes(searchQuery) ||
-      (vendor.nni && vendor.nni.includes(searchQuery))
+      vendor.phone.includes(searchQuery)
     )
     setFilteredVendors(filtered)
   }, [searchQuery, vendors])
@@ -225,7 +224,7 @@ export default function VendorsPage() {
         owner_name: vendor.owner_name,
         email: vendor.email,
         phone: vendor.phone,
-        nni: vendor.nni || '',
+        nni_image_url: vendor.nni_image_url || '',
         logo_url: vendor.logo_url || '',
         personal_picture_url: vendor.personal_picture_url || '',
         promo_code: vendor.promo_code || '',
@@ -243,7 +242,7 @@ export default function VendorsPage() {
         owner_name: '',
         email: '',
         phone: '',
-        nni: '',
+        nni_image_url: '',
         logo_url: '',
         personal_picture_url: '',
         promo_code: '',
@@ -266,7 +265,7 @@ export default function VendorsPage() {
       owner_name: '',
       email: '',
       phone: '',
-      nni: '',
+      nni_image_url: '',
       logo_url: '',
       personal_picture_url: '',
       promo_code: '',
@@ -289,7 +288,7 @@ export default function VendorsPage() {
       // Prepare data (remove empty strings)
       const vendorData = {
         ...formData,
-        nni: formData.nni || null,
+        nni_image_url: formData.nni_image_url || null,
         logo_url: formData.logo_url || null,
         personal_picture_url: formData.personal_picture_url || null,
         promo_code: formData.promo_code || null,
@@ -451,7 +450,7 @@ export default function VendorsPage() {
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by business name, owner, email, phone, or NNI..."
+              placeholder="Search by business name, owner, email, or phone..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500 transition-colors"
@@ -499,7 +498,6 @@ export default function VendorsPage() {
                         )}
                         <div>
                           <p className="text-white font-medium">{vendor.business_name}</p>
-                          {vendor.nni && <p className="text-gray-500 text-xs">NNI: {vendor.nni}</p>}
                         </div>
                       </div>
                     </td>
@@ -731,19 +729,18 @@ export default function VendorsPage() {
                       />
                     </div>
 
+                  </div>
+
+                  {/* NNI Image Display (Read-only) */}
+                  {formData.nni_image_url && (
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        NNI (National ID)
+                        NNI (National ID) Image
                       </label>
-                      <input
-                        type="text"
-                        value={formData.nni}
-                        onChange={(e) => setFormData({ ...formData, nni: e.target.value })}
-                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
-                        placeholder="Enter NNI number"
-                      />
+                      <img src={formData.nni_image_url} alt="NNI" className="w-full max-w-md h-40 object-cover rounded-lg border border-gray-700" />
+                      <p className="text-xs text-gray-500 mt-2">NNI image (from vendor registration)</p>
                     </div>
-                  </div>
+                  )}
 
                   {/* Personal Picture Upload */}
                   <div>

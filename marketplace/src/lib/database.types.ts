@@ -476,7 +476,7 @@ export type Database = {
           is_active: boolean | null
           is_verified: boolean | null
           logo_url: string | null
-          nni: string | null
+          nni_image_url: string | null
           owner_name: string
           personal_picture_url: string | null
           phone: string
@@ -500,7 +500,7 @@ export type Database = {
           is_active?: boolean | null
           is_verified?: boolean | null
           logo_url?: string | null
-          nni?: string | null
+          nni_image_url?: string | null
           owner_name: string
           personal_picture_url?: string | null
           phone: string
@@ -524,7 +524,7 @@ export type Database = {
           is_active?: boolean | null
           is_verified?: boolean | null
           logo_url?: string | null
-          nni?: string | null
+          nni_image_url?: string | null
           owner_name?: string
           personal_picture_url?: string | null
           phone?: string

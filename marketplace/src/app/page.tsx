@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server"
 import { Database } from "@/lib/database.types"
 import ModernNavbar from "@/components/modern-navbar"
 import ModernHero from "@/components/modern-hero"
+import HowItWorks from "@/components/how-it-works"
+import FeaturesSection from "@/components/features-section"
+import TestimonialsSection from "@/components/testimonials-section"
 import ModernCategoryCard from "@/components/modern-category-card"
 import ModernProductCard from "@/components/modern-product-card"
 import ModernFooter from "@/components/modern-footer"
@@ -48,22 +51,28 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     .limit(12)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-white">
       {/* Modern Navbar */}
       <ModernNavbar />
 
       {/* Modern Hero Section */}
       <ModernHero />
 
+      {/* How It Works Section */}
+      <HowItWorks />
+
       {/* Categories Section */}
-      <section className="py-20 bg-white">
+      <section id="categories" className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Shop by Category
+            <span className="inline-block px-4 py-2 rounded-full bg-primary-100 text-primary-700 font-semibold text-sm mb-4">
+              الفئات
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+              تسوق حسب الفئة
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Explore our wide range of categories and find exactly what you&apos;re looking for
+              استكشف مجموعة واسعة من الفئات واعثر على ما تحتاجه بالضبط
             </p>
           </div>
 
@@ -83,23 +92,29 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <div className="text-center mt-12">
             <Link
               href="/products"
-              className="inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:shadow-2xl hover:shadow-blue-500/50 transition-all duration-300"
+              className="inline-block px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-2xl hover:shadow-2xl hover:shadow-primary-500/50 transition-all duration-300"
             >
-              View All Categories →
+              عرض جميع الفئات ←
             </Link>
           </div>
         </div>
       </section>
 
+      {/* Features Section */}
+      <FeaturesSection />
+
       {/* Recent Products Section */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section id="products" className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Latest Products
+            <span className="inline-block px-4 py-2 rounded-full bg-secondary-100 text-secondary-700 font-semibold text-sm mb-4">
+              أحدث المنتجات
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+              اكتشف منتجات جديدة
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Discover the newest additions from our trusted vendors across Mauritania
+              أحدث الإضافات من البائعين الموثوقين في جميع أنحاء موريتانيا
             </p>
           </div>
 
@@ -127,13 +142,16 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <div className="text-center mt-12">
             <Link
               href="/products"
-              className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-2xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300"
+              className="inline-block px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-2xl hover:shadow-2xl hover:shadow-primary-500/50 transition-all duration-300"
             >
-              View All Products →
+              عرض جميع المنتجات ←
             </Link>
           </div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      <TestimonialsSection />
 
       {/* Modern Footer */}
       <ModernFooter />

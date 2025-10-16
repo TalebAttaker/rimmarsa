@@ -2,13 +2,20 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FiMenu, FiX, FiShoppingBag, FiUser, FiHeart } from 'react-icons/fi'
+import {
+  FiMenu, FiX, FiShoppingBag, FiUser, FiHeart, FiSearch,
+  FiPackage, FiMapPin, FiPhone
+} from 'react-icons/fi'
+import { HiOutlineShoppingBag } from 'react-icons/hi'
 import { HiSparkles } from 'react-icons/hi'
 
 export default function ModernNavbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const router = useRouter()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,11 +25,17 @@ export default function ModernNavbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchQuery)}`)
+    }
+  }
+
   const navLinks = [
-    { href: '/products', label: 'المنتجات', icon: <FiShoppingBag /> },
-    { href: '/vendors', label: 'البائعون', icon: <HiSparkles /> },
-    { href: '/vendor-registration', label: 'كن بائعاً', icon: <FiUser />, highlight: true },
-    { href: '/favorites', label: 'المفضلة', icon: <FiHeart /> },
+    { href: '/products', label: 'المنتجات', icon: <FiShoppingBag />, color: 'primary' },
+    { href: '/vendors', label: 'البائعون', icon: <HiOutlineShoppingBag />, color: 'primary' },
+    { href: '/vendor-registration', label: 'كن بائعاً', icon: <HiSparkles />, highlight: true },
   ]
 
   return (
@@ -32,30 +45,55 @@ export default function ModernNavbar() {
         animate={{ y: 0 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20'
-            : 'bg-transparent'
+            ? 'bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-200'
+            : 'bg-white/90 backdrop-blur-md'
         }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
+          {/* Main Navigation Row */}
+          <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
+            <Link href="/" className="flex items-center gap-3 group">
               <motion.div
-                whileHover={{ rotate: 180, scale: 1.1 }}
-                transition={{ duration: 0.3 }}
-                className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"
+                whileHover={{ rotate: 360, scale: 1.1 }}
+                transition={{ duration: 0.5 }}
+                className="relative"
               >
-                <HiSparkles className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/30">
+                  <FiShoppingBag className="w-6 h-6 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-secondary-500 rounded-full animate-pulse-glow" />
               </motion.div>
-              <span className={`text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent ${
-                !isScrolled && 'text-white bg-clip-text'
-              }`}>
-                Rimmarsa
-              </span>
+              <div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent block">
+                  ريمارسا
+                </span>
+                <span className="text-xs text-gray-500 block">سوق موريتانيا</span>
+              </div>
             </Link>
 
+            {/* Desktop Search Bar */}
+            <form onSubmit={handleSearch} className="hidden lg:flex flex-1 max-w-2xl mx-8">
+              <div className="relative w-full">
+                <FiSearch className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="ابحث عن منتجات، بائعين، أو فئات..."
+                  className="w-full pr-12 pl-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 text-gray-700 placeholder:text-gray-400"
+                />
+                <button
+                  type="submit"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 px-6 py-1.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-300"
+                >
+                  بحث
+                </button>
+              </div>
+            </form>
+
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-2">
               {navLinks.map((link, index) => (
                 <motion.div
                   key={link.href}
@@ -65,14 +103,10 @@ export default function ModernNavbar() {
                 >
                   <Link
                     href={link.href}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 ${
                       link.highlight
-                        ? isScrolled
-                          ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg hover:shadow-xl'
-                          : 'bg-white/20 text-white border border-white/30 hover:bg-white/30'
-                        : isScrolled
-                        ? 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
-                        : 'text-white hover:bg-white/20'
+                        ? 'bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-lg hover:shadow-xl hover:shadow-secondary-500/30'
+                        : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
                     }`}
                   >
                     {link.icon}
@@ -82,21 +116,28 @@ export default function ModernNavbar() {
               ))}
             </nav>
 
-            {/* CTA Button */}
-            <div className="hidden md:flex items-center gap-4">
+            {/* CTA Buttons */}
+            <div className="hidden md:flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative p-2.5 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-300"
+              >
+                <FiHeart className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-secondary-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                  0
+                </span>
+              </motion.button>
+
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Link
                   href="/login"
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
-                    isScrolled
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40'
-                      : 'bg-white text-blue-600 shadow-lg hover:shadow-xl'
-                  }`}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 transition-all duration-300"
                 >
-                  <FiUser />
+                  <FiUser className="w-4 h-4" />
                   تسجيل الدخول
                 </Link>
               </motion.div>
@@ -106,12 +147,48 @@ export default function ModernNavbar() {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`md:hidden p-2 rounded-xl ${
-                isScrolled ? 'text-gray-700' : 'text-white'
-              }`}
+              className="md:hidden p-2 text-gray-700 hover:bg-primary-50 hover:text-primary-600 rounded-xl transition-colors duration-300"
             >
               {isMobileMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
             </motion.button>
+          </div>
+
+          {/* Mobile Search Bar */}
+          <div className="lg:hidden pb-4">
+            <form onSubmit={handleSearch} className="relative">
+              <FiSearch className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="ابحث عن منتجات..."
+                className="w-full pr-12 pl-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 text-gray-700"
+              />
+            </form>
+          </div>
+        </div>
+
+        {/* Quick Links Bar (Desktop only) */}
+        <div className="hidden lg:block border-t border-gray-100 bg-gray-50/50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-center gap-8 py-3">
+              <Link href="/products" className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors duration-300">
+                <FiPackage className="w-4 h-4" />
+                جميع المنتجات
+              </Link>
+              <Link href="/vendors" className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors duration-300">
+                <HiOutlineShoppingBag className="w-4 h-4" />
+                المتاجر المميزة
+              </Link>
+              <Link href="/" className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors duration-300">
+                <FiMapPin className="w-4 h-4" />
+                التوصيل في جميع أنحاء موريتانيا
+              </Link>
+              <Link href="/" className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors duration-300">
+                <FiPhone className="w-4 h-4" />
+                دعم عملاء 24/7
+              </Link>
+            </div>
           </div>
         </div>
       </motion.header>
@@ -141,8 +218,8 @@ export default function ModernNavbar() {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`flex items-center gap-3 px-4 py-4 rounded-xl transition-all duration-300 font-medium ${
                         link.highlight
-                          ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg'
-                          : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                          ? 'bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-lg'
+                          : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
                       }`}
                     >
                       {link.icon}
@@ -150,21 +227,44 @@ export default function ModernNavbar() {
                     </Link>
                   </motion.div>
                 ))}
+
+                <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Link
+                    href="/favorites"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-4 rounded-xl text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-all duration-300 font-medium"
+                  >
+                    <FiHeart />
+                    المفضلة
+                  </Link>
+                </motion.div>
               </nav>
 
               {/* Mobile CTA */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.4 }}
+                className="space-y-3"
               >
                 <Link
                   href="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow-lg shadow-blue-500/30"
+                  className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg shadow-primary-500/30"
                 >
                   <FiUser />
                   تسجيل الدخول
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl border-2 border-primary-500 text-primary-600 font-semibold hover:bg-primary-50 transition-colors duration-300"
+                >
+                  إنشاء حساب
                 </Link>
               </motion.div>
             </div>
@@ -184,6 +284,9 @@ export default function ModernNavbar() {
           />
         )}
       </AnimatePresence>
+
+      {/* Spacer */}
+      <div className="h-32 lg:h-40" />
     </>
   )
 }
