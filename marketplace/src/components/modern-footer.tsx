@@ -8,22 +8,22 @@ import { HiSparkles } from 'react-icons/hi'
 export default function ModernFooter() {
   const footerLinks = {
     buyers: [
-      { label: 'Browse Products', href: '/products' },
-      { label: 'Categories', href: '/categories' },
-      { label: 'Find Vendors', href: '/vendors' },
-      { label: 'How it Works', href: '/how-it-works' },
+      { label: 'تصفح المنتجات', href: '/products' },
+      { label: 'الفئات', href: '/categories' },
+      { label: 'البحث عن البائعين', href: '/vendors' },
+      { label: 'كيف يعمل', href: '/how-it-works' },
     ],
     vendors: [
-      { label: 'Become a Vendor', href: '/vendor-registration' },
-      { label: 'Vendor Login', href: '/vendor/login' },
-      { label: 'Referral Program', href: '/referral-program' },
-      { label: 'Pricing', href: '/pricing' },
+      { label: 'كن بائعاً', href: '/vendor-registration' },
+      { label: 'تسجيل دخول البائع', href: '/vendor/login' },
+      { label: 'برنامج الإحالة', href: '/referral-program' },
+      { label: 'الأسعار', href: '/pricing' },
     ],
     support: [
-      { label: 'Help Center', href: '/help' },
-      { label: 'Contact Us', href: '/contact' },
-      { label: 'Terms of Service', href: '/terms' },
-      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'مركز المساعدة', href: '/help' },
+      { label: 'اتصل بنا', href: '/contact' },
+      { label: 'شروط الخدمة', href: '/terms' },
+      { label: 'سياسة الخصوصية', href: '/privacy' },
     ],
   }
 
@@ -83,8 +83,8 @@ export default function ModernFooter() {
               </Link>
 
               <p className="text-gray-300 mb-6 leading-relaxed">
-                Your trusted multi-vendor marketplace in Mauritania.
-                Buy and sell local products with exclusive referral benefits.
+                سوقك الموثوق متعدد البائعين في موريتانيا.
+                اشترِ وبع المنتجات المحلية مع مزايا الإحالة الحصرية.
               </p>
 
               {/* Contact Info */}
@@ -116,7 +116,7 @@ export default function ModernFooter() {
             transition={{ delay: 0.1 }}
           >
             <h4 className="text-lg font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              For Buyers
+              للمشترين
             </h4>
             <ul className="space-y-3">
               {footerLinks.buyers.map((link, index) => (
@@ -141,7 +141,7 @@ export default function ModernFooter() {
             transition={{ delay: 0.2 }}
           >
             <h4 className="text-lg font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              For Vendors
+              للبائعين
             </h4>
             <ul className="space-y-3">
               {footerLinks.vendors.map((link, index) => (
@@ -166,7 +166,7 @@ export default function ModernFooter() {
             transition={{ delay: 0.3 }}
           >
             <h4 className="text-lg font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Support
+              الدعم
             </h4>
             <ul className="space-y-3">
               {footerLinks.support.map((link, index) => (
@@ -196,7 +196,7 @@ export default function ModernFooter() {
             viewport={{ once: true }}
             className="text-gray-400 text-sm text-center md:text-left"
           >
-            © 2025 Rimmarsa. All rights reserved. Made with ❤️ in Mauritania
+            © 2025 ريمارسا. جميع الحقوق محفوظة. صنع بـ ❤️ في موريتانيا
           </motion.p>
 
           {/* Social Links */}

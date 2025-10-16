@@ -19,10 +19,10 @@ export default function ModernNavbar() {
   }, [])
 
   const navLinks = [
-    { href: '/products', label: 'Products', icon: <FiShoppingBag /> },
-    { href: '/vendors', label: 'Vendors', icon: <HiSparkles /> },
-    { href: '/vendor-registration', label: 'Become a Vendor', icon: <FiUser />, highlight: true },
-    { href: '/favorites', label: 'Favorites', icon: <FiHeart /> },
+    { href: '/products', label: 'المنتجات', icon: <FiShoppingBag /> },
+    { href: '/vendors', label: 'البائعون', icon: <HiSparkles /> },
+    { href: '/vendor-registration', label: 'كن بائعاً', icon: <FiUser />, highlight: true },
+    { href: '/favorites', label: 'المفضلة', icon: <FiHeart /> },
   ]
 
   return (
@@ -97,7 +97,7 @@ export default function ModernNavbar() {
                   }`}
                 >
                   <FiUser />
-                  Login
+                  تسجيل الدخول
                 </Link>
               </motion.div>
             </div>
@@ -164,7 +164,7 @@ export default function ModernNavbar() {
                   className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow-lg shadow-blue-500/30"
                 >
                   <FiUser />
-                  Login
+                  تسجيل الدخول
                 </Link>
               </motion.div>
             </div>

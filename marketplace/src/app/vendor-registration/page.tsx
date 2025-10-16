@@ -50,18 +50,18 @@ interface PendingRequest {
 const PRICING_PLANS = [
   {
     id: '1_month',
-    name: '1 Month Plan',
+    name: 'خطة شهر واحد',
     price: 1250,
-    duration: '30 days',
-    features: ['Full platform access', 'Unlimited products', 'Customer support', 'Analytics dashboard']
+    duration: '30 يوم',
+    features: ['وصول كامل للمنصة', 'منتجات غير محدودة', 'دعم العملاء', 'لوحة التحليلات']
   },
   {
     id: '2_months',
-    name: '2 Months Plan',
+    name: 'خطة شهرين',
     price: 1600,
-    duration: '60 days',
-    savings: 'Save 350 MRU',
-    features: ['Full platform access', 'Unlimited products', 'Priority customer support', 'Analytics dashboard', 'Featured vendor badge']
+    duration: '60 يوم',
+    savings: 'وفر 350 أوقية',
+    features: ['وصول كامل للمنصة', 'منتجات غير محدودة', 'دعم العملاء ذو الأولوية', 'لوحة التحليلات', 'شارة البائع المميز']
   }
 ]
 
@@ -97,6 +97,13 @@ export default function VendorRegistrationPage() {
     personal: false,
     store: false,
     payment: false
+  })
+
+  const [uploadProgress, setUploadProgress] = useState({
+    nni: 0,
+    personal: 0,
+    store: 0,
+    payment: 0
   })
 
   useEffect(() => {
@@ -210,6 +217,18 @@ export default function VendorRegistrationPage() {
 
   const handleImageUpload = async (file: File, type: 'nni' | 'personal' | 'store' | 'payment') => {
     setUploading(prev => ({ ...prev, [type]: true }))
+    setUploadProgress(prev => ({ ...prev, [type]: 0 }))
+
+    // Simulate progress for better UX
+    const progressInterval = setInterval(() => {
+      setUploadProgress(prev => {
+        const currentProgress = prev[type]
+        if (currentProgress < 90) {
+          return { ...prev, [type]: currentProgress + 10 }
+        }
+        return prev
+      })
+    }, 200)
 
     try {
       const supabase = createClient()
@@ -222,6 +241,10 @@ export default function VendorRegistrationPage() {
         .upload(filePath, file)
 
       if (uploadError) throw uploadError
+
+      // Complete the progress
+      clearInterval(progressInterval)
+      setUploadProgress(prev => ({ ...prev, [type]: 100 }))
 
       const { data: { publicUrl } } = supabase.storage
         .from('images')
@@ -236,10 +259,17 @@ export default function VendorRegistrationPage() {
 
       setFormData(prev => ({ ...prev, [fieldMap[type]]: publicUrl }))
       toast.success('Image uploaded successfully!')
+
+      // Reset progress after a short delay
+      setTimeout(() => {
+        setUploadProgress(prev => ({ ...prev, [type]: 0 }))
+      }, 1000)
     } catch (error: unknown) {
+      clearInterval(progressInterval)
       console.error('Error uploading image:', error)
       const errorMessage = error instanceof Error ? error.message : 'Failed to upload image'
       toast.error(errorMessage)
+      setUploadProgress(prev => ({ ...prev, [type]: 0 }))
     } finally {
       setUploading(prev => ({ ...prev, [type]: false }))
     }
@@ -318,7 +348,7 @@ export default function VendorRegistrationPage() {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading...</p>
+          <p className="text-gray-400">جاري التحميل...</p>
         </div>
       </div>
     )
@@ -338,46 +368,46 @@ export default function VendorRegistrationPage() {
             <Clock className="w-12 h-12 text-yellow-400" />
           </div>
 
-          <h2 className="text-3xl font-bold text-yellow-400 text-center mb-4">Request Pending</h2>
+          <h2 className="text-3xl font-bold text-yellow-400 text-center mb-4">الطلب قيد الانتظار</h2>
 
           <div className="bg-gray-800/50 rounded-xl p-6 mb-6 space-y-3">
             <div className="flex items-center gap-2 text-gray-300">
               <AlertCircle className="w-5 h-5 text-yellow-400" />
-              <p className="text-sm">You already have a pending registration request.</p>
+              <p className="text-sm">لديك بالفعل طلب تسجيل قيد الانتظار.</p>
             </div>
 
             <div className="border-t border-gray-700 pt-3 space-y-2">
               <p className="text-sm text-gray-400">
-                <span className="font-semibold text-white">Business:</span> {pendingRequest.business_name}
+                <span className="font-semibold text-white">العمل:</span> {pendingRequest.business_name}
               </p>
               <p className="text-sm text-gray-400">
-                <span className="font-semibold text-white">Email:</span> {pendingRequest.email}
+                <span className="font-semibold text-white">البريد الإلكتروني:</span> {pendingRequest.email}
               </p>
               <p className="text-sm text-gray-400">
-                <span className="font-semibold text-white">Phone:</span> {pendingRequest.phone}
+                <span className="font-semibold text-white">الهاتف:</span> {pendingRequest.phone}
               </p>
               {pendingRequest.whatsapp_number && (
                 <p className="text-sm text-gray-400">
-                  <span className="font-semibold text-white">WhatsApp:</span> {pendingRequest.whatsapp_number}
+                  <span className="font-semibold text-white">الواتساب:</span> {pendingRequest.whatsapp_number}
                 </p>
               )}
               <p className="text-sm text-gray-400">
-                <span className="font-semibold text-white">Plan:</span> {selectedPlan?.name} - {pendingRequest.package_price} MRU
+                <span className="font-semibold text-white">الخطة:</span> {selectedPlan?.name} - {pendingRequest.package_price} أوقية
               </p>
               <p className="text-sm text-gray-400">
-                <span className="font-semibold text-white">Submitted:</span> {new Date(pendingRequest.created_at).toLocaleDateString()}
+                <span className="font-semibold text-white">تاريخ الإرسال:</span> {new Date(pendingRequest.created_at).toLocaleDateString('ar-MR')}
               </p>
             </div>
 
             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mt-4">
               <p className="text-sm text-yellow-200 font-medium text-center">
-                Status: <span className="text-yellow-400 font-bold uppercase">{pendingRequest.status}</span>
+                الحالة: <span className="text-yellow-400 font-bold uppercase">{pendingRequest.status === 'pending' ? 'قيد الانتظار' : pendingRequest.status}</span>
               </p>
             </div>
           </div>
 
           <p className="text-sm text-gray-400 text-center mb-6">
-            Our admin team is reviewing your application. You will receive an email notification once your request is approved or if we need additional information.
+            فريق الإدارة لدينا يراجع طلبك. ستتلقى إشعاراً عبر البريد الإلكتروني بمجرد الموافقة على طلبك أو إذا كنا بحاجة إلى معلومات إضافية.
           </p>
 
           <div className="space-y-3">
@@ -388,13 +418,13 @@ export default function VendorRegistrationPage() {
               }}
               className="w-full px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-all"
             >
-              Register with Different Email
+              التسجيل ببريد إلكتروني مختلف
             </button>
             <Link
               href="/"
               className="block text-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-semibold rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition-all"
             >
-              Back to Home
+              العودة إلى الصفحة الرئيسية
             </Link>
           </div>
         </motion.div>
@@ -415,17 +445,17 @@ export default function VendorRegistrationPage() {
           <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-green-400" />
           </div>
-          <h2 className="text-3xl font-bold text-green-400 mb-4">Application Submitted!</h2>
+          <h2 className="text-3xl font-bold text-green-400 mb-4">تم إرسال الطلب!</h2>
           <p className="text-gray-300 mb-6">
-            Thank you for applying to join Rimmarsa! We&apos;ve received your application and will review it shortly.
-            You&apos;ll receive an email notification once your application is processed.
+            شكراً لتقديم طلبك للانضمام إلى ريمارسا! لقد استلمنا طلبك وسنقوم بمراجعته قريباً.
+            ستتلقى إشعاراً عبر البريد الإلكتروني بمجرد معالجة طلبك.
           </p>
           <div className="bg-gray-800/50 rounded-xl p-4 mb-6">
-            <p className="text-sm text-gray-400 mb-2">Application Details:</p>
+            <p className="text-sm text-gray-400 mb-2">تفاصيل الطلب:</p>
             <p className="text-white font-medium">{formData.business_name}</p>
             <p className="text-gray-400 text-sm">{formData.email}</p>
             <p className="text-yellow-400 font-semibold mt-2">
-              {selectedPlan?.name} - {selectedPlan?.price} MRU
+              {selectedPlan?.name} - {selectedPlan?.price} أوقية
             </p>
           </div>
           <Link
@@ -433,7 +463,7 @@ export default function VendorRegistrationPage() {
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-semibold rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition-all"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Home
+            العودة إلى الصفحة الرئيسية
           </Link>
         </motion.div>
       </div>
@@ -453,16 +483,16 @@ export default function VendorRegistrationPage() {
           className="text-center mb-8"
         >
           <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent mb-2">
-            Become a Vendor
+            كن بائعاً
           </h1>
-          <p className="text-gray-400">Join Mauritania&apos;s leading marketplace platform</p>
+          <p className="text-gray-400">انضم إلى منصة السوق الرائدة في موريتانيا</p>
           <div className="mt-4">
             <Link
               href="/"
               className="inline-flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Home
+              العودة إلى الصفحة الرئيسية
             </Link>
           </div>
         </motion.div>
@@ -503,13 +533,13 @@ export default function VendorRegistrationPage() {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
                 <Store className="w-6 h-6" />
-                Business Information
+                معلومات العمل
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Business Name *
+                    اسم العمل *
                   </label>
                   <input
                     type="text"
@@ -517,13 +547,13 @@ export default function VendorRegistrationPage() {
                     value={formData.business_name}
                     onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
-                    placeholder="Your business name"
+                    placeholder="اسم عملك التجاري"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Owner Name *
+                    اسم المالك *
                   </label>
                   <input
                     type="text"
@@ -531,14 +561,14 @@ export default function VendorRegistrationPage() {
                     value={formData.owner_name}
                     onChange={(e) => setFormData({ ...formData, owner_name: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
-                    placeholder="Full name"
+                    placeholder="الاسم الكامل"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
                     <Mail className="w-4 h-4" />
-                    Email *
+                    البريد الإلكتروني *
                   </label>
                   <input
                     type="email"
@@ -554,7 +584,7 @@ export default function VendorRegistrationPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
                     <Phone className="w-4 h-4" />
-                    Phone Number *
+                    رقم الهاتف *
                   </label>
                   <input
                     type="tel"
@@ -569,17 +599,17 @@ export default function VendorRegistrationPage() {
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
                     <MessageCircle className="w-4 h-4" />
-                    WhatsApp Number
+                    رقم الواتساب
                   </label>
                   <input
                     type="tel"
                     value={formData.whatsapp_number}
                     onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
-                    placeholder="+222 XX XX XX XX (optional)"
+                    placeholder="+222 XX XX XX XX (اختياري)"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Provide WhatsApp number if different from phone number
+                    قدم رقم الواتساب إذا كان مختلفاً عن رقم الهاتف
                   </p>
                 </div>
               </div>
@@ -589,7 +619,7 @@ export default function VendorRegistrationPage() {
                 onClick={() => setStep(2)}
                 className="w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold rounded-xl transition-all"
               >
-                Next: Location
+                التالي: الموقع
               </button>
             </div>
           )}
@@ -599,23 +629,23 @@ export default function VendorRegistrationPage() {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
                 <MapPin className="w-6 h-6" />
-                Location
+                الموقع
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Region
+                    المنطقة
                   </label>
                   <select
                     value={formData.region_id}
                     onChange={(e) => setFormData({ ...formData, region_id: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
                   >
-                    <option value="">Select a region</option>
+                    <option value="">اختر منطقة</option>
                     {regions.map(region => (
                       <option key={region.id} value={region.id}>
-                        {region.name}
+                        {region.name_ar || region.name}
                       </option>
                     ))}
                   </select>
@@ -623,7 +653,7 @@ export default function VendorRegistrationPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    City
+                    المدينة
                   </label>
                   <select
                     value={formData.city_id}
@@ -631,29 +661,29 @@ export default function VendorRegistrationPage() {
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors disabled:opacity-50"
                     disabled={!formData.region_id}
                   >
-                    <option value="">Select a city</option>
+                    <option value="">اختر مدينة</option>
                     {filteredCities.map(city => (
                       <option key={city.id} value={city.id}>
-                        {city.name}
+                        {city.name_ar || city.name}
                       </option>
                     ))}
                   </select>
                   {!formData.region_id && (
-                    <p className="text-xs text-gray-500 mt-1">Select a region first</p>
+                    <p className="text-xs text-gray-500 mt-1">اختر منطقة أولاً</p>
                   )}
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Address
+                  العنوان
                 </label>
                 <input
                   type="text"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
-                  placeholder="Street address"
+                  placeholder="عنوان الشارع"
                 />
               </div>
 
@@ -663,14 +693,14 @@ export default function VendorRegistrationPage() {
                   onClick={() => setStep(1)}
                   className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors"
                 >
-                  Back
+                  السابق
                 </button>
                 <button
                   type="button"
                   onClick={() => setStep(3)}
                   className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold rounded-xl transition-all"
                 >
-                  Next: Documents
+                  التالي: المستندات
                 </button>
               </div>
             </div>
@@ -681,7 +711,7 @@ export default function VendorRegistrationPage() {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
                 <Upload className="w-6 h-6" />
-                Upload Documents
+                تحميل المستندات
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -689,7 +719,7 @@ export default function VendorRegistrationPage() {
                 <div className="bg-gray-800/30 rounded-xl p-6">
                   <label className="block text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
                     <Shield className="w-4 h-4" />
-                    National ID (NNI) *
+                    البطاقة الوطنية (NNI) *
                   </label>
                   {formData.nni_image_url ? (
                     <div className="space-y-3">
@@ -699,26 +729,36 @@ export default function VendorRegistrationPage() {
                         onClick={() => setFormData({ ...formData, nni_image_url: '' })}
                         className="w-full py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg transition-colors text-sm"
                       >
-                        Remove
+                        إزالة
                       </button>
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
-                      <Upload className="w-8 h-8 text-gray-500 mb-2" />
-                      <span className="text-sm text-gray-400">
-                        {uploading.nni ? 'Uploading...' : 'Click to upload'}
-                      </span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0]
-                          if (file) handleImageUpload(file, 'nni')
-                        }}
-                        className="hidden"
-                        disabled={uploading.nni}
-                      />
-                    </label>
+                    <div>
+                      <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                        <Upload className="w-8 h-8 text-gray-500 mb-2" />
+                        <span className="text-sm text-gray-400">
+                          {uploading.nni ? `جاري التحميل... ${uploadProgress.nni}%` : 'انقر للتحميل'}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handleImageUpload(file, 'nni')
+                          }}
+                          className="hidden"
+                          disabled={uploading.nni}
+                        />
+                      </label>
+                      {uploading.nni && (
+                        <div className="mt-2 bg-gray-700 rounded-full h-2 overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-full transition-all duration-300"
+                            style={{ width: `${uploadProgress.nni}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
 
@@ -726,7 +766,7 @@ export default function VendorRegistrationPage() {
                 <div className="bg-gray-800/30 rounded-xl p-6">
                   <label className="block text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
                     <User className="w-4 h-4" />
-                    Personal Photo *
+                    الصورة الشخصية *
                   </label>
                   {formData.personal_image_url ? (
                     <div className="space-y-3">
@@ -736,26 +776,36 @@ export default function VendorRegistrationPage() {
                         onClick={() => setFormData({ ...formData, personal_image_url: '' })}
                         className="w-full py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg transition-colors text-sm"
                       >
-                        Remove
+                        إزالة
                       </button>
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
-                      <Upload className="w-8 h-8 text-gray-500 mb-2" />
-                      <span className="text-sm text-gray-400">
-                        {uploading.personal ? 'Uploading...' : 'Click to upload'}
-                      </span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0]
-                          if (file) handleImageUpload(file, 'personal')
-                        }}
-                        className="hidden"
-                        disabled={uploading.personal}
-                      />
-                    </label>
+                    <div>
+                      <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                        <Upload className="w-8 h-8 text-gray-500 mb-2" />
+                        <span className="text-sm text-gray-400">
+                          {uploading.personal ? `جاري التحميل... ${uploadProgress.personal}%` : 'انقر للتحميل'}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handleImageUpload(file, 'personal')
+                          }}
+                          className="hidden"
+                          disabled={uploading.personal}
+                        />
+                      </label>
+                      {uploading.personal && (
+                        <div className="mt-2 bg-gray-700 rounded-full h-2 overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-full transition-all duration-300"
+                            style={{ width: `${uploadProgress.personal}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
 
@@ -763,7 +813,7 @@ export default function VendorRegistrationPage() {
                 <div className="bg-gray-800/30 rounded-xl p-6 md:col-span-2">
                   <label className="block text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
                     <Building2 className="w-4 h-4" />
-                    Store Photo *
+                    صورة المتجر *
                   </label>
                   {formData.store_image_url ? (
                     <div className="space-y-3">
@@ -773,26 +823,36 @@ export default function VendorRegistrationPage() {
                         onClick={() => setFormData({ ...formData, store_image_url: '' })}
                         className="w-full py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg transition-colors text-sm"
                       >
-                        Remove
+                        إزالة
                       </button>
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
-                      <Upload className="w-12 h-12 text-gray-500 mb-2" />
-                      <span className="text-sm text-gray-400">
-                        {uploading.store ? 'Uploading...' : 'Click to upload store image'}
-                      </span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0]
-                          if (file) handleImageUpload(file, 'store')
-                        }}
-                        className="hidden"
-                        disabled={uploading.store}
-                      />
-                    </label>
+                    <div>
+                      <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                        <Upload className="w-12 h-12 text-gray-500 mb-2" />
+                        <span className="text-sm text-gray-400">
+                          {uploading.store ? `جاري التحميل... ${uploadProgress.store}%` : 'انقر لتحميل صورة المتجر'}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handleImageUpload(file, 'store')
+                          }}
+                          className="hidden"
+                          disabled={uploading.store}
+                        />
+                      </label>
+                      {uploading.store && (
+                        <div className="mt-2 bg-gray-700 rounded-full h-2 overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-full transition-all duration-300"
+                            style={{ width: `${uploadProgress.store}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -803,7 +863,7 @@ export default function VendorRegistrationPage() {
                   onClick={() => setStep(2)}
                   className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors"
                 >
-                  Back
+                  السابق
                 </button>
                 <button
                   type="button"
@@ -811,7 +871,7 @@ export default function VendorRegistrationPage() {
                   disabled={!formData.nni_image_url || !formData.personal_image_url || !formData.store_image_url}
                   className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next: Payment
+                  التالي: الدفع
                 </button>
               </div>
             </div>
@@ -822,7 +882,7 @@ export default function VendorRegistrationPage() {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2 mb-6">
                 <CreditCard className="w-6 h-6" />
-                Select Plan & Payment
+                اختيار الخطة والدفع
               </h2>
 
               {/* Pricing Plans */}
@@ -844,7 +904,7 @@ export default function VendorRegistrationPage() {
                       </div>
                     )}
                     <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
-                    <p className="text-3xl font-bold text-yellow-400 mb-2">{plan.price} MRU</p>
+                    <p className="text-3xl font-bold text-yellow-400 mb-2">{plan.price} أوقية</p>
                     <p className="text-gray-400 text-sm mb-4">{plan.duration}</p>
                     <ul className="space-y-2">
                       {plan.features.map((feature, i) => (
@@ -861,10 +921,10 @@ export default function VendorRegistrationPage() {
               {/* Payment Screenshot */}
               <div className="bg-gray-800/30 rounded-xl p-6">
                 <label className="block text-sm font-medium text-gray-300 mb-3">
-                  Upload Payment Screenshot *
+                  تحميل لقطة شاشة الدفع *
                 </label>
                 <p className="text-sm text-gray-400 mb-4">
-                  Please make payment to the account details provided and upload the screenshot here.
+                  يرجى إجراء الدفع إلى تفاصيل الحساب المقدمة وتحميل لقطة الشاشة هنا.
                 </p>
                 {formData.payment_screenshot_url ? (
                   <div className="space-y-3">
@@ -874,26 +934,36 @@ export default function VendorRegistrationPage() {
                       onClick={() => setFormData({ ...formData, payment_screenshot_url: '' })}
                       className="w-full py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg transition-colors text-sm"
                     >
-                      Remove
+                      إزالة
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
-                    <Upload className="w-12 h-12 text-gray-500 mb-2" />
-                    <span className="text-sm text-gray-400">
-                      {uploading.payment ? 'Uploading...' : 'Click to upload payment screenshot'}
-                    </span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) handleImageUpload(file, 'payment')
-                      }}
-                      className="hidden"
-                      disabled={uploading.payment}
-                    />
-                  </label>
+                  <div>
+                    <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                      <Upload className="w-12 h-12 text-gray-500 mb-2" />
+                      <span className="text-sm text-gray-400">
+                        {uploading.payment ? `جاري التحميل... ${uploadProgress.payment}%` : 'انقر لتحميل لقطة شاشة الدفع'}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) handleImageUpload(file, 'payment')
+                        }}
+                        className="hidden"
+                        disabled={uploading.payment}
+                      />
+                    </label>
+                    {uploading.payment && (
+                      <div className="mt-2 bg-gray-700 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-full transition-all duration-300"
+                          style={{ width: `${uploadProgress.payment}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
 
@@ -903,14 +973,14 @@ export default function VendorRegistrationPage() {
                   onClick={() => setStep(3)}
                   className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors"
                 >
-                  Back
+                  السابق
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !formData.payment_screenshot_url}
                   className="flex-1 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submitting ? 'Submitting...' : 'Submit Application'}
+                  {submitting ? 'جاري الإرسال...' : 'إرسال الطلب'}
                 </button>
               </div>
             </div>

@@ -15,9 +15,9 @@ export default function ModernHero() {
   }
 
   const stats = [
-    { icon: <FiShoppingBag />, value: '10K+', label: 'Products' },
-    { icon: <FiTrendingUp />, value: '5K+', label: 'Vendors' },
-    { icon: <FiPackage />, value: '50K+', label: 'Orders' },
+    { icon: <FiShoppingBag />, value: '10K+', label: 'منتج' },
+    { icon: <FiTrendingUp />, value: '5K+', label: 'بائع' },
+    { icon: <FiPackage />, value: '50K+', label: 'طلب' },
   ]
 
   return (
@@ -59,7 +59,7 @@ export default function ModernHero() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 text-white mb-8"
           >
             <HiSparkles className="w-5 h-5 text-yellow-300" />
-            <span className="text-sm font-semibold">Welcome to the Future of Shopping</span>
+            <span className="text-sm font-semibold">مرحباً بك في مستقبل التسوق</span>
           </motion.div>
 
           {/* Main Heading */}
@@ -69,10 +69,10 @@ export default function ModernHero() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight"
           >
-            Discover Amazing
+            اكتشف منتجات رائعة
             <br />
             <span className="bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
-              Local Products
+              محلية
             </span>
           </motion.h1>
 
@@ -83,8 +83,8 @@ export default function ModernHero() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-lg sm:text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed"
           >
-            Buy directly from local vendors in Mauritania.
-            Earn exclusive referral commissions when you sell.
+            اشتر مباشرة من البائعين المحليين في موريتانيا.
+            احصل على عمولات إحالة حصرية عند البيع.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -104,7 +104,7 @@ export default function ModernHero() {
               >
                 <span className="relative z-10 flex items-center gap-2">
                   <FiShoppingBag className="w-5 h-5" />
-                  Browse Products
+                  تصفح المنتجات
                 </span>
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -125,7 +125,7 @@ export default function ModernHero() {
                 className="px-8 py-4 bg-white/10 backdrop-blur-xl border-2 border-white/30 text-white rounded-2xl font-bold text-lg hover:bg-white/20 transition-all duration-300 flex items-center gap-2"
               >
                 <HiSparkles className="w-5 h-5" />
-                Become a Vendor
+                كن بائعاً
               </Link>
             </motion.div>
           </motion.div>

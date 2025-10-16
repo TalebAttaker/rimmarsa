@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cairo } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const cairo = Cairo({
+  variable: "--font-cairo",
+  subsets: ["latin", "arabic"],
+  weight: ["400", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Rimmarsa - Multi-Vendor Marketplace",
-  description: "Buy and sell products directly from local vendors in Mauritania. Join our marketplace with exclusive referral benefits.",
+  title: "ريمارسا - سوق متعدد البائعين",
+  description: "اشترِ وبع المنتجات مباشرة من البائعين المحليين في موريتانيا. انضم إلى سوقنا مع مزايا الإحالة الحصرية.",
 };
 
 export default function RootLayout({
@@ -23,9 +19,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ar" dir="rtl">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${cairo.variable} antialiased font-cairo`}
       >
         {children}
       </body>
