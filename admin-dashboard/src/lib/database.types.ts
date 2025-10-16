@@ -12,69 +12,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      admins: {
+      vendor_requests: {
         Row: {
+          address: string | null
+          business_name: string
+          city_id: string | null
           created_at: string | null
-          email: string
+          email: string | null
           id: string
-          name: string
-          password_hash: string
-          role: string | null
+          nni_image_url: string
+          owner_name: string
+          package_plan: string
+          package_price: number
+          password: string | null
+          payment_screenshot_url: string
+          personal_image_url: string
+          phone: string
+          region_id: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          store_image_url: string
           updated_at: string | null
+          vendor_id: string | null
+          whatsapp_number: string | null
         }
         Insert: {
+          address?: string | null
+          business_name: string
+          city_id?: string | null
           created_at?: string | null
-          email: string
+          email?: string | null
           id?: string
-          name: string
-          password_hash: string
-          role?: string | null
+          nni_image_url: string
+          owner_name: string
+          package_plan: string
+          package_price: number
+          password?: string | null
+          payment_screenshot_url: string
+          personal_image_url: string
+          phone: string
+          region_id?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          store_image_url: string
           updated_at?: string | null
+          vendor_id?: string | null
+          whatsapp_number?: string | null
         }
         Update: {
+          address?: string | null
+          business_name?: string
+          city_id?: string | null
           created_at?: string | null
-          email?: string
+          email?: string | null
           id?: string
-          name?: string
-          password_hash?: string
-          role?: string | null
+          nni_image_url?: string
+          owner_name?: string
+          package_plan?: string
+          package_price?: number
+          password?: string | null
+          payment_screenshot_url?: string
+          personal_image_url?: string
+          phone?: string
+          region_id?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          store_image_url?: string
           updated_at?: string | null
-        }
-        Relationships: []
-      }
-      cities: {
-        Row: {
-          created_at: string | null
-          id: string
-          is_active: boolean | null
-          name: string
-          name_ar: string
-          order_index: number | null
-          region: string | null
-          region_ar: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          name: string
-          name_ar: string
-          order_index?: number | null
-          region?: string | null
-          region_ar?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          name?: string
-          name_ar?: string
-          order_index?: number | null
-          region?: string | null
-          region_ar?: string | null
-          updated_at?: string | null
+          vendor_id?: string | null
+          whatsapp_number?: string | null
         }
         Relationships: []
       }
@@ -83,7 +95,6 @@ export type Database = {
           address: string | null
           business_name: string
           city: string | null
-          commission_rate: number | null
           created_at: string | null
           email: string
           id: string
@@ -101,7 +112,6 @@ export type Database = {
           address?: string | null
           business_name: string
           city?: string | null
-          commission_rate?: number | null
           created_at?: string | null
           email: string
           id?: string
@@ -119,7 +129,6 @@ export type Database = {
           address?: string | null
           business_name?: string
           city?: string | null
-          commission_rate?: number | null
           created_at?: string | null
           email?: string
           id?: string
@@ -135,36 +144,27 @@ export type Database = {
         }
         Relationships: []
       }
-      subscription_history: {
+      products: {
         Row: {
-          amount: number
-          created_at: string | null
-          end_date: string | null
           id: string
-          plan_type: string
-          start_date: string
-          status: string | null
+          name: string
+          price: number
           vendor_id: string
+          created_at: string | null
         }
         Insert: {
-          amount: number
-          created_at?: string | null
-          end_date?: string | null
           id?: string
-          plan_type: string
-          start_date: string
-          status?: string | null
+          name: string
+          price: number
           vendor_id: string
+          created_at?: string | null
         }
         Update: {
-          amount?: number
-          created_at?: string | null
-          end_date?: string | null
           id?: string
-          plan_type?: string
-          start_date?: string
-          status?: string | null
+          name?: string
+          price?: number
           vendor_id?: string
+          created_at?: string | null
         }
         Relationships: []
       }
