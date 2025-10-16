@@ -100,8 +100,11 @@ export default function VendorRegistrationPage() {
   })
 
   useEffect(() => {
-    fetchData()
-    checkInitialEmail()
+    const initialize = async () => {
+      await fetchData()
+      checkInitialEmail()
+    }
+    initialize()
   }, [])
 
   useEffect(() => {
@@ -151,22 +154,36 @@ export default function VendorRegistrationPage() {
     try {
       const supabase = createClient()
 
-      const { data: regionsData } = await supabase
+      const { data: regionsData, error: regionsError } = await supabase
         .from('regions')
         .select('*')
         .eq('is_active', true)
         .order('name')
 
-      const { data: citiesData } = await supabase
+      if (regionsError) {
+        console.error('Error fetching regions:', regionsError)
+        toast.error('Failed to load regions')
+      }
+
+      const { data: citiesData, error: citiesError } = await supabase
         .from('cities')
         .select('*')
         .eq('is_active', true)
         .order('name')
 
+      if (citiesError) {
+        console.error('Error fetching cities:', citiesError)
+        toast.error('Failed to load cities')
+      }
+
       setRegions(regionsData || [])
       setCities(citiesData || [])
+
+      console.log('Loaded regions:', regionsData?.length || 0)
+      console.log('Loaded cities:', citiesData?.length || 0)
     } catch (error) {
       console.error('Error fetching data:', error)
+      toast.error('Failed to load location data')
     }
   }
 
