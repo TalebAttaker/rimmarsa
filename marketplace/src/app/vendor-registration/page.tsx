@@ -14,7 +14,10 @@ import {
   Shield,
   Building2,
   Phone,
-  Mail
+  Mail,
+  Clock,
+  AlertCircle,
+  MessageCircle
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 import Link from 'next/link'
@@ -30,6 +33,18 @@ interface City {
   name: string
   name_ar: string
   region_id: string
+}
+
+interface PendingRequest {
+  id: string
+  business_name: string
+  email: string
+  phone: string
+  whatsapp_number: string | null
+  status: string
+  package_plan: string
+  package_price: number
+  created_at: string
 }
 
 const PRICING_PLANS = [
@@ -57,12 +72,16 @@ export default function VendorRegistrationPage() {
   const [filteredCities, setFilteredCities] = useState<City[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [pendingRequest, setPendingRequest] = useState<PendingRequest | null>(null)
+  const [emailToCheck, setEmailToCheck] = useState('')
 
   const [formData, setFormData] = useState({
     business_name: '',
     owner_name: '',
     email: '',
     phone: '',
+    whatsapp_number: '',
     region_id: '',
     city_id: '',
     address: '',
@@ -82,6 +101,7 @@ export default function VendorRegistrationPage() {
 
   useEffect(() => {
     fetchData()
+    checkInitialEmail()
   }, [])
 
   useEffect(() => {
@@ -95,6 +115,37 @@ export default function VendorRegistrationPage() {
       setFilteredCities([])
     }
   }, [formData.region_id, cities, formData.city_id])
+
+  const checkInitialEmail = () => {
+    // Check if there's an email in localStorage from previous attempt
+    const storedEmail = localStorage.getItem('vendor_registration_email')
+    if (storedEmail) {
+      setEmailToCheck(storedEmail)
+      checkExistingRequest(storedEmail)
+    } else {
+      setLoading(false)
+    }
+  }
+
+  const checkExistingRequest = async (email: string) => {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('vendor_requests')
+        .select('*')
+        .eq('email', email)
+        .eq('status', 'pending')
+        .single()
+
+      if (data && !error) {
+        setPendingRequest(data)
+      }
+    } catch (error) {
+      console.error('Error checking existing request:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const fetchData = async () => {
     try {
@@ -116,6 +167,27 @@ export default function VendorRegistrationPage() {
       setCities(citiesData || [])
     } catch (error) {
       console.error('Error fetching data:', error)
+    }
+  }
+
+  const handleEmailBlur = async () => {
+    if (formData.email) {
+      // Save email to localStorage
+      localStorage.setItem('vendor_registration_email', formData.email)
+
+      // Check for existing pending request
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('vendor_requests')
+        .select('*')
+        .eq('email', formData.email)
+        .eq('status', 'pending')
+        .single()
+
+      if (data && !error) {
+        setPendingRequest(data)
+        toast.error('You already have a pending registration request!')
+      }
     }
   }
 
@@ -171,6 +243,20 @@ export default function VendorRegistrationPage() {
     try {
       const supabase = createClient()
 
+      // Check again for duplicate request
+      const { data: existingData } = await supabase
+        .from('vendor_requests')
+        .select('id')
+        .eq('email', formData.email)
+        .eq('status', 'pending')
+        .single()
+
+      if (existingData) {
+        toast.error('You already have a pending registration request!')
+        setSubmitting(false)
+        return
+      }
+
       const selectedPlan = PRICING_PLANS.find(p => p.id === formData.package_plan)
 
       const { error } = await supabase
@@ -180,6 +266,7 @@ export default function VendorRegistrationPage() {
           owner_name: formData.owner_name,
           email: formData.email,
           phone: formData.phone,
+          whatsapp_number: formData.whatsapp_number || null,
           region_id: formData.region_id || null,
           city_id: formData.city_id || null,
           address: formData.address || null,
@@ -195,6 +282,7 @@ export default function VendorRegistrationPage() {
       if (error) throw error
 
       setSuccess(true)
+      localStorage.setItem('vendor_registration_email', formData.email)
       toast.success('Application submitted successfully!')
     } catch (error: unknown) {
       console.error('Error submitting application:', error)
@@ -207,6 +295,97 @@ export default function VendorRegistrationPage() {
 
   const selectedPlan = PRICING_PLANS.find(p => p.id === formData.package_plan)
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Pending request status page
+  if (pendingRequest) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-4">
+        <Toaster position="top-right" />
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="max-w-md w-full bg-gray-900 border border-yellow-500/20 rounded-2xl p-8"
+        >
+          <div className="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Clock className="w-12 h-12 text-yellow-400" />
+          </div>
+
+          <h2 className="text-3xl font-bold text-yellow-400 text-center mb-4">Request Pending</h2>
+
+          <div className="bg-gray-800/50 rounded-xl p-6 mb-6 space-y-3">
+            <div className="flex items-center gap-2 text-gray-300">
+              <AlertCircle className="w-5 h-5 text-yellow-400" />
+              <p className="text-sm">You already have a pending registration request.</p>
+            </div>
+
+            <div className="border-t border-gray-700 pt-3 space-y-2">
+              <p className="text-sm text-gray-400">
+                <span className="font-semibold text-white">Business:</span> {pendingRequest.business_name}
+              </p>
+              <p className="text-sm text-gray-400">
+                <span className="font-semibold text-white">Email:</span> {pendingRequest.email}
+              </p>
+              <p className="text-sm text-gray-400">
+                <span className="font-semibold text-white">Phone:</span> {pendingRequest.phone}
+              </p>
+              {pendingRequest.whatsapp_number && (
+                <p className="text-sm text-gray-400">
+                  <span className="font-semibold text-white">WhatsApp:</span> {pendingRequest.whatsapp_number}
+                </p>
+              )}
+              <p className="text-sm text-gray-400">
+                <span className="font-semibold text-white">Plan:</span> {selectedPlan?.name} - {pendingRequest.package_price} MRU
+              </p>
+              <p className="text-sm text-gray-400">
+                <span className="font-semibold text-white">Submitted:</span> {new Date(pendingRequest.created_at).toLocaleDateString()}
+              </p>
+            </div>
+
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mt-4">
+              <p className="text-sm text-yellow-200 font-medium text-center">
+                Status: <span className="text-yellow-400 font-bold uppercase">{pendingRequest.status}</span>
+              </p>
+            </div>
+          </div>
+
+          <p className="text-sm text-gray-400 text-center mb-6">
+            Our admin team is reviewing your application. You will receive an email notification once your request is approved or if we need additional information.
+          </p>
+
+          <div className="space-y-3">
+            <button
+              onClick={() => {
+                setPendingRequest(null)
+                localStorage.removeItem('vendor_registration_email')
+              }}
+              className="w-full px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-all"
+            >
+              Register with Different Email
+            </button>
+            <Link
+              href="/"
+              className="block text-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-semibold rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition-all"
+            >
+              Back to Home
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    )
+  }
+
+  // Success page
   if (success) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-4">
@@ -244,6 +423,7 @@ export default function VendorRegistrationPage() {
     )
   }
 
+  // Registration form
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-12 px-4">
       <Toaster position="top-right" />
@@ -348,6 +528,7 @@ export default function VendorRegistrationPage() {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onBlur={handleEmailBlur}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
                     placeholder="your@email.com"
                   />
@@ -366,6 +547,23 @@ export default function VendorRegistrationPage() {
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
                     placeholder="+222 XX XX XX XX"
                   />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4" />
+                    WhatsApp Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={formData.whatsapp_number}
+                    onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    placeholder="+222 XX XX XX XX (optional)"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Provide WhatsApp number if different from phone number
+                  </p>
                 </div>
               </div>
 
@@ -413,7 +611,7 @@ export default function VendorRegistrationPage() {
                   <select
                     value={formData.city_id}
                     onChange={(e) => setFormData({ ...formData, city_id: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors disabled:opacity-50"
                     disabled={!formData.region_id}
                   >
                     <option value="">Select a city</option>
@@ -423,6 +621,9 @@ export default function VendorRegistrationPage() {
                       </option>
                     ))}
                   </select>
+                  {!formData.region_id && (
+                    <p className="text-xs text-gray-500 mt-1">Select a region first</p>
+                  )}
                 </div>
               </div>
 
@@ -542,14 +743,14 @@ export default function VendorRegistrationPage() {
                 </div>
 
                 {/* Store Image */}
-                <div className="bg-gray-800/30 rounded-xl p-6">
+                <div className="bg-gray-800/30 rounded-xl p-6 md:col-span-2">
                   <label className="block text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
                     <Building2 className="w-4 h-4" />
                     Store Photo *
                   </label>
                   {formData.store_image_url ? (
                     <div className="space-y-3">
-                      <img src={formData.store_image_url} alt="Store" className="w-full h-32 object-cover rounded-lg" />
+                      <img src={formData.store_image_url} alt="Store" className="w-full h-48 object-cover rounded-lg" />
                       <button
                         type="button"
                         onClick={() => setFormData({ ...formData, store_image_url: '' })}
@@ -559,10 +760,10 @@ export default function VendorRegistrationPage() {
                       </button>
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
-                      <Upload className="w-8 h-8 text-gray-500 mb-2" />
+                    <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-yellow-500 transition-colors">
+                      <Upload className="w-12 h-12 text-gray-500 mb-2" />
                       <span className="text-sm text-gray-400">
-                        {uploading.store ? 'Uploading...' : 'Click to upload'}
+                        {uploading.store ? 'Uploading...' : 'Click to upload store image'}
                       </span>
                       <input
                         type="file"

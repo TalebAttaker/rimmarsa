@@ -1,36 +1,28 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { Database } from '@/lib/database.types'
-import ProductFilters from '@/components/ProductFilters'
-import ProductGrid from '@/components/ProductGrid'
+import VendorFilters from '@/components/VendorFilters'
+import VendorGrid from '@/components/VendorGrid'
 import Link from 'next/link'
 
-type Product = Database['public']['Tables']['products']['Row']
+type Vendor = Database['public']['Tables']['vendors']['Row']
 type Category = Database['public']['Tables']['categories']['Row']
+type Region = Database['public']['Tables']['regions']['Row']
+type City = Database['public']['Tables']['cities']['Row']
 
 interface SearchParams {
-  category?: string
   region_id?: string
   city_id?: string
   search?: string
-  minPrice?: string
-  maxPrice?: string
 }
 
-export default async function ProductsPage({
+export default async function VendorsPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>
 }) {
   const params = await searchParams
   const supabase = await createClient()
-
-  // Fetch all categories for filter
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('is_active', true)
-    .order('order', { ascending: true })
 
   // Fetch all regions and cities for filters
   const { data: regions } = await supabase
@@ -47,44 +39,36 @@ export default async function ProductsPage({
 
   // Build query with filters
   let query = supabase
-    .from('products')
+    .from('vendors')
     .select('*, cities(name, name_ar), regions(name, name_ar)')
     .eq('is_active', true)
+    .eq('is_verified', true)
     .order('created_at', { ascending: false })
 
-  // Apply filters
-  if (params.category) {
-    query = query.eq('category_id', params.category)
-  }
-
+  // Apply region filter if provided
   if (params.region_id) {
     query = query.eq('region_id', params.region_id)
   }
 
+  // Apply city filter if provided
   if (params.city_id) {
     query = query.eq('city_id', params.city_id)
   }
 
+  // Apply search filter if provided
   if (params.search) {
     query = query.or(
-      `name.ilike.%${params.search}%,description.ilike.%${params.search}%`
+      `business_name.ilike.%${params.search}%,owner_name.ilike.%${params.search}%,description.ilike.%${params.search}%`
     )
   }
 
-  if (params.minPrice) {
-    query = query.gte('price', parseFloat(params.minPrice))
-  }
-
-  if (params.maxPrice) {
-    query = query.lte('price', parseFloat(params.maxPrice))
-  }
-
-  const { data: products, count } = await supabase
-    .from('products')
+  const { data: vendors, count } = await supabase
+    .from('vendors')
     .select('*', { count: 'exact' })
     .eq('is_active', true)
+    .eq('is_verified', true)
 
-  const { data: filteredProducts } = await query.limit(50)
+  const { data: filteredVendors } = await query.limit(50)
 
   return (
     <div className="min-h-screen">
@@ -112,9 +96,9 @@ export default async function ProductsPage({
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Browse Products</h1>
+          <h1 className="text-4xl font-bold mb-2">Browse Vendors</h1>
           <p className="text-gray-600">
-            Discover {count?.toLocaleString() || 0} products from local vendors
+            Discover {count?.toLocaleString() || 0} trusted vendors across Mauritania
           </p>
         </div>
 
@@ -122,8 +106,7 @@ export default async function ProductsPage({
           {/* Filters Sidebar */}
           <aside className="lg:col-span-1">
             <Suspense fallback={<div>Loading filters...</div>}>
-              <ProductFilters
-                categories={categories || []}
+              <VendorFilters
                 regions={regions || []}
                 cities={cities || []}
                 searchParams={params}
@@ -131,28 +114,27 @@ export default async function ProductsPage({
             </Suspense>
           </aside>
 
-          {/* Products Grid */}
+          {/* Vendors Grid */}
           <main className="lg:col-span-3">
             <div className="mb-4 flex items-center justify-between">
               <p className="text-sm text-gray-600">
-                Showing {filteredProducts?.length || 0} products
+                Showing {filteredVendors?.length || 0} vendors
               </p>
-              {/* Sort dropdown can go here */}
             </div>
 
-            <Suspense fallback={<div>Loading products...</div>}>
-              <ProductGrid products={filteredProducts || []} />
+            <Suspense fallback={<div>Loading vendors...</div>}>
+              <VendorGrid vendors={filteredVendors || []} />
             </Suspense>
 
-            {filteredProducts && filteredProducts.length === 0 && (
+            {filteredVendors && filteredVendors.length === 0 && (
               <div className="text-center py-20">
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-semibold mb-2">No products found</h3>
+                <div className="text-6xl mb-4">🏪</div>
+                <h3 className="text-xl font-semibold mb-2">No vendors found</h3>
                 <p className="text-gray-600 mb-4">
                   Try adjusting your filters or search query
                 </p>
                 <Link
-                  href="/products"
+                  href="/vendors"
                   className="text-blue-600 hover:underline font-semibold"
                 >
                   Clear all filters

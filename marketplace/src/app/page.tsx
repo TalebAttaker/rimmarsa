@@ -5,13 +5,19 @@ import ModernHero from "@/components/modern-hero"
 import ModernCategoryCard from "@/components/modern-category-card"
 import ModernProductCard from "@/components/modern-product-card"
 import ModernFooter from "@/components/modern-footer"
+import LocationFilter from "@/components/LocationFilter"
 import Link from "next/link"
 
 type Category = Database['public']['Tables']['categories']['Row']
 type Product = Database['public']['Tables']['products']['Row']
 
-export default async function HomePage() {
+interface HomePageProps {
+  searchParams: Promise<{ region_id?: string; city_id?: string }>
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
   const supabase = await createClient()
+  const params = await searchParams
 
   // Fetch active categories
   const { data: categories } = await supabase
@@ -21,11 +27,23 @@ export default async function HomePage() {
     .order('order', { ascending: true })
     .limit(8)
 
-  // Fetch recent products
-  const { data: products } = await supabase
+  // Build product query with optional location filters
+  let productsQuery = supabase
     .from('products')
-    .select('*')
+    .select('*, cities(name, name_ar), regions(name, name_ar)')
     .eq('is_active', true)
+
+  // Apply region filter if provided
+  if (params.region_id) {
+    productsQuery = productsQuery.eq('region_id', params.region_id)
+  }
+
+  // Apply city filter if provided
+  if (params.city_id) {
+    productsQuery = productsQuery.eq('city_id', params.city_id)
+  }
+
+  const { data: products } = await productsQuery
     .order('created_at', { ascending: false })
     .limit(12)
 
@@ -85,15 +103,21 @@ export default async function HomePage() {
             </p>
           </div>
 
+          {/* Location Filter */}
+          <div className="flex justify-center mb-8">
+            <LocationFilter />
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {products?.map((product: Product, index: number) => (
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {products?.map((product: any, index: number) => (
               <ModernProductCard
                 key={product.id}
                 id={product.id}
                 name={product.name}
                 description={product.description}
                 price={product.price}
-                city={product.city}
+                city={product.cities?.name || product.city_deprecated || null}
                 images={product.images}
                 index={index}
               />

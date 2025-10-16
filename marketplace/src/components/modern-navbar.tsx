@@ -21,6 +21,7 @@ export default function ModernNavbar() {
   const navLinks = [
     { href: '/products', label: 'Products', icon: <FiShoppingBag /> },
     { href: '/vendors', label: 'Vendors', icon: <HiSparkles /> },
+    { href: '/vendor-registration', label: 'Become a Vendor', icon: <FiUser />, highlight: true },
     { href: '/favorites', label: 'Favorites', icon: <FiHeart /> },
   ]
 
@@ -65,7 +66,11 @@ export default function ModernNavbar() {
                   <Link
                     href={link.href}
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
-                      isScrolled
+                      link.highlight
+                        ? isScrolled
+                          ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg hover:shadow-xl'
+                          : 'bg-white/20 text-white border border-white/30 hover:bg-white/30'
+                        : isScrolled
                         ? 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
                         : 'text-white hover:bg-white/20'
                     }`}
@@ -134,7 +139,11 @@ export default function ModernNavbar() {
                     <Link
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-4 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 font-medium"
+                      className={`flex items-center gap-3 px-4 py-4 rounded-xl transition-all duration-300 font-medium ${
+                        link.highlight
+                          ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg'
+                          : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                      }`}
                     >
                       {link.icon}
                       {link.label}

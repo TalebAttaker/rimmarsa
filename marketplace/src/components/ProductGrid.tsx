@@ -1,10 +1,8 @@
 import Link from 'next/link'
-import { Database } from '@/lib/database.types'
-
-type Product = Database['public']['Tables']['products']['Row']
 
 interface ProductGridProps {
-  products: Product[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  products: any[]
 }
 
 export default function ProductGrid({ products }: ProductGridProps) {
@@ -40,9 +38,11 @@ export default function ProductGrid({ products }: ProductGridProps) {
               <span className="text-blue-600 font-bold text-xl">
                 {product.price.toLocaleString()} MRU
               </span>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                📍 {product.city}
-              </span>
+              {(product.cities?.name || product.city_deprecated) && (
+                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                  📍 {product.cities?.name || product.city_deprecated}
+                </span>
+              )}
             </div>
           </div>
         </Link>

@@ -14,7 +14,7 @@ export default function ModernFooter() {
       { label: 'How it Works', href: '/how-it-works' },
     ],
     vendors: [
-      { label: 'Become a Vendor', href: '/become-vendor' },
+      { label: 'Become a Vendor', href: '/vendor-registration' },
       { label: 'Vendor Login', href: '/vendor/login' },
       { label: 'Referral Program', href: '/referral-program' },
       { label: 'Pricing', href: '/pricing' },
