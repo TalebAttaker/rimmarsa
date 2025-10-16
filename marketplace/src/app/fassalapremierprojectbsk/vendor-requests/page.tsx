@@ -19,7 +19,8 @@ import {
   CreditCard,
   Shield,
   User,
-  Building2
+  Building2,
+  ZoomIn
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -57,6 +58,7 @@ export default function VendorRequestsPage() {
   const [showRejectModal, setShowRejectModal] = useState(false)
   const [rejectionReason, setRejectionReason] = useState('')
   const [processing, setProcessing] = useState(false)
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null)
 
   useEffect(() => {
     // Check authentication
@@ -545,28 +547,56 @@ export default function VendorRequestsPage() {
                         <Shield className="w-4 h-4" />
                         البطاقة الوطنية
                       </p>
-                      <img src={selectedRequest.nni_image_url} alt="NNI" className="w-full h-48 object-cover rounded-lg" />
+                      <div className="relative group cursor-pointer" onClick={() => setZoomedImage(selectedRequest.nni_image_url)}>
+                        <img src={selectedRequest.nni_image_url} alt="NNI" className="w-full h-48 object-cover rounded-lg" />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center">
+                          <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-gray-800 p-3 rounded-full">
+                            <ZoomIn className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                     <div>
                       <p className="text-gray-400 text-sm mb-2 flex items-center gap-2">
                         <User className="w-4 h-4" />
                         الصورة الشخصية
                       </p>
-                      <img src={selectedRequest.personal_image_url} alt="Personal" className="w-full h-48 object-cover rounded-lg" />
+                      <div className="relative group cursor-pointer" onClick={() => setZoomedImage(selectedRequest.personal_image_url)}>
+                        <img src={selectedRequest.personal_image_url} alt="Personal" className="w-full h-48 object-cover rounded-lg" />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center">
+                          <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-gray-800 p-3 rounded-full">
+                            <ZoomIn className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                     <div>
                       <p className="text-gray-400 text-sm mb-2 flex items-center gap-2">
                         <Building2 className="w-4 h-4" />
                         صورة المتجر
                       </p>
-                      <img src={selectedRequest.store_image_url} alt="Store" className="w-full h-48 object-cover rounded-lg" />
+                      <div className="relative group cursor-pointer" onClick={() => setZoomedImage(selectedRequest.store_image_url)}>
+                        <img src={selectedRequest.store_image_url} alt="Store" className="w-full h-48 object-cover rounded-lg" />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center">
+                          <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-gray-800 p-3 rounded-full">
+                            <ZoomIn className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                     <div>
                       <p className="text-gray-400 text-sm mb-2 flex items-center gap-2">
                         <CreditCard className="w-4 h-4" />
                         إثبات الدفع
                       </p>
-                      <img src={selectedRequest.payment_screenshot_url} alt="Payment" className="w-full h-48 object-cover rounded-lg" />
+                      <div className="relative group cursor-pointer" onClick={() => setZoomedImage(selectedRequest.payment_screenshot_url)}>
+                        <img src={selectedRequest.payment_screenshot_url} alt="Payment" className="w-full h-48 object-cover rounded-lg" />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center">
+                          <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-gray-800 p-3 rounded-full">
+                            <ZoomIn className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -654,6 +684,32 @@ export default function VendorRequestsPage() {
                 </button>
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Image Zoom Modal */}
+      <AnimatePresence>
+        {zoomedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[60] p-4"
+            onClick={() => setZoomedImage(null)}
+          >
+            <button
+              onClick={() => setZoomedImage(null)}
+              className="absolute top-4 left-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img
+              src={zoomedImage}
+              alt="Zoomed"
+              className="max-w-full max-h-full object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
           </motion.div>
         )}
       </AnimatePresence>
