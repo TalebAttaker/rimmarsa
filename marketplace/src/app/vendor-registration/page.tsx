@@ -138,7 +138,7 @@ export default function VendorRegistrationPage() {
         .select('*')
         .eq('email', email)
         .eq('status', 'pending')
-        .single()
+        .maybeSingle()
 
       if (data && !error) {
         setPendingRequest(data)
@@ -199,7 +199,7 @@ export default function VendorRegistrationPage() {
         .select('*')
         .eq('email', formData.email)
         .eq('status', 'pending')
-        .single()
+        .maybeSingle()
 
       if (data && !error) {
         setPendingRequest(data)
@@ -266,7 +266,7 @@ export default function VendorRegistrationPage() {
         .select('id')
         .eq('email', formData.email)
         .eq('status', 'pending')
-        .single()
+        .maybeSingle()
 
       if (existingData) {
         toast.error('You already have a pending registration request!')
