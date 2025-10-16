@@ -131,63 +131,13 @@ export default function VendorRequestsPage() {
     try {
       const supabase = createClient()
 
-      // Calculate subscription dates
-      const startDate = new Date()
-      const monthsToAdd = request.package_plan === '2_months' ? 2 : 1
-      const endDate = new Date(startDate)
-      endDate.setMonth(endDate.getMonth() + monthsToAdd)
-
-      // Generate referral code
-      const referralCode = Math.random().toString(36).substring(2, 10).toUpperCase()
-
-      // Create vendor
-      const { data: vendor, error: vendorError } = await supabase
-        .from('vendors')
-        .insert([{
-          business_name: request.business_name,
-          owner_name: request.owner_name,
-          email: request.email,
-          phone: request.phone,
-          logo_url: request.store_image_url,
-          personal_picture_url: request.personal_image_url,
-          nni: null, // NNI image is stored, but we don't have the text value
-          region_id: request.region_id,
-          city_id: request.city_id,
-          address: request.address,
-          referral_code: referralCode,
-          is_verified: true, // Auto-verify approved vendors
-          is_active: true
-        }])
-        .select()
-        .single()
-
-      if (vendorError) throw vendorError
-
-      // Create subscription
-      const { error: subscriptionError } = await supabase
-        .from('subscription_history')
-        .insert([{
-          vendor_id: vendor.id,
-          plan_type: request.package_plan === '2_months' ? '2 Months' : '1 Month',
-          amount: request.package_price,
-          start_date: startDate.toISOString(),
-          end_date: endDate.toISOString(),
-          status: 'active'
-        }])
-
-      if (subscriptionError) throw subscriptionError
-
-      // Update request status
-      const { error: updateError } = await supabase
-        .from('vendor_requests')
-        .update({
-          status: 'approved',
-          reviewed_at: new Date().toISOString(),
-          vendor_id: vendor.id
+      // Call the database function to approve the vendor request
+      const { data, error } = await supabase
+        .rpc('approve_vendor_request', {
+          request_id: request.id
         })
-        .eq('id', request.id)
 
-      if (updateError) throw updateError
+      if (error) throw error
 
       toast.success(`Vendor approved! Account created for ${request.business_name}`)
       fetchRequests()
