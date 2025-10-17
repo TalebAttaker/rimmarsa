@@ -21,19 +21,6 @@ interface Category {
   name_ar: string
 }
 
-interface Region {
-  id: string
-  name: string
-  name_ar: string
-}
-
-interface City {
-  id: string
-  name: string
-  name_ar: string
-  region_id: string
-}
-
 const MAX_IMAGES = 6
 
 export default function AddProductPage() {
@@ -41,14 +28,13 @@ export default function AddProductPage() {
   const [loading, setLoading] = useState(false)
   const [uploadingImages, setUploadingImages] = useState(false)
   const [vendorId, setVendorId] = useState<string | null>(null)
+  const [vendorRegionId, setVendorRegionId] = useState<string | null>(null)
+  const [vendorCityId, setVendorCityId] = useState<string | null>(null)
 
-  // Categories, Regions, Cities
+  // Categories
   const [categories, setCategories] = useState<Category[]>([])
-  const [regions, setRegions] = useState<Region[]>([])
-  const [cities, setCities] = useState<City[]>([])
-  const [filteredCities, setFilteredCities] = useState<City[]>([])
 
-  // Form data
+  // Form data (removed region_id and city_id as they come from vendor)
   const [formData, setFormData] = useState({
     name: '',
     name_ar: '',
@@ -56,8 +42,6 @@ export default function AddProductPage() {
     price: '',
     compare_at_price: '',
     category_id: '',
-    region_id: '',
-    city_id: '',
     stock_quantity: '0',
     is_active: true
   })
@@ -75,32 +59,25 @@ export default function AddProductPage() {
 
     const vendor = JSON.parse(storedVendor)
     setVendorId(vendor.id)
-    fetchFormData()
+    fetchVendorAndFormData(vendor.id)
   }, [router])
 
-  useEffect(() => {
-    if (formData.region_id) {
-      const filtered = cities.filter(city => city.region_id === formData.region_id)
-      setFilteredCities(filtered)
-      setFormData(prev => ({ ...prev, city_id: '' }))
-    } else {
-      setFilteredCities([])
-    }
-  }, [formData.region_id, cities])
-
-  const fetchFormData = async () => {
+  const fetchVendorAndFormData = async (vendorId: string) => {
     try {
       const supabase = createClient()
 
-      const [categoriesRes, regionsRes, citiesRes] = await Promise.all([
-        supabase.from('categories').select('*').eq('is_active', true).order('order'),
-        supabase.from('regions').select('*').eq('is_active', true).order('name'),
-        supabase.from('cities').select('*').eq('is_active', true).order('name')
+      // Fetch vendor's region and city along with categories
+      const [vendorRes, categoriesRes] = await Promise.all([
+        supabase.from('vendors').select('region_id, city_id').eq('id', vendorId).single(),
+        supabase.from('categories').select('*').eq('is_active', true).order('order')
       ])
 
+      if (vendorRes.data) {
+        setVendorRegionId(vendorRes.data.region_id)
+        setVendorCityId(vendorRes.data.city_id)
+      }
+
       if (categoriesRes.data) setCategories(categoriesRes.data)
-      if (regionsRes.data) setRegions(regionsRes.data)
-      if (citiesRes.data) setCities(citiesRes.data)
     } catch (error) {
       console.error('Error fetching form data:', error)
       toast.error('فشل في تحميل البيانات')
@@ -206,6 +183,7 @@ export default function AddProductPage() {
       const imageUrls = await uploadImages()
 
       // Create product using secure RPC function
+      // Use vendor's region_id and city_id automatically
       const supabase = createClient()
       const { data: productId, error } = await supabase.rpc('vendor_insert_product', {
         p_vendor_id: vendorId,
@@ -215,8 +193,8 @@ export default function AddProductPage() {
         p_price: parseFloat(formData.price),
         p_compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : null,
         p_category_id: formData.category_id,
-        p_region_id: formData.region_id || null,
-        p_city_id: formData.city_id || null,
+        p_region_id: vendorRegionId,
+        p_city_id: vendorCityId,
         p_stock_quantity: parseInt(formData.stock_quantity) || 0,
         p_is_active: formData.is_active,
         p_images: imageUrls
@@ -411,7 +389,7 @@ export default function AddProductPage() {
                 </select>
               </div>
 
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-gray-300 text-sm font-medium mb-2">
                   الكمية المتوفرة
                 </label>
@@ -422,39 +400,6 @@ export default function AddProductPage() {
                   className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500 transition-colors"
                   placeholder="0"
                 />
-              </div>
-
-              <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">
-                  المنطقة
-                </label>
-                <select
-                  value={formData.region_id}
-                  onChange={(e) => setFormData({ ...formData, region_id: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
-                >
-                  <option value="">اختر المنطقة</option>
-                  {regions.map(region => (
-                    <option key={region.id} value={region.id}>{region.name_ar}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">
-                  المدينة
-                </label>
-                <select
-                  value={formData.city_id}
-                  onChange={(e) => setFormData({ ...formData, city_id: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-colors"
-                  disabled={!formData.region_id}
-                >
-                  <option value="">اختر المدينة</option>
-                  {filteredCities.map(city => (
-                    <option key={city.id} value={city.id}>{city.name_ar}</option>
-                  ))}
-                </select>
               </div>
 
               <div className="md:col-span-2">
