@@ -80,8 +80,10 @@ export default function VendorRegistrationPage() {
     business_name: '',
     owner_name: '',
     phone: '',
+    phoneDigits: '',
     password: '',
     whatsapp_number: '',
+    whatsappDigits: '',
     region_id: '',
     city_id: '',
     address: '',
@@ -217,16 +219,20 @@ export default function VendorRegistrationPage() {
   }
 
   const handlePhoneBlur = async () => {
-    if (formData.phone) {
+    if (formData.phoneDigits && formData.phoneDigits.length === 8) {
+      const fullPhone = `+222${formData.phoneDigits}`
       // Save phone to localStorage
-      localStorage.setItem('vendor_registration_phone', formData.phone)
+      localStorage.setItem('vendor_registration_phone', fullPhone)
+
+      // Update form data with full phone
+      setFormData(prev => ({ ...prev, phone: fullPhone }))
 
       // Check for existing pending request
       const supabase = createClient()
       const { data, error } = await supabase
         .from('vendor_requests')
         .select('*')
-        .eq('phone', formData.phone)
+        .eq('phone', fullPhone)
         .eq('status', 'pending')
         .maybeSingle()
 
@@ -310,6 +316,16 @@ export default function VendorRegistrationPage() {
     e.preventDefault()
 
     // Validation
+    if (!formData.phoneDigits || formData.phoneDigits.length !== 8) {
+      toast.error('يرجى إدخال رقم هاتف صحيح (8 أرقام)')
+      return
+    }
+
+    if (!formData.whatsappDigits || formData.whatsappDigits.length !== 8) {
+      toast.error('يرجى إدخال رقم واتساب صحيح (8 أرقام)')
+      return
+    }
+
     if (!formData.nni_image_url || !formData.personal_image_url ||
         !formData.store_image_url || !formData.payment_screenshot_url) {
       toast.error('يرجى تحميل جميع الصور المطلوبة')
@@ -326,11 +342,15 @@ export default function VendorRegistrationPage() {
     try {
       const supabase = createClient()
 
+      // Build full phone numbers
+      const fullPhone = `+222${formData.phoneDigits}`
+      const fullWhatsapp = `+222${formData.whatsappDigits}`
+
       // Check again for duplicate request using phone
       const { data: existingData } = await supabase
         .from('vendor_requests')
         .select('id')
-        .eq('phone', formData.phone)
+        .eq('phone', fullPhone)
         .eq('status', 'pending')
         .maybeSingle()
 
@@ -343,7 +363,7 @@ export default function VendorRegistrationPage() {
       const selectedPlan = PRICING_PLANS.find(p => p.id === formData.package_plan)
 
       // Generate email from phone: remove +, spaces, and add @rimmarsa.com
-      const cleanPhone = formData.phone.replace(/[\s+\-()]/g, '')
+      const cleanPhone = fullPhone.replace(/[\s+\-()]/g, '')
       const generatedEmail = `${cleanPhone}@rimmarsa.com`
 
       const { error } = await supabase
@@ -352,9 +372,9 @@ export default function VendorRegistrationPage() {
           business_name: formData.business_name,
           owner_name: formData.owner_name,
           email: generatedEmail,
-          phone: formData.phone,
+          phone: fullPhone,
           password: formData.password, // Will be hashed by admin when creating account
-          whatsapp_number: formData.whatsapp_number,
+          whatsapp_number: fullWhatsapp,
           region_id: formData.region_id || null,
           city_id: formData.city_id || null,
           address: formData.address || null,
@@ -370,7 +390,7 @@ export default function VendorRegistrationPage() {
       if (error) throw error
 
       setSuccess(true)
-      localStorage.setItem('vendor_registration_phone', formData.phone)
+      localStorage.setItem('vendor_registration_phone', fullPhone)
       toast.success('تم إرسال الطلب بنجاح!')
     } catch (error: unknown) {
       console.error('Error submitting application:', error)
@@ -491,7 +511,7 @@ export default function VendorRegistrationPage() {
           <div className="bg-gray-800/50 rounded-xl p-4 mb-6">
             <p className="text-sm text-gray-400 mb-2">تفاصيل الطلب:</p>
             <p className="text-white font-medium">{formData.business_name}</p>
-            <p className="text-gray-400 text-sm">{formData.phone}</p>
+            <p className="text-gray-400 text-sm">+222{formData.phoneDigits}</p>
             <p className="text-primary-400 font-semibold mt-2">
               {selectedPlan?.name} - {selectedPlan?.price} أوقية
             </p>
@@ -608,15 +628,23 @@ export default function VendorRegistrationPage() {
                     <Phone className="w-4 h-4" />
                     رقم الهاتف *
                   </label>
-                  <input
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    onBlur={handlePhoneBlur}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-primary-500 transition-colors"
-                    placeholder="+222 XX XX XX XX"
-                  />
+                  <div className="flex items-center w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus-within:border-primary-500 transition-colors" dir="ltr">
+                    <span className="text-gray-400 font-medium">+222</span>
+                    <input
+                      type="tel"
+                      required
+                      value={formData.phoneDigits}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 8)
+                        setFormData({ ...formData, phoneDigits: value })
+                      }}
+                      onBlur={handlePhoneBlur}
+                      maxLength={8}
+                      className="flex-1 ml-2 bg-transparent border-none text-white focus:outline-none"
+                      placeholder="XXXXXXXX"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">أدخل 8 أرقام فقط</p>
                 </div>
 
                 <div>
@@ -650,16 +678,23 @@ export default function VendorRegistrationPage() {
                     <MessageCircle className="w-4 h-4" />
                     رقم الواتساب *
                   </label>
-                  <input
-                    type="tel"
-                    required
-                    value={formData.whatsapp_number}
-                    onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-primary-500 transition-colors"
-                    placeholder="+222 XX XX XX XX"
-                  />
+                  <div className="flex items-center w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus-within:border-primary-500 transition-colors" dir="ltr">
+                    <span className="text-gray-400 font-medium">+222</span>
+                    <input
+                      type="tel"
+                      required
+                      value={formData.whatsappDigits}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 8)
+                        setFormData({ ...formData, whatsappDigits: value })
+                      }}
+                      maxLength={8}
+                      className="flex-1 ml-2 bg-transparent border-none text-white focus:outline-none"
+                      placeholder="XXXXXXXX"
+                    />
+                  </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    مطلوب للتواصل معك عند الموافقة على الطلب
+                    مطلوب للتواصل معك عند الموافقة على الطلب (أدخل 8 أرقام فقط)
                   </p>
                 </div>
               </div>

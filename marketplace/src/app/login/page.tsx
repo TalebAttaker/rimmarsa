@@ -10,7 +10,7 @@ import Link from 'next/link'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [phone, setPhone] = useState('')
+  const [phoneDigits, setPhoneDigits] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -18,8 +18,13 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!phone || !password) {
+    if (!phoneDigits || !password) {
       toast.error('الرجاء إدخال رقم الهاتف وكلمة المرور')
+      return
+    }
+
+    if (phoneDigits.length !== 8) {
+      toast.error('رقم الهاتف يجب أن يتكون من 8 أرقام')
       return
     }
 
@@ -28,8 +33,11 @@ export default function LoginPage() {
     try {
       const supabase = createClient()
 
+      // Full phone number with +222 prefix
+      const fullPhone = `+222${phoneDigits}`
+
       // Convert phone to generated email format: phone@rimmarsa.com
-      const cleanPhone = phone.replace(/[\s+\-()]/g, '')
+      const cleanPhone = fullPhone.replace(/[\s+\-()]/g, '')
       const generatedEmail = `${cleanPhone}@rimmarsa.com`
 
       // Try to authenticate with Supabase Auth first
@@ -46,7 +54,7 @@ export default function LoginPage() {
         const { data: vendorData, error: vendorError } = await supabase
           .from('vendors')
           .select('id, business_name, password_hash, is_active, is_approved')
-          .eq('phone', phone)
+          .eq('phone', fullPhone)
           .single()
 
         if (vendorError || !vendorData) {
@@ -63,7 +71,7 @@ export default function LoginPage() {
 
         // Verify password using RPC function
         const { data: passwordValid, error: verifyError } = await supabase.rpc('verify_vendor_password', {
-          vendor_phone: phone,
+          vendor_phone: fullPhone,
           password_attempt: password
         })
 
@@ -215,15 +223,22 @@ export default function LoginPage() {
                   </label>
                   <div className="relative group">
                     <Phone className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary-400 transition-colors" />
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+222 XX XX XX XX"
-                      className="w-full pr-12 pl-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-400/50 transition-all"
-                      dir="ltr"
-                    />
+                    <div className="flex items-center w-full pr-12 pl-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl focus-within:ring-2 focus-within:ring-primary-400/50 focus-within:border-primary-400/50 transition-all" dir="ltr">
+                      <span className="text-gray-300 font-medium">+222</span>
+                      <input
+                        type="tel"
+                        value={phoneDigits}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 8)
+                          setPhoneDigits(value)
+                        }}
+                        placeholder="XXXXXXXX"
+                        maxLength={8}
+                        className="flex-1 ml-1 bg-transparent border-none text-white placeholder-gray-400 focus:outline-none"
+                      />
+                    </div>
                   </div>
+                  <p className="text-xs text-gray-400 mt-1">أدخل 8 أرقام فقط</p>
                 </div>
 
                 {/* Password Input */}
