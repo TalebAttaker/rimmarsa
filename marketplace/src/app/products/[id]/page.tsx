@@ -190,10 +190,10 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">جاري التحميل...</p>
+          <div className="w-16 h-16 border-4 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-300">جاري التحميل...</p>
         </div>
       </div>
     )
@@ -206,7 +206,7 @@ export default function ProductDetailPage() {
   const images = product.images && product.images.length > 0 ? product.images : []
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <Toaster position="top-center" />
 
       {/* Lightbox */}
@@ -221,7 +221,7 @@ export default function ProductDetailPage() {
           >
             <button
               onClick={() => setLightboxOpen(false)}
-              className="absolute top-4 right-4 text-white hover:text-primary-400 transition-colors"
+              className="absolute top-4 right-4 text-white hover:text-yellow-400 transition-colors"
             >
               <X className="w-8 h-8" />
             </button>
@@ -231,7 +231,7 @@ export default function ProductDetailPage() {
                 e.stopPropagation()
                 prevImage()
               }}
-              className="absolute left-4 text-white hover:text-primary-400 transition-colors"
+              className="absolute left-4 text-white hover:text-yellow-400 transition-colors"
             >
               <ChevronLeft className="w-12 h-12" />
             </button>
@@ -251,7 +251,7 @@ export default function ProductDetailPage() {
                 e.stopPropagation()
                 nextImage()
               }}
-              className="absolute right-4 text-white hover:text-primary-400 transition-colors"
+              className="absolute right-4 text-white hover:text-yellow-400 transition-colors"
             >
               <ChevronRight className="w-12 h-12" />
             </button>
@@ -266,7 +266,7 @@ export default function ProductDetailPage() {
                   }}
                   className={`w-2 h-2 rounded-full transition-all ${
                     idx === selectedImageIndex
-                      ? 'bg-primary-500 w-8'
+                      ? 'bg-yellow-500 w-8'
                       : 'bg-white/50 hover:bg-white/75'
                   }`}
                 />
@@ -279,26 +279,26 @@ export default function ProductDetailPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-sm mb-8" dir="rtl">
-          <Link href="/" className="text-gray-600 hover:text-primary-600 transition-colors">
+          <Link href="/" className="text-gray-400 hover:text-yellow-400 transition-colors">
             الرئيسية
           </Link>
-          <ChevronLeft className="w-4 h-4 text-gray-400" />
-          <Link href="/products" className="text-gray-600 hover:text-primary-600 transition-colors">
+          <ChevronLeft className="w-4 h-4 text-gray-600" />
+          <Link href="/products" className="text-gray-400 hover:text-yellow-400 transition-colors">
             المنتجات
           </Link>
           {category && (
             <>
-              <ChevronLeft className="w-4 h-4 text-gray-400" />
+              <ChevronLeft className="w-4 h-4 text-gray-600" />
               <Link
                 href={`/products?category=${category.id}`}
-                className="text-gray-600 hover:text-primary-600 transition-colors"
+                className="text-gray-400 hover:text-yellow-400 transition-colors"
               >
                 {category.icon} {category.name_ar || category.name}
               </Link>
             </>
           )}
-          <ChevronLeft className="w-4 h-4 text-gray-400" />
-          <span className="text-gray-900 font-medium">{product.name}</span>
+          <ChevronLeft className="w-4 h-4 text-gray-600" />
+          <span className="text-white font-medium">{product.name}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
@@ -309,7 +309,7 @@ export default function ProductDetailPage() {
             transition={{ duration: 0.5 }}
           >
             {/* Main Image */}
-            <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl mb-4 group">
+            <div className="relative bg-gray-800/50 backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl shadow-yellow-500/10 border border-yellow-500/20 mb-4 group">
               {images.length > 0 ? (
                 <div
                   className="aspect-square cursor-zoom-in"
@@ -323,11 +323,11 @@ export default function ProductDetailPage() {
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               ) : (
-                <div className="aspect-square flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                  <Package className="w-32 h-32 text-gray-400" />
+                <div className="aspect-square flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800">
+                  <Package className="w-32 h-32 text-gray-600" />
                 </div>
               )}
 
@@ -336,13 +336,13 @@ export default function ProductDetailPage() {
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-all"
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-900/90 hover:bg-yellow-500/90 text-yellow-400 hover:text-black rounded-full p-2 shadow-lg shadow-yellow-500/20 opacity-0 group-hover:opacity-100 transition-all"
                   >
                     <ChevronLeft className="w-6 h-6" />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-all"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-900/90 hover:bg-yellow-500/90 text-yellow-400 hover:text-black rounded-full p-2 shadow-lg shadow-yellow-500/20 opacity-0 group-hover:opacity-100 transition-all"
                   >
                     <ChevronRight className="w-6 h-6" />
                   </button>
@@ -351,7 +351,7 @@ export default function ProductDetailPage() {
 
               {/* Image Counter */}
               {images.length > 1 && (
-                <div className="absolute bottom-4 right-4 bg-black/70 text-white text-sm px-3 py-1 rounded-full">
+                <div className="absolute bottom-4 right-4 bg-gray-900/80 backdrop-blur-xl border border-yellow-500/20 text-yellow-400 text-sm px-3 py-1 rounded-full">
                   {selectedImageIndex + 1} / {images.length}
                 </div>
               )}
@@ -368,8 +368,8 @@ export default function ProductDetailPage() {
                     onClick={() => setSelectedImageIndex(idx)}
                     className={`relative aspect-square rounded-xl overflow-hidden transition-all ${
                       idx === selectedImageIndex
-                        ? 'ring-4 ring-primary-500 shadow-lg'
-                        : 'ring-2 ring-gray-200 hover:ring-primary-300'
+                        ? 'ring-4 ring-yellow-500 shadow-lg shadow-yellow-500/50'
+                        : 'ring-2 ring-yellow-500/20 hover:ring-yellow-500/40'
                     }`}
                   >
                     <img
@@ -390,10 +390,10 @@ export default function ProductDetailPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             dir="rtl"
           >
-            <div className="bg-white rounded-3xl shadow-2xl p-8 sticky top-8">
+            <div className="bg-gray-800/50 backdrop-blur-xl rounded-3xl shadow-2xl shadow-yellow-500/10 border border-yellow-500/20 p-8 sticky top-8">
               {/* Title and Actions */}
               <div className="flex items-start justify-between mb-4">
-                <h1 className="text-3xl font-bold text-gray-900 flex-1">{product.name}</h1>
+                <h1 className="text-3xl font-bold text-white flex-1">{product.name}</h1>
                 <div className="flex gap-2">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -401,8 +401,8 @@ export default function ProductDetailPage() {
                     onClick={() => setIsFavorite(!isFavorite)}
                     className={`p-3 rounded-xl transition-all ${
                       isFavorite
-                        ? 'bg-red-50 text-red-500'
-                        : 'bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500'
+                        ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                        : 'bg-gray-900/50 text-gray-400 hover:bg-red-500/20 hover:text-red-400 border border-yellow-500/20 hover:border-red-500/30'
                     }`}
                   >
                     <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
@@ -411,7 +411,7 @@ export default function ProductDetailPage() {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={handleShare}
-                    className="p-3 rounded-xl bg-gray-50 text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all"
+                    className="p-3 rounded-xl bg-gray-900/50 text-gray-400 hover:bg-yellow-500/20 hover:text-yellow-400 transition-all border border-yellow-500/20"
                   >
                     <Share2 className="w-5 h-5" />
                   </motion.button>
@@ -419,27 +419,27 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Price */}
-              <div className="mb-6 pb-6 border-b border-gray-200">
+              <div className="mb-6 pb-6 border-b border-yellow-500/20">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
+                  <span className="text-5xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
                     {product.price.toLocaleString()}
                   </span>
-                  <span className="text-2xl text-gray-600">أوقية</span>
+                  <span className="text-2xl text-gray-300">أوقية</span>
                 </div>
               </div>
 
               {/* Meta Info */}
-              <div className="space-y-3 mb-6 pb-6 border-b border-gray-200">
+              <div className="space-y-3 mb-6 pb-6 border-b border-yellow-500/20">
                 {category && (
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-xl">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center text-xl shadow-lg shadow-yellow-500/50">
                       {category.icon}
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">الفئة</p>
+                      <p className="text-sm text-gray-400">الفئة</p>
                       <Link
                         href={`/products?category=${category.id}`}
-                        className="font-semibold text-primary-600 hover:text-primary-700"
+                        className="font-semibold text-yellow-400 hover:text-yellow-300"
                       >
                         {category.name_ar || category.name}
                       </Link>
@@ -449,12 +449,12 @@ export default function ProductDetailPage() {
 
                 {product.city_deprecated && (
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-secondary-50 flex items-center justify-center">
-                      <MapPin className="w-5 h-5 text-secondary-600" />
+                    <div className="w-10 h-10 rounded-xl bg-gray-900/50 border border-yellow-500/20 flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-yellow-400" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">الموقع</p>
-                      <p className="font-semibold text-gray-900">
+                      <p className="text-sm text-gray-400">الموقع</p>
+                      <p className="font-semibold text-white">
                         {product.city_deprecated}
                       </p>
                     </div>
@@ -462,23 +462,23 @@ export default function ProductDetailPage() {
                 )}
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
-                    <Eye className="w-5 h-5 text-gray-600" />
+                  <div className="w-10 h-10 rounded-xl bg-gray-900/50 border border-yellow-500/20 flex items-center justify-center">
+                    <Eye className="w-5 h-5 text-yellow-400" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">المشاهدات</p>
-                    <p className="font-semibold text-gray-900">{product.views_count?.toLocaleString() || 0}</p>
+                    <p className="text-sm text-gray-400">المشاهدات</p>
+                    <p className="font-semibold text-white">{product.views_count?.toLocaleString() || 0}</p>
                   </div>
                 </div>
               </div>
 
               {/* Description */}
               <div className="mb-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  <MessageCircle className="w-5 h-5 text-primary-600" />
+                <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                  <MessageCircle className="w-5 h-5 text-yellow-400" />
                   الوصف
                 </h2>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                <p className="text-gray-300 leading-relaxed whitespace-pre-line">
                   {product.description}
                 </p>
               </div>
@@ -505,11 +505,11 @@ export default function ProductDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="bg-gradient-to-br from-white via-primary-50/30 to-white rounded-3xl shadow-2xl p-8 mb-12"
+            className="bg-gray-800/50 backdrop-blur-xl rounded-3xl shadow-2xl shadow-yellow-500/10 border border-yellow-500/20 p-8 mb-12"
             dir="rtl"
           >
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <Store className="w-6 h-6 text-primary-600" />
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+              <Store className="w-6 h-6 text-yellow-400" />
               معلومات البائع
             </h2>
 
@@ -517,8 +517,8 @@ export default function ProductDetailPage() {
               {/* Vendor Avatar */}
               <Link href={`/vendors/${product.vendor_id}`} className="flex-shrink-0 group">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 p-1">
-                    <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center overflow-hidden">
+                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-yellow-500 to-yellow-600 p-1 shadow-lg shadow-yellow-500/50">
+                    <div className="w-full h-full rounded-2xl bg-gray-900 flex items-center justify-center overflow-hidden">
                       {vendor.profile_image ? (
                         <img
                           src={vendor.profile_image}
@@ -526,11 +526,11 @@ export default function ProductDetailPage() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <Store className="w-10 h-10 text-primary-600" />
+                        <Store className="w-10 h-10 text-yellow-400" />
                       )}
                     </div>
                   </div>
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-4 border-white">
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-4 border-gray-800">
                     <span className="text-xs">✓</span>
                   </div>
                 </div>
@@ -540,36 +540,36 @@ export default function ProductDetailPage() {
               <div className="flex-1">
                 <Link
                   href={`/vendors/${product.vendor_id}`}
-                  className="text-2xl font-bold text-gray-900 hover:text-primary-600 transition-colors inline-block mb-2"
+                  className="text-2xl font-bold text-white hover:text-yellow-400 transition-colors inline-block mb-2"
                 >
                   {vendor.store_name}
                 </Link>
-                <p className="text-gray-600 mb-4">{vendor.vendor_name}</p>
+                <p className="text-gray-400 mb-4">{vendor.vendor_name}</p>
 
                 {vendor.description && (
-                  <p className="text-gray-700 leading-relaxed mb-4 line-clamp-2">
+                  <p className="text-gray-300 leading-relaxed mb-4 line-clamp-2">
                     {vendor.description}
                   </p>
                 )}
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
-                  <div className="bg-white rounded-xl p-3 border border-gray-200">
-                    <p className="text-2xl font-bold text-primary-600">{vendor.total_products}</p>
-                    <p className="text-xs text-gray-600">منتج</p>
+                  <div className="bg-gray-900/50 rounded-xl p-3 border border-yellow-500/20">
+                    <p className="text-2xl font-bold text-yellow-400">{vendor.total_products}</p>
+                    <p className="text-xs text-gray-400">منتج</p>
                   </div>
-                  <div className="bg-white rounded-xl p-3 border border-gray-200">
+                  <div className="bg-gray-900/50 rounded-xl p-3 border border-yellow-500/20">
                     <div className="flex items-center gap-1 mb-1">
-                      <MapPin className="w-4 h-4 text-secondary-600" />
+                      <MapPin className="w-4 h-4 text-yellow-400" />
                     </div>
-                    <p className="text-xs text-gray-900 font-semibold">{vendor.city}</p>
-                    <p className="text-xs text-gray-600">{vendor.state}</p>
+                    <p className="text-xs text-white font-semibold">{vendor.city}</p>
+                    <p className="text-xs text-gray-400">{vendor.state}</p>
                   </div>
-                  <div className="bg-white rounded-xl p-3 border border-gray-200">
+                  <div className="bg-gray-900/50 rounded-xl p-3 border border-yellow-500/20">
                     <div className="flex items-center gap-1 mb-1">
-                      <Calendar className="w-4 h-4 text-gray-600" />
+                      <Calendar className="w-4 h-4 text-yellow-400" />
                     </div>
-                    <p className="text-xs text-gray-900 font-semibold">عضو منذ</p>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-white font-semibold">عضو منذ</p>
+                    <p className="text-xs text-gray-400">
                       {new Date(vendor.member_since).toLocaleDateString('ar-MR', {
                         year: 'numeric',
                         month: 'short',
@@ -580,7 +580,7 @@ export default function ProductDetailPage() {
 
                 <Link
                   href={`/vendors/${product.vendor_id}`}
-                  className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold"
+                  className="inline-flex items-center gap-2 text-yellow-400 hover:text-yellow-300 font-semibold"
                 >
                   زيارة المتجر
                   <ChevronLeft className="w-4 h-4 rotate-180" />
@@ -598,8 +598,8 @@ export default function ProductDetailPage() {
             transition={{ duration: 0.5, delay: 0.6 }}
             dir="rtl"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-              <ShoppingBag className="w-8 h-8 text-primary-600" />
+            <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+              <ShoppingBag className="w-8 h-8 text-yellow-400" />
               منتجات أخرى من نفس البائع
             </h2>
 
@@ -613,9 +613,9 @@ export default function ProductDetailPage() {
                 >
                   <Link
                     href={`/products/${p.id}`}
-                    className="group block bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
+                    className="group block bg-gray-800/50 backdrop-blur-xl rounded-2xl overflow-hidden shadow-lg shadow-yellow-500/10 hover:shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300 border border-yellow-500/20"
                   >
-                    <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                    <div className="relative aspect-square bg-gradient-to-br from-gray-700 to-gray-800 overflow-hidden">
                       {p.images && p.images[0] ? (
                         <img
                           src={p.images[0]}
@@ -624,16 +624,16 @@ export default function ProductDetailPage() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Package className="w-16 h-16 text-gray-400" />
+                          <Package className="w-16 h-16 text-gray-600" />
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="p-4">
-                      <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors">
+                      <h3 className="font-bold text-white mb-2 line-clamp-2 group-hover:text-yellow-400 transition-colors">
                         {p.name}
                       </h3>
-                      <p className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
+                      <p className="text-xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
                         {p.price.toLocaleString()} أوقية
                       </p>
                     </div>
