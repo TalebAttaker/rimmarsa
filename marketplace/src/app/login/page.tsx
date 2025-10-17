@@ -79,9 +79,15 @@ export default function LoginPage() {
           throw new Error('رقم الهاتف أو كلمة المرور غير صحيحة')
         }
 
-        // Store vendor session in localStorage
-        localStorage.setItem('vendor_id', vendorData.id)
-        localStorage.setItem('vendor_name', vendorData.business_name)
+        // Store vendor session in localStorage (format expected by dashboard)
+        const vendorSession = {
+          id: vendorData.id,
+          business_name: vendorData.business_name,
+          phone: fullPhone
+        }
+        localStorage.setItem('vendor', JSON.stringify(vendorSession))
+        localStorage.setItem('vendorLoginTime', Date.now().toString())
+
         toast.success('تم تسجيل الدخول بنجاح!')
 
         // Redirect to vendor dashboard

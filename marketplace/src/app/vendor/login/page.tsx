@@ -10,15 +10,20 @@ import Link from 'next/link'
 
 export default function VendorLoginPage() {
   const router = useRouter()
-  const [phone, setPhone] = useState('')
+  const [phoneDigits, setPhoneDigits] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!phone || !password) {
+    if (!phoneDigits || !password) {
       toast.error('الرجاء إدخال رقم الهاتف وكلمة المرور')
+      return
+    }
+
+    if (phoneDigits.length !== 8) {
+      toast.error('رقم الهاتف يجب أن يتكون من 8 أرقام')
       return
     }
 
@@ -27,25 +32,53 @@ export default function VendorLoginPage() {
     try {
       const supabase = createClient()
 
-      const { data, error } = await supabase.rpc('vendor_login', {
-        phone_number: phone,
-        login_password: password
+      // Full phone number with +222 prefix
+      const fullPhone = `+222${phoneDigits}`
+
+      // Look up vendor by phone
+      const { data: vendorData, error: vendorError } = await supabase
+        .from('vendors')
+        .select('id, business_name, password_hash, is_active, is_approved')
+        .eq('phone', fullPhone)
+        .single()
+
+      if (vendorError || !vendorData) {
+        throw new Error('رقم الهاتف أو كلمة المرور غير صحيحة')
+      }
+
+      if (!vendorData.is_active) {
+        throw new Error('حسابك غير نشط. يرجى الاتصال بالدعم')
+      }
+
+      if (!vendorData.is_approved) {
+        throw new Error('حسابك لم تتم الموافقة عليه بعد. يرجى الانتظار حتى تتم مراجعة طلبك')
+      }
+
+      // Verify password using RPC function
+      const { data: passwordValid, error: verifyError } = await supabase.rpc('verify_vendor_password', {
+        vendor_phone: fullPhone,
+        password_attempt: password
       })
 
-      if (error) throw error
-
-      if (data && data.success) {
-        // Store vendor data in localStorage
-        localStorage.setItem('vendor', JSON.stringify(data.vendor))
-        localStorage.setItem('vendorLoginTime', Date.now().toString())
-
-        toast.success(`مرحباً ${data.vendor.business_name}!`)
-
-        // Redirect to dashboard
-        setTimeout(() => {
-          router.push('/vendor/dashboard')
-        }, 500)
+      if (verifyError || !passwordValid) {
+        throw new Error('رقم الهاتف أو كلمة المرور غير صحيحة')
       }
+
+      // Store vendor session in localStorage (format expected by dashboard)
+      const vendorSession = {
+        id: vendorData.id,
+        business_name: vendorData.business_name,
+        phone: fullPhone
+      }
+      localStorage.setItem('vendor', JSON.stringify(vendorSession))
+      localStorage.setItem('vendorLoginTime', Date.now().toString())
+
+      toast.success(`مرحباً ${vendorData.business_name}!`)
+
+      // Redirect to dashboard
+      setTimeout(() => {
+        router.push('/vendor/dashboard')
+      }, 500)
     } catch (error: unknown) {
       console.error('Login error:', error)
       const errorMessage = error instanceof Error ? error.message : 'فشل تسجيل الدخول'
@@ -96,15 +129,22 @@ export default function VendorLoginPage() {
               </label>
               <div className="relative">
                 <Phone className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="أدخل رقم هاتفك"
-                  className="w-full pr-12 pl-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500 transition-colors"
-                  dir="ltr"
-                />
+                <div className="flex items-center w-full pr-12 pl-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl focus-within:border-yellow-500 transition-colors" dir="ltr">
+                  <span className="text-gray-400 font-medium">+222</span>
+                  <input
+                    type="tel"
+                    value={phoneDigits}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 8)
+                      setPhoneDigits(value)
+                    }}
+                    placeholder="XXXXXXXX"
+                    maxLength={8}
+                    className="flex-1 ml-1 bg-transparent border-none text-white placeholder-gray-500 focus:outline-none"
+                  />
+                </div>
               </div>
+              <p className="text-xs text-gray-500 mt-1">أدخل 8 أرقام فقط</p>
             </div>
 
             {/* Password Input */}
