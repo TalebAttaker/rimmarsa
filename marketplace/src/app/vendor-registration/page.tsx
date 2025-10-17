@@ -17,7 +17,8 @@ import {
   Mail,
   Clock,
   AlertCircle,
-  MessageCircle
+  MessageCircle,
+  Sparkles
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 import Link from 'next/link'
@@ -88,6 +89,7 @@ export default function VendorRegistrationPage() {
     city_id: '',
     address: '',
     package_plan: '2_months',
+    referral_code: '',
     nni_image_url: '',
     personal_image_url: '',
     store_image_url: '',
@@ -380,6 +382,7 @@ export default function VendorRegistrationPage() {
           address: formData.address || null,
           package_plan: formData.package_plan,
           package_price: selectedPlan?.price || 0,
+          referred_by_code: formData.referral_code || null,
           nni_image_url: formData.nni_image_url,
           personal_image_url: formData.personal_image_url,
           store_image_url: formData.store_image_url,
@@ -695,6 +698,24 @@ export default function VendorRegistrationPage() {
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
                     مطلوب للتواصل معك عند الموافقة على الطلب (أدخل 8 أرقام فقط)
+                  </p>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-primary-400" />
+                    رمز الإحالة (اختياري)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.referral_code}
+                    onChange={(e) => setFormData({ ...formData, referral_code: e.target.value.toUpperCase() })}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-primary-500 transition-colors placeholder-gray-500"
+                    placeholder="أدخل رمز الإحالة من بائع آخر"
+                    maxLength={20}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    إذا كان لديك رمز إحالة من بائع آخر، أدخله هنا للحصول على مزايا إضافية
                   </p>
                 </div>
               </div>

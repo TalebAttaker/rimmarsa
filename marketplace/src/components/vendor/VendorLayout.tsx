@@ -16,7 +16,8 @@ import {
   Store,
   Calendar,
   Home,
-  User
+  User,
+  Gift
 } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useIsMobile'
 
@@ -29,6 +30,7 @@ const menuItems = [
   { icon: Package, label: 'منتجاتي', href: '/vendor/products', mobileLabel: 'المنتجات' },
   { icon: Plus, label: 'إضافة منتج', href: '/vendor/products/add', mobileLabel: 'إضافة' },
   { icon: BarChart3, label: 'الإحصائيات', href: '/vendor/analytics', mobileLabel: 'إحصائيات' },
+  { icon: Gift, label: 'برنامج الإحالة', href: '/vendor/referrals', mobileLabel: 'الإحالات' },
   { icon: Calendar, label: 'اشتراكي', href: '/vendor/subscription', mobileLabel: 'اشتراكي' },
 ]
 
