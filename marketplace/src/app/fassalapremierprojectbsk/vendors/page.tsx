@@ -19,7 +19,8 @@ import {
   User,
   MapPin,
   Shield,
-  Tag
+  Tag,
+  Key
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -68,6 +69,9 @@ export default function VendorsPage() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [resetPasswordVendor, setResetPasswordVendor] = useState<Vendor | null>(null)
+  const [newPassword, setNewPassword] = useState('')
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null)
   const [formData, setFormData] = useState({
     business_name: '',
@@ -395,6 +399,51 @@ export default function VendorsPage() {
     }
   }
 
+  const handleOpenPasswordModal = (vendor: Vendor) => {
+    setResetPasswordVendor(vendor)
+    setNewPassword('')
+    setShowPasswordModal(true)
+  }
+
+  const handleClosePasswordModal = () => {
+    setShowPasswordModal(false)
+    setResetPasswordVendor(null)
+    setNewPassword('')
+  }
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!resetPasswordVendor || !newPassword) {
+      toast.error('Please enter a new password')
+      return
+    }
+
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters')
+      return
+    }
+
+    try {
+      const supabase = createClient()
+
+      // Hash the password using pgcrypto
+      const { data, error } = await supabase.rpc('reset_vendor_password', {
+        vendor_uuid: resetPasswordVendor.id,
+        new_password: newPassword
+      })
+
+      if (error) throw error
+
+      toast.success('Password reset successfully!')
+      handleClosePasswordModal()
+    } catch (error: unknown) {
+      console.error('Error resetting password:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to reset password'
+      toast.error(errorMessage)
+    }
+  }
+
   if (loading) {
     return (
       <AdminLayout>
@@ -561,6 +610,13 @@ export default function VendorsPage() {
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleOpenPasswordModal(vendor)}
+                          className="p-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded-lg transition-colors"
+                          title="Reset Password"
+                        >
+                          <Key className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(vendor)}
@@ -904,6 +960,82 @@ export default function VendorsPage() {
                     className="flex-1 px-4 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submitting ? 'Saving...' : editingVendor ? 'Update Vendor' : 'Create Vendor'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Password Reset Modal */}
+      <AnimatePresence>
+        {showPasswordModal && resetPasswordVendor && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={handleClosePasswordModal}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gray-900 border border-blue-500/20 rounded-2xl p-6 w-full max-w-md"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-500/20 rounded-lg">
+                    <Key className="w-6 h-6 text-blue-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-blue-400">Reset Password</h2>
+                    <p className="text-sm text-gray-400">{resetPasswordVendor.business_name}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleClosePasswordModal}
+                  className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-400" />
+                </button>
+              </div>
+
+              <form onSubmit={handleResetPassword} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    New Password *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-blue-500 transition-colors"
+                    placeholder="Enter new password (min 6 characters)"
+                    minLength={6}
+                    autoFocus
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    The vendor will use this password to log in to their account.
+                  </p>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleClosePasswordModal}
+                    className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all"
+                  >
+                    Reset Password
                   </button>
                 </div>
               </form>
