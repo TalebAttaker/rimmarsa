@@ -200,3 +200,18 @@ html {
   background-color: var(--primary-light);
   color: white;
 }
+
+/* Hide Scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe Area for Mobile (iOS notch support) */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
