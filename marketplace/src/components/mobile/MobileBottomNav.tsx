@@ -16,29 +16,29 @@ const navItems = [
     href: '/',
     icon: Home,
     label: 'الرئيسية',
-    activeColor: 'text-primary-600',
-    bgColor: 'bg-primary-100'
+    activeColor: 'text-yellow-400',
+    bgColor: 'bg-yellow-500/20'
   },
   {
     href: '/products',
     icon: Search,
     label: 'بحث',
-    activeColor: 'text-primary-600',
-    bgColor: 'bg-primary-100'
+    activeColor: 'text-yellow-400',
+    bgColor: 'bg-yellow-500/20'
   },
   {
     href: '/vendors',
     icon: Store,
     label: 'المتاجر',
-    activeColor: 'text-secondary-600',
-    bgColor: 'bg-secondary-100'
+    activeColor: 'text-yellow-400',
+    bgColor: 'bg-yellow-500/20'
   },
   {
     href: '/login',
     icon: User,
     label: 'حسابي',
-    activeColor: 'text-gray-900',
-    bgColor: 'bg-gray-100'
+    activeColor: 'text-yellow-400',
+    bgColor: 'bg-yellow-500/20'
   }
 ]
 
@@ -51,7 +51,7 @@ export default function MobileBottomNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-gray-200 shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-gray-900 border-t border-yellow-500/20 shadow-lg shadow-yellow-500/10">
       <div className="flex items-center justify-around px-2 py-2 safe-bottom">
         {navItems.map((item) => {
           const Icon = item.icon

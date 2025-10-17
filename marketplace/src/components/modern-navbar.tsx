@@ -45,8 +45,8 @@ export default function ModernNavbar() {
         animate={{ y: 0 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-200'
-            : 'bg-white/90 backdrop-blur-md'
+            ? 'bg-gray-900/95 backdrop-blur-xl shadow-lg border-b border-yellow-500/20'
+            : 'bg-gray-900/90 backdrop-blur-md border-b border-yellow-500/10'
         }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,16 +59,16 @@ export default function ModernNavbar() {
                 transition={{ duration: 0.5 }}
                 className="relative"
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/30">
-                  <FiShoppingBag className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg shadow-yellow-500/50">
+                  <FiShoppingBag className="w-6 h-6 text-black" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-secondary-500 rounded-full animate-pulse-glow" />
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-pulse-glow" />
               </motion.div>
               <div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent block">
+                <span className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent block">
                   ريمارسا
                 </span>
-                <span className="text-xs text-gray-500 block">سوق موريتانيا</span>
+                <span className="text-xs text-gray-400 block">سوق موريتانيا</span>
               </div>
             </Link>
 
@@ -81,11 +81,11 @@ export default function ModernNavbar() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="ابحث عن منتجات، بائعين، أو فئات..."
-                  className="w-full pr-12 pl-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 text-gray-700 placeholder:text-gray-400"
+                  className="w-full pr-12 pl-4 py-3 bg-gray-800 border border-yellow-500/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300 text-white placeholder:text-gray-400"
                 />
                 <button
                   type="submit"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 px-6 py-1.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-300"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 px-6 py-1.5 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black rounded-xl font-medium hover:shadow-lg hover:shadow-yellow-500/50 transition-all duration-300"
                 >
                   بحث
                 </button>
@@ -105,8 +105,8 @@ export default function ModernNavbar() {
                     href={link.href}
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 ${
                       link.highlight
-                        ? 'bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-lg hover:shadow-xl hover:shadow-secondary-500/30'
-                        : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
+                        ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-black shadow-lg hover:shadow-xl hover:shadow-yellow-500/50'
+                        : 'text-gray-300 hover:bg-yellow-500/10 hover:text-yellow-400'
                     }`}
                   >
                     {link.icon}
@@ -121,10 +121,10 @@ export default function ModernNavbar() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative p-2.5 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-300"
+                className="relative p-2.5 text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10 rounded-xl transition-all duration-300"
               >
                 <FiHeart className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-secondary-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 text-black text-xs rounded-full flex items-center justify-center font-bold">
                   0
                 </span>
               </motion.button>
@@ -135,7 +135,7 @@ export default function ModernNavbar() {
               >
                 <Link
                   href="/login"
-                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 transition-all duration-300"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black rounded-xl font-semibold shadow-lg shadow-yellow-500/50 hover:shadow-xl hover:shadow-yellow-500/60 transition-all duration-300"
                 >
                   <FiUser className="w-4 h-4" />
                   تسجيل الدخول
@@ -147,7 +147,7 @@ export default function ModernNavbar() {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-gray-700 hover:bg-primary-50 hover:text-primary-600 rounded-xl transition-colors duration-300"
+              className="md:hidden p-2 text-gray-300 hover:bg-yellow-500/10 hover:text-yellow-400 rounded-xl transition-colors duration-300"
             >
               {isMobileMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
             </motion.button>
@@ -162,29 +162,29 @@ export default function ModernNavbar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="ابحث عن منتجات..."
-                className="w-full pr-12 pl-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 text-gray-700"
+                className="w-full pr-12 pl-4 py-3 bg-gray-800 border border-yellow-500/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300 text-white"
               />
             </form>
           </div>
         </div>
 
         {/* Quick Links Bar (Desktop only) */}
-        <div className="hidden lg:block border-t border-gray-100 bg-gray-50/50">
+        <div className="hidden lg:block border-t border-yellow-500/10 bg-gray-800/50">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center gap-8 py-3">
-              <Link href="/products" className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors duration-300">
+              <Link href="/products" className="flex items-center gap-2 text-sm text-gray-400 hover:text-yellow-400 transition-colors duration-300">
                 <FiPackage className="w-4 h-4" />
                 جميع المنتجات
               </Link>
-              <Link href="/vendors" className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors duration-300">
+              <Link href="/vendors" className="flex items-center gap-2 text-sm text-gray-400 hover:text-yellow-400 transition-colors duration-300">
                 <HiOutlineShoppingBag className="w-4 h-4" />
                 المتاجر المميزة
               </Link>
-              <Link href="/" className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors duration-300">
+              <Link href="/" className="flex items-center gap-2 text-sm text-gray-400 hover:text-yellow-400 transition-colors duration-300">
                 <FiMapPin className="w-4 h-4" />
                 التوصيل في جميع أنحاء موريتانيا
               </Link>
-              <Link href="/" className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors duration-300">
+              <Link href="/" className="flex items-center gap-2 text-sm text-gray-400 hover:text-yellow-400 transition-colors duration-300">
                 <FiPhone className="w-4 h-4" />
                 دعم عملاء 24/7
               </Link>
@@ -201,7 +201,7 @@ export default function ModernNavbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'spring', damping: 25 }}
-            className="fixed inset-y-0 right-0 z-40 w-full max-w-sm bg-white shadow-2xl md:hidden"
+            className="fixed inset-y-0 right-0 z-40 w-full max-w-sm bg-gray-900 shadow-2xl border-l border-yellow-500/20 md:hidden"
           >
             <div className="flex flex-col h-full pt-24 px-6 pb-6">
               {/* Mobile Nav Links */}
@@ -218,8 +218,8 @@ export default function ModernNavbar() {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`flex items-center gap-3 px-4 py-4 rounded-xl transition-all duration-300 font-medium ${
                         link.highlight
-                          ? 'bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-lg'
-                          : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
+                          ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-black shadow-lg'
+                          : 'text-gray-300 hover:bg-yellow-500/10 hover:text-yellow-400'
                       }`}
                     >
                       {link.icon}
@@ -236,7 +236,7 @@ export default function ModernNavbar() {
                   <Link
                     href="/favorites"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-4 rounded-xl text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-all duration-300 font-medium"
+                    className="flex items-center gap-3 px-4 py-4 rounded-xl text-gray-300 hover:bg-yellow-500/10 hover:text-yellow-400 transition-all duration-300 font-medium"
                   >
                     <FiHeart />
                     المفضلة
@@ -254,7 +254,7 @@ export default function ModernNavbar() {
                 <Link
                   href="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg shadow-primary-500/30"
+                  className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-semibold shadow-lg shadow-yellow-500/50"
                 >
                   <FiUser />
                   تسجيل الدخول
@@ -262,7 +262,7 @@ export default function ModernNavbar() {
                 <Link
                   href="/signup"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl border-2 border-primary-500 text-primary-600 font-semibold hover:bg-primary-50 transition-colors duration-300"
+                  className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl border-2 border-yellow-500 text-yellow-400 font-semibold hover:bg-yellow-500/10 transition-colors duration-300"
                 >
                   إنشاء حساب
                 </Link>

@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  /* Professional Color Palette - Inspired by modern e-commerce */
-  --background: #ffffff;
-  --foreground: #1e293b;
+  /* Professional Color Palette - Gold & Dark Luxury Theme */
+  --background: #0f172a;
+  --foreground: #f1f5f9;
 
-  /* Primary Colors - Emerald/Teal (Trust & Growth) */
-  --primary: #10b981;
-  --primary-dark: #059669;
-  --primary-light: #34d399;
+  /* Primary Colors - Gold/Yellow (Luxury & Trust) */
+  --primary: #eab308;
+  --primary-dark: #ca8a04;
+  --primary-light: #fde047;
 
-  /* Secondary Colors - Amber/Orange (Energy & Action) */
+  /* Secondary Colors - Amber/Gold (Energy & Prestige) */
   --secondary: #f59e0b;
   --secondary-dark: #d97706;
   --secondary-light: #fbbf24;
@@ -39,21 +39,21 @@
   --info: #06b6d4;
 
   /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(234, 179, 8, 0.2);
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-sm: 0 1px 2px 0 rgb(234 179 8 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(234 179 8 / 0.2);
+  --shadow-lg: 0 10px 15px -3px rgb(234 179 8 / 0.3);
+  --shadow-xl: 0 20px 25px -5px rgb(234 179 8 / 0.4);
+  --shadow-2xl: 0 25px 50px -12px rgb(234 179 8 / 0.5);
 
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
-  --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+  --gradient-primary: linear-gradient(135deg, #eab308 0%, #fde047 100%);
+  --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);
   --gradient-purple: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-  --gradient-light: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  --gradient-light: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
 }
 
 @theme inline {
@@ -63,16 +63,16 @@
 
   /* Custom Theme Colors */
   --color-primary-*: initial;
-  --color-primary-50: #ecfdf5;
-  --color-primary-100: #d1fae5;
-  --color-primary-200: #a7f3d0;
-  --color-primary-300: #6ee7b7;
-  --color-primary-400: #34d399;
-  --color-primary-500: #10b981;
-  --color-primary-600: #059669;
-  --color-primary-700: #047857;
-  --color-primary-800: #065f46;
-  --color-primary-900: #064e3b;
+  --color-primary-50: #fefce8;
+  --color-primary-100: #fef9c3;
+  --color-primary-200: #fef08a;
+  --color-primary-300: #fde047;
+  --color-primary-400: #facc15;
+  --color-primary-500: #eab308;
+  --color-primary-600: #ca8a04;
+  --color-primary-700: #a16207;
+  --color-primary-800: #854d0e;
+  --color-primary-900: #713f12;
 
   --color-secondary-*: initial;
   --color-secondary-50: #fffbeb;
@@ -92,7 +92,7 @@
     --background: #0f172a;
     --foreground: #f1f5f9;
     --glass-bg: rgba(15, 23, 42, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(234, 179, 8, 0.2);
   }
 }
 
@@ -116,16 +116,16 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--gray-100);
+  background: var(--gray-900);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--gray-400);
+  background: var(--primary);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--gray-500);
+  background: var(--primary-light);
 }
 
 /* Glassmorphism Utility */
@@ -197,8 +197,8 @@ html {
 
 /* Selection Color */
 ::selection {
-  background-color: var(--primary-light);
-  color: white;
+  background-color: var(--primary);
+  color: black;
 }
 
 /* Hide Scrollbar */

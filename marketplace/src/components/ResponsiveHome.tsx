@@ -57,7 +57,7 @@ export default function ResponsiveHome({ categories, products }: ResponsiveHomeP
 
       {/* Desktop Version - Hidden on mobile with CSS */}
       <div className="hidden md:block">
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       {/* Modern Navbar */}
       <ModernNavbar />
 
@@ -68,16 +68,16 @@ export default function ResponsiveHome({ categories, products }: ResponsiveHomeP
       <HowItWorks />
 
       {/* Categories Section */}
-      <section id="categories" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section id="categories" className="py-20 bg-gradient-to-b from-gray-900 to-gray-800">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-2 rounded-full bg-primary-100 text-primary-700 font-semibold text-sm mb-4">
+            <span className="inline-block px-4 py-2 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 font-semibold text-sm mb-4">
               الفئات
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
               تسوق حسب الفئة
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
               استكشف مجموعة واسعة من الفئات واعثر على ما تحتاجه بالضبط
             </p>
           </div>
@@ -98,7 +98,7 @@ export default function ResponsiveHome({ categories, products }: ResponsiveHomeP
           <div className="text-center mt-12">
             <Link
               href="/products"
-              className="inline-block px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-2xl hover:shadow-2xl hover:shadow-primary-500/50 transition-all duration-300"
+              className="inline-block px-8 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-semibold rounded-2xl hover:shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300"
             >
               عرض جميع الفئات ←
             </Link>
@@ -110,16 +110,16 @@ export default function ResponsiveHome({ categories, products }: ResponsiveHomeP
       <FeaturesSection />
 
       {/* Recent Products Section */}
-      <section id="products" className="py-20 bg-white">
+      <section id="products" className="py-20 bg-gradient-to-b from-gray-800 to-gray-900">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-2 rounded-full bg-secondary-100 text-secondary-700 font-semibold text-sm mb-4">
+            <span className="inline-block px-4 py-2 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 font-semibold text-sm mb-4">
               أحدث المنتجات
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
               اكتشف منتجات جديدة
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
               أحدث الإضافات من البائعين الموثوقين في جميع أنحاء موريتانيا
             </p>
           </div>
@@ -147,7 +147,7 @@ export default function ResponsiveHome({ categories, products }: ResponsiveHomeP
           <div className="text-center mt-12">
             <Link
               href="/products"
-              className="inline-block px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-2xl hover:shadow-2xl hover:shadow-primary-500/50 transition-all duration-300"
+              className="inline-block px-8 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-semibold rounded-2xl hover:shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300"
             >
               عرض جميع المنتجات ←
             </Link>
