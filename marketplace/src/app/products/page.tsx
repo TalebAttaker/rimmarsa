@@ -163,11 +163,11 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-20 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black pb-20 md:pb-0">
       <Toaster position="top-center" />
 
       {/* Hero Section with Search */}
-      <div className="relative bg-gradient-to-br from-primary-600 via-primary-500 to-primary-700 text-white overflow-hidden">
+      <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white overflow-hidden border-b border-yellow-500/20">
         {/* Animated Background */}
         <div className="absolute inset-0 opacity-10">
           <motion.div
@@ -180,7 +180,7 @@ export default function ProductsPage() {
               repeat: Infinity,
               ease: "linear"
             }}
-            className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"
+            className="absolute top-0 right-0 w-96 h-96 bg-yellow-500 rounded-full blur-3xl"
           />
           <motion.div
             animate={{
@@ -192,7 +192,7 @@ export default function ProductsPage() {
               repeat: Infinity,
               ease: "linear"
             }}
-            className="absolute bottom-0 left-0 w-96 h-96 bg-secondary-400 rounded-full blur-3xl"
+            className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-600 rounded-full blur-3xl"
           />
         </div>
 
@@ -203,49 +203,38 @@ export default function ProductsPage() {
             className="text-center mb-12"
           >
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="w-6 h-6 text-secondary-400" />
-              <h1 className="text-4xl md:text-6xl font-bold">
+              <Sparkles className="w-6 h-6 text-yellow-400" />
+              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
                 اكتشف منتجاتنا
               </h1>
-              <Sparkles className="w-6 h-6 text-secondary-400" />
+              <Sparkles className="w-6 h-6 text-yellow-400" />
             </div>
-            <p className="text-xl md:text-2xl text-primary-100 mb-8">
+            <p className="text-xl md:text-2xl text-gray-300 mb-8">
               {totalProducts.toLocaleString()} منتج من البائعين المحليين
             </p>
 
             {/* Search Bar */}
             <div className="max-w-3xl mx-auto">
               <div className="relative group">
-                <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400 group-focus-within:text-yellow-500 transition-colors" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && updateURL()}
                   placeholder="ابحث عن المنتجات..."
-                  className="w-full pr-14 pl-14 py-5 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-primary-300/50 shadow-2xl text-lg"
+                  className="w-full pr-14 pl-14 py-5 rounded-2xl bg-gray-800 border border-yellow-500/20 text-white placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-yellow-500/50 shadow-2xl shadow-yellow-500/10 text-lg"
                   dir="rtl"
                 />
                 <button
                   onClick={updateURL}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition-all shadow-lg"
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-yellow-500/50 transition-all shadow-lg"
                 >
                   بحث
                 </button>
               </div>
             </div>
           </motion.div>
-        </div>
-
-        {/* Wave Decoration */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="w-full">
-            <path
-              fill="#f9fafb"
-              fillOpacity="1"
-              d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
-            ></path>
-          </svg>
         </div>
       </div>
 
@@ -258,17 +247,17 @@ export default function ProductsPage() {
             animate={{ opacity: 1, x: 0 }}
             className={`lg:w-80 ${showFilters ? 'block' : 'hidden lg:block'}`}
           >
-            <div className="bg-white rounded-3xl shadow-xl p-6 sticky top-8 border border-gray-100">
+            <div className="bg-gray-800/50 backdrop-blur-xl rounded-3xl shadow-xl shadow-yellow-500/10 p-6 sticky top-8 border border-yellow-500/20">
               {/* Filter Header */}
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-yellow-500/20">
                 <div className="flex items-center gap-2">
-                  <Filter className="w-5 h-5 text-primary-600" />
-                  <h2 className="text-xl font-bold text-gray-900">الفلاتر</h2>
+                  <Filter className="w-5 h-5 text-yellow-400" />
+                  <h2 className="text-xl font-bold text-white">الفلاتر</h2>
                 </div>
                 {hasActiveFilters && (
                   <button
                     onClick={clearFilters}
-                    className="text-sm text-red-600 hover:text-red-700 font-semibold flex items-center gap-1"
+                    className="text-sm text-red-400 hover:text-red-300 font-semibold flex items-center gap-1"
                   >
                     <X className="w-4 h-4" />
                     مسح الكل
@@ -278,7 +267,7 @@ export default function ProductsPage() {
 
               {/* Categories */}
               <div className="mb-6">
-                <label className="block text-sm font-bold text-gray-700 mb-3" dir="rtl">
+                <label className="block text-sm font-bold text-gray-300 mb-3" dir="rtl">
                   الفئة
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -292,12 +281,12 @@ export default function ProductsPage() {
                       }}
                       className={`p-3 rounded-xl border-2 transition-all ${
                         selectedCategory === category.id
-                          ? 'border-primary-500 bg-primary-50 shadow-md'
-                          : 'border-gray-200 hover:border-primary-300'
+                          ? 'border-yellow-500 bg-yellow-500/20 shadow-md shadow-yellow-500/50'
+                          : 'border-yellow-500/20 hover:border-yellow-500/40 bg-gray-900/50'
                       }`}
                     >
                       <div className="text-2xl mb-1">{category.icon}</div>
-                      <div className="text-xs font-semibold text-gray-700 line-clamp-1">
+                      <div className="text-xs font-semibold text-white line-clamp-1">
                         {category.name_ar}
                       </div>
                     </motion.button>
@@ -307,7 +296,7 @@ export default function ProductsPage() {
 
               {/* Region */}
               <div className="mb-6">
-                <label className="block text-sm font-bold text-gray-700 mb-3" dir="rtl">
+                <label className="block text-sm font-bold text-gray-300 mb-3" dir="rtl">
                   المنطقة
                 </label>
                 <select
@@ -316,7 +305,7 @@ export default function ProductsPage() {
                     setSelectedRegion(e.target.value)
                     setSelectedCity('')
                   }}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-500 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-yellow-500/20 bg-gray-900/50 text-white focus:border-yellow-500 focus:outline-none transition-colors"
                   dir="rtl"
                 >
                   <option value="">كل المناطق</option>
@@ -330,14 +319,14 @@ export default function ProductsPage() {
 
               {/* City */}
               <div className="mb-6">
-                <label className="block text-sm font-bold text-gray-700 mb-3" dir="rtl">
+                <label className="block text-sm font-bold text-gray-300 mb-3" dir="rtl">
                   المدينة
                 </label>
                 <select
                   value={selectedCity}
                   onChange={(e) => setSelectedCity(e.target.value)}
                   disabled={!selectedRegion}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-500 focus:outline-none transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-yellow-500/20 bg-gray-900/50 text-white focus:border-yellow-500 focus:outline-none transition-colors disabled:bg-gray-700/30 disabled:cursor-not-allowed"
                   dir="rtl"
                 >
                   <option value="">كل المدن</option>
@@ -351,7 +340,7 @@ export default function ProductsPage() {
 
               {/* Price Range */}
               <div className="mb-6">
-                <label className="block text-sm font-bold text-gray-700 mb-3" dir="rtl">
+                <label className="block text-sm font-bold text-gray-300 mb-3" dir="rtl">
                   نطاق السعر (أوقية)
                 </label>
                 <div className="space-y-3">
@@ -360,7 +349,7 @@ export default function ProductsPage() {
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value)}
                     placeholder="الحد الأدنى"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-500 focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-yellow-500/20 bg-gray-900/50 text-white placeholder-gray-400 focus:border-yellow-500 focus:outline-none transition-colors"
                     dir="rtl"
                   />
                   <input
@@ -368,7 +357,7 @@ export default function ProductsPage() {
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
                     placeholder="الحد الأقصى"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-500 focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-yellow-500/20 bg-gray-900/50 text-white placeholder-gray-400 focus:border-yellow-500 focus:outline-none transition-colors"
                     dir="rtl"
                   />
                 </div>
@@ -379,7 +368,7 @@ export default function ProductsPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={updateURL}
-                className="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+                className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-black py-4 rounded-xl font-bold shadow-lg hover:shadow-xl hover:shadow-yellow-500/50 transition-all"
               >
                 تطبيق الفلاتر
               </motion.button>
@@ -389,31 +378,31 @@ export default function ProductsPage() {
           {/* Products Section */}
           <main className="flex-1">
             {/* Toolbar */}
-            <div className="bg-white rounded-2xl shadow-lg p-4 mb-6 border border-gray-100">
+            <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-lg shadow-yellow-500/10 p-4 mb-6 border border-yellow-500/20">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className="lg:hidden flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-primary-500 text-primary-600 font-semibold hover:bg-primary-50 transition-colors"
+                    className="lg:hidden flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-yellow-500 text-yellow-400 font-semibold hover:bg-yellow-500/20 transition-colors"
                   >
                     <SlidersHorizontal className="w-5 h-5" />
                     فلاتر
                   </button>
 
-                  <p className="text-gray-600 font-semibold" dir="rtl">
-                    <span className="text-primary-600 font-bold">{products.length}</span> منتج
+                  <p className="text-gray-300 font-semibold" dir="rtl">
+                    <span className="text-yellow-400 font-bold">{products.length}</span> منتج
                   </p>
                 </div>
 
                 <div className="flex items-center gap-3">
                   {/* View Toggle */}
-                  <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
+                  <div className="flex items-center gap-1 bg-gray-900/50 p-1 rounded-xl">
                     <button
                       onClick={() => setViewMode('grid')}
                       className={`p-2 rounded-lg transition-all ${
                         viewMode === 'grid'
-                          ? 'bg-white text-primary-600 shadow-md'
-                          : 'text-gray-600 hover:text-primary-600'
+                          ? 'bg-yellow-500/20 text-yellow-400 shadow-md'
+                          : 'text-gray-400 hover:text-yellow-400'
                       }`}
                     >
                       <Grid3x3 className="w-5 h-5" />
@@ -422,8 +411,8 @@ export default function ProductsPage() {
                       onClick={() => setViewMode('list')}
                       className={`p-2 rounded-lg transition-all ${
                         viewMode === 'list'
-                          ? 'bg-white text-primary-600 shadow-md'
-                          : 'text-gray-600 hover:text-primary-600'
+                          ? 'bg-yellow-500/20 text-yellow-400 shadow-md'
+                          : 'text-gray-400 hover:text-yellow-400'
                       }`}
                     >
                       <List className="w-5 h-5" />
@@ -435,7 +424,7 @@ export default function ProductsPage() {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value as 'newest' | 'price-low' | 'price-high' | 'popular')}
-                      className="appearance-none px-4 py-2 pr-10 rounded-xl border-2 border-gray-200 focus:border-primary-500 focus:outline-none font-semibold text-gray-700 cursor-pointer hover:border-primary-300 transition-colors"
+                      className="appearance-none px-4 py-2 pr-10 rounded-xl border-2 border-yellow-500/20 bg-gray-900/50 text-white focus:border-yellow-500 focus:outline-none font-semibold cursor-pointer hover:border-yellow-500/40 transition-colors"
                       dir="rtl"
                     >
                       <option value="newest">الأحدث</option>
@@ -450,12 +439,12 @@ export default function ProductsPage() {
 
               {/* Active Filters Chips */}
               {hasActiveFilters && (
-                <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-200">
+                <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-yellow-500/20">
                   {selectedCategory && (
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="flex items-center gap-2 bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-semibold"
+                      className="flex items-center gap-2 bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm font-semibold border border-yellow-500/30"
                     >
                       <span>{getCategoryById(selectedCategory)?.name_ar}</span>
                       <button onClick={() => setSelectedCategory('')}>
@@ -467,7 +456,7 @@ export default function ProductsPage() {
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="flex items-center gap-2 bg-secondary-100 text-secondary-700 px-3 py-1 rounded-full text-sm font-semibold"
+                      className="flex items-center gap-2 bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-sm font-semibold border border-blue-500/30"
                     >
                       <span>البحث: {searchQuery}</span>
                       <button onClick={() => setSearchQuery('')}>
@@ -479,7 +468,7 @@ export default function ProductsPage() {
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold"
+                      className="flex items-center gap-2 bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-semibold border border-green-500/30"
                     >
                       <span>
                         {minPrice && maxPrice
@@ -501,8 +490,8 @@ export default function ProductsPage() {
             {loading ? (
               <div className="flex items-center justify-center py-20">
                 <div className="relative">
-                  <div className="w-20 h-20 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
-                  <ShoppingBag className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-primary-600" />
+                  <div className="w-20 h-20 border-4 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin"></div>
+                  <ShoppingBag className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-yellow-400" />
                 </div>
               </div>
             ) : products.length === 0 ? (
@@ -512,15 +501,15 @@ export default function ProductsPage() {
                 className="text-center py-20"
               >
                 <div className="text-8xl mb-6">🔍</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2" dir="rtl">
+                <h3 className="text-2xl font-bold text-white mb-2" dir="rtl">
                   لم نجد أي منتجات
                 </h3>
-                <p className="text-gray-600 mb-6" dir="rtl">
+                <p className="text-gray-300 mb-6" dir="rtl">
                   جرب تعديل الفلاتر أو البحث بكلمات مختلفة
                 </p>
                 <button
                   onClick={clearFilters}
-                  className="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                  className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-bold rounded-xl shadow-lg hover:shadow-xl hover:shadow-yellow-500/50 transition-all"
                 >
                   مسح جميع الفلاتر
                 </button>
@@ -547,9 +536,9 @@ export default function ProductsPage() {
                       className="group"
                     >
                       {viewMode === 'grid' ? (
-                        <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 h-full flex flex-col">
+                        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-lg shadow-yellow-500/10 hover:shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300 overflow-hidden border border-yellow-500/20 h-full flex flex-col">
                           {/* Product Image */}
-                          <Link href={`/products/${product.id}`} className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                          <Link href={`/products/${product.id}`} className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-700 to-gray-800">
                             {product.images && product.images[0] ? (
                               <img
                                 src={product.images[0]}
@@ -568,20 +557,20 @@ export default function ProductsPage() {
                                 e.preventDefault()
                                 toggleFavorite(product.id)
                               }}
-                              className="absolute top-3 left-3 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-white transition-all z-10"
+                              className="absolute top-3 left-3 w-10 h-10 rounded-full bg-gray-900/90 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-yellow-500/20 border border-yellow-500/30 transition-all z-10"
                             >
                               <Heart
                                 className={`w-5 h-5 transition-all ${
                                   favorites.has(product.id)
                                     ? 'fill-red-500 text-red-500'
-                                    : 'text-gray-600'
+                                    : 'text-yellow-400'
                                 }`}
                               />
                             </button>
 
                             {/* Badge */}
                             {product.views_count && product.views_count > 100 && (
-                              <div className="absolute top-3 right-3 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                              <div className="absolute top-3 right-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
                                 <TrendingUp className="w-3 h-3" />
                                 رائج
                               </div>
@@ -591,27 +580,27 @@ export default function ProductsPage() {
                           {/* Product Info */}
                           <div className="p-4 flex-1 flex flex-col">
                             <Link href={`/products/${product.id}`}>
-                              <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors" dir="rtl">
+                              <h3 className="font-bold text-lg text-white mb-2 line-clamp-2 group-hover:text-yellow-400 transition-colors" dir="rtl">
                                 {product.name}
                               </h3>
                             </Link>
 
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2" dir="rtl">
+                            <p className="text-sm text-gray-300 mb-3 line-clamp-2" dir="rtl">
                               {product.description}
                             </p>
 
                             <div className="mt-auto">
                               {/* Price */}
                               <div className="mb-3">
-                                <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+                                <span className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
                                   {product.price.toLocaleString()}
                                 </span>
-                                <span className="text-sm text-gray-600 mr-1">أوقية</span>
+                                <span className="text-sm text-gray-300 mr-1">أوقية</span>
                               </div>
 
                               {/* Location */}
                               {product.city_deprecated && (
-                                <div className="flex items-center gap-1 text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-full w-fit" dir="rtl">
+                                <div className="flex items-center gap-1 text-xs text-gray-400 bg-gray-900/50 border border-yellow-500/20 px-3 py-1 rounded-full w-fit" dir="rtl">
                                   <MapPin className="w-3 h-3" />
                                   {product.city_deprecated}
                                 </div>
@@ -622,10 +611,10 @@ export default function ProductsPage() {
                       ) : (
                         <Link
                           href={`/products/${product.id}`}
-                          className="flex gap-4 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 p-4"
+                          className="flex gap-4 bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-lg shadow-yellow-500/10 hover:shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300 overflow-hidden border border-yellow-500/20 p-4"
                         >
                           {/* Image */}
-                          <div className="w-32 h-32 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex-shrink-0">
+                          <div className="w-32 h-32 rounded-xl overflow-hidden bg-gradient-to-br from-gray-700 to-gray-800 flex-shrink-0">
                             {product.images && product.images[0] ? (
                               <img
                                 src={product.images[0]}
@@ -641,21 +630,21 @@ export default function ProductsPage() {
 
                           {/* Info */}
                           <div className="flex-1 min-w-0" dir="rtl">
-                            <h3 className="font-bold text-xl text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                            <h3 className="font-bold text-xl text-white mb-2 group-hover:text-yellow-400 transition-colors">
                               {product.name}
                             </h3>
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                            <p className="text-sm text-gray-300 mb-3 line-clamp-2">
                               {product.description}
                             </p>
                             <div className="flex items-center justify-between">
                               <div>
-                                <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+                                <span className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
                                   {product.price.toLocaleString()}
                                 </span>
-                                <span className="text-sm text-gray-600 mr-1">أوقية</span>
+                                <span className="text-sm text-gray-300 mr-1">أوقية</span>
                               </div>
                               {product.city_deprecated && (
-                                <div className="flex items-center gap-1 text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                                <div className="flex items-center gap-1 text-xs text-gray-400 bg-gray-900/50 border border-yellow-500/20 px-3 py-1 rounded-full">
                                   <MapPin className="w-3 h-3" />
                                   {product.city_deprecated}
                                 </div>
@@ -669,13 +658,13 @@ export default function ProductsPage() {
                               e.preventDefault()
                               toggleFavorite(product.id)
                             }}
-                            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition-all flex-shrink-0"
+                            className="w-10 h-10 rounded-full bg-gray-900/50 border border-yellow-500/20 hover:bg-yellow-500/20 flex items-center justify-center transition-all flex-shrink-0"
                           >
                             <Heart
                               className={`w-5 h-5 transition-all ${
                                 favorites.has(product.id)
                                   ? 'fill-red-500 text-red-500'
-                                  : 'text-gray-600'
+                                  : 'text-yellow-400'
                               }`}
                             />
                           </button>
