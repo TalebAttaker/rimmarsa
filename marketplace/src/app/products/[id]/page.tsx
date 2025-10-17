@@ -31,9 +31,8 @@ type Product = {
   images: string[]
   category_id: string
   vendor_id: string
-  city: string
-  state: string
-  views: number
+  city_deprecated: string | null
+  views_count: number
   created_at: string
   is_active: boolean
 }
@@ -50,9 +49,9 @@ type VendorProfile = {
   store_name: string
   vendor_name: string
   total_products: number
-  city: string
-  state: string
-  whatsapp_number: string
+  city: string | null
+  state: string | null
+  whatsapp_number: string | null
   description: string | null
   member_since: string
 }
@@ -118,7 +117,7 @@ export default function ProductDetailPage() {
       // Increment view count
       await supabase
         .from('products')
-        .update({ views: (productData.views || 0) + 1 })
+        .update({ views_count: (productData.views_count || 0) + 1 })
         .eq('id', id)
 
       // Fetch more products from same vendor
@@ -448,17 +447,19 @@ export default function ProductDetailPage() {
                   </div>
                 )}
 
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-secondary-50 flex items-center justify-center">
-                    <MapPin className="w-5 h-5 text-secondary-600" />
+                {product.city_deprecated && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-secondary-50 flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-secondary-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">الموقع</p>
+                      <p className="font-semibold text-gray-900">
+                        {product.city_deprecated}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500">الموقع</p>
-                    <p className="font-semibold text-gray-900">
-                      {product.city}, {product.state}
-                    </p>
-                  </div>
-                </div>
+                )}
 
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
@@ -466,7 +467,7 @@ export default function ProductDetailPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">المشاهدات</p>
-                    <p className="font-semibold text-gray-900">{product.views.toLocaleString()}</p>
+                    <p className="font-semibold text-gray-900">{product.views_count?.toLocaleString() || 0}</p>
                   </div>
                 </div>
               </div>
