@@ -29,7 +29,7 @@ export default function TestimonialsSection() {
   ]
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-gradient-to-b from-gray-900 to-gray-800">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -38,13 +38,13 @@ export default function TestimonialsSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-primary-100 text-primary-700 font-semibold text-sm mb-4">
+          <span className="inline-block px-4 py-2 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 font-semibold text-sm mb-4">
             آراء العملاء
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent mb-4">
             ماذا يقول عملاؤنا
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             آلاف العملاء والبائعين السعداء يثقون بنا كل يوم
           </p>
         </motion.div>
@@ -61,27 +61,27 @@ export default function TestimonialsSection() {
               whileHover={{ y: -5 }}
               className="group"
             >
-              <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 border-2 border-gray-100 hover:border-primary-300 hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+              <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-8 border-2 border-yellow-500/20 hover:border-yellow-500/40 hover:shadow-xl hover:shadow-yellow-500/20 transition-all duration-300 h-full flex flex-col">
                 {/* Rating */}
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <FiStar key={i} className="w-5 h-5 fill-secondary-500 text-secondary-500" />
+                    <FiStar key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
 
                 {/* Content */}
-                <p className="text-gray-700 leading-relaxed mb-6 flex-1">
+                <p className="text-gray-300 leading-relaxed mb-6 flex-1">
                   &quot;{testimonial.content}&quot;
                 </p>
 
                 {/* Author */}
-                <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-2xl">
+                <div className="flex items-center gap-4 pt-4 border-t border-yellow-500/20">
+                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center text-2xl shadow-lg shadow-yellow-500/50">
                     {testimonial.image}
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
-                    <p className="text-sm text-gray-600">{testimonial.role}</p>
+                    <h4 className="font-bold text-yellow-400">{testimonial.name}</h4>
+                    <p className="text-sm text-gray-400">{testimonial.role}</p>
                   </div>
                 </div>
               </div>

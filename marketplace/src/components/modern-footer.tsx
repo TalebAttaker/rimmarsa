@@ -66,13 +66,13 @@ export default function ModernFooter() {
                   transition={{ duration: 0.5 }}
                   className="relative"
                 >
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/30">
-                    <FiShoppingBag className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg shadow-yellow-500/50">
+                    <FiShoppingBag className="w-6 h-6 text-black" />
                   </div>
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-secondary-500 rounded-full animate-pulse-glow" />
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-pulse-glow" />
                 </motion.div>
                 <div>
-                  <span className="text-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-300 bg-clip-text text-transparent block">
+                  <span className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent block">
                     ريمارسا
                   </span>
                   <span className="text-xs text-gray-400 block">سوق موريتانيا الإلكتروني</span>
@@ -94,9 +94,9 @@ export default function ModernFooter() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-center gap-3 text-gray-300 hover:text-primary-400 transition-colors duration-300 group"
+                    className="flex items-center gap-3 text-gray-300 hover:text-yellow-400 transition-colors duration-300 group"
                   >
-                    <div className="w-10 h-10 bg-white/5 backdrop-blur-xl rounded-xl flex items-center justify-center group-hover:bg-primary-500/20 transition-colors duration-300">
+                    <div className="w-10 h-10 bg-white/5 backdrop-blur-xl rounded-xl flex items-center justify-center group-hover:bg-yellow-500/20 transition-colors duration-300">
                       {item.icon}
                     </div>
                     <span className="text-sm">{item.text}</span>
@@ -121,9 +121,9 @@ export default function ModernFooter() {
                 <li key={index}>
                   <Link
                     href={link.href}
-                    className="text-gray-300 hover:text-primary-400 transition-colors duration-300 text-sm flex items-center gap-2 group"
+                    className="text-gray-300 hover:text-yellow-400 transition-colors duration-300 text-sm flex items-center gap-2 group"
                   >
-                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full group-hover:bg-primary-400 group-hover:scale-150 transition-all duration-300" />
+                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full group-hover:bg-yellow-400 group-hover:scale-150 transition-all duration-300" />
                     {link.label}
                   </Link>
                 </li>
@@ -146,9 +146,9 @@ export default function ModernFooter() {
                 <li key={index}>
                   <Link
                     href={link.href}
-                    className="text-gray-300 hover:text-secondary-400 transition-colors duration-300 text-sm flex items-center gap-2 group"
+                    className="text-gray-300 hover:text-yellow-400 transition-colors duration-300 text-sm flex items-center gap-2 group"
                   >
-                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full group-hover:bg-secondary-400 group-hover:scale-150 transition-all duration-300" />
+                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full group-hover:bg-yellow-400 group-hover:scale-150 transition-all duration-300" />
                     {link.label}
                   </Link>
                 </li>
@@ -171,9 +171,9 @@ export default function ModernFooter() {
                 <li key={index}>
                   <Link
                     href={link.href}
-                    className="text-gray-300 hover:text-primary-400 transition-colors duration-300 text-sm flex items-center gap-2 group"
+                    className="text-gray-300 hover:text-yellow-400 transition-colors duration-300 text-sm flex items-center gap-2 group"
                   >
-                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full group-hover:bg-primary-400 group-hover:scale-150 transition-all duration-300" />
+                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full group-hover:bg-yellow-400 group-hover:scale-150 transition-all duration-300" />
                     {link.label}
                   </Link>
                 </li>
@@ -190,18 +190,18 @@ export default function ModernFooter() {
           className="mb-12 pb-12 border-b border-white/10"
         >
           <div className="max-w-2xl mx-auto text-center">
-            <HiSparkles className="w-8 h-8 text-secondary-400 mx-auto mb-4" />
+            <HiSparkles className="w-8 h-8 text-yellow-400 mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-3">اشترك في نشرتنا الإخبارية</h3>
             <p className="text-gray-400 mb-6">احصل على آخر العروض والأخبار مباشرة في بريدك الإلكتروني</p>
             <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="أدخل بريدك الإلكتروني"
-                className="flex-1 px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 text-white placeholder:text-gray-400"
+                className="flex-1 px-6 py-3 bg-white/10 backdrop-blur-xl border border-yellow-500/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300 text-white placeholder:text-gray-400"
               />
               <button
                 type="submit"
-                className="px-8 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-300 whitespace-nowrap"
+                className="px-8 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black rounded-xl font-semibold hover:shadow-lg hover:shadow-yellow-500/50 transition-all duration-300 whitespace-nowrap"
               >
                 اشترك الآن
               </button>

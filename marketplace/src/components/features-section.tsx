@@ -9,42 +9,42 @@ export default function FeaturesSection() {
       icon: <FiShield className="w-6 h-6" />,
       title: 'دفع آمن ومضمون',
       description: 'جميع المعاملات محمية بأحدث تقنيات الأمان',
-      color: 'from-primary-500 to-primary-600'
+      color: 'from-yellow-500 to-yellow-600'
     },
     {
       icon: <FiTruck className="w-6 h-6" />,
       title: 'توصيل سريع',
       description: 'خدمة توصيل لجميع أنحاء موريتانيا بأسرع وقت',
-      color: 'from-secondary-500 to-secondary-600'
+      color: 'from-yellow-400 to-yellow-500'
     },
     {
       icon: <FiDollarSign className="w-6 h-6" />,
       title: 'أسعار تنافسية',
       description: 'أفضل الأسعار مع عروض وخصومات حصرية',
-      color: 'from-primary-600 to-primary-700'
+      color: 'from-yellow-500 to-yellow-600'
     },
     {
       icon: <FiHeadphones className="w-6 h-6" />,
       title: 'دعم عملاء 24/7',
       description: 'فريق دعم متاح دائماً لمساعدتك',
-      color: 'from-secondary-600 to-secondary-700'
+      color: 'from-yellow-400 to-yellow-500'
     },
     {
       icon: <FiGift className="w-6 h-6" />,
       title: 'برنامج الإحالة',
       description: 'احصل على عمولات عند إحالة بائعين جدد',
-      color: 'from-primary-500 to-primary-600'
+      color: 'from-yellow-500 to-yellow-600'
     },
     {
       icon: <FiZap className="w-6 h-6" />,
       title: 'تجربة سريعة',
       description: 'منصة سريعة وسهلة الاستخدام لكل الأجهزة',
-      color: 'from-secondary-500 to-secondary-600'
+      color: 'from-yellow-400 to-yellow-500'
     }
   ]
 
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+    <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -53,13 +53,13 @@ export default function FeaturesSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-secondary-100 text-secondary-700 font-semibold text-sm mb-4">
+          <span className="inline-block px-4 py-2 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 font-semibold text-sm mb-4">
             لماذا نحن؟
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent mb-4">
             مزايا تجعلنا الأفضل
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             نقدم أفضل تجربة تسوق إلكتروني في موريتانيا مع خدمات متميزة
           </p>
         </motion.div>
@@ -76,17 +76,17 @@ export default function FeaturesSection() {
               whileHover={{ y: -5, scale: 1.02 }}
               className="group"
             >
-              <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-primary-300 hover:shadow-xl transition-all duration-300">
+              <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-8 border border-yellow-500/20 hover:border-yellow-500/40 hover:shadow-xl hover:shadow-yellow-500/20 transition-all duration-300">
                 {/* Icon */}
-                <div className={`w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                <div className={`w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center text-black mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-yellow-500/50`}>
                   {feature.icon}
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                <h3 className="text-xl font-bold text-yellow-400 mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-300 leading-relaxed">
                   {feature.description}
                 </p>
               </div>
