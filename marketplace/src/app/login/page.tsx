@@ -4,13 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, ShoppingBag } from 'lucide-react'
+import { Phone, Lock, Eye, EyeOff, ArrowRight, Sparkles, ShoppingBag } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 import Link from 'next/link'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -18,8 +18,8 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!email || !password) {
-      toast.error('الرجاء إدخال البريد الإلكتروني وكلمة المرور')
+    if (!phone || !password) {
+      toast.error('الرجاء إدخال رقم الهاتف وكلمة المرور')
       return
     }
 
@@ -28,14 +28,59 @@ export default function LoginPage() {
     try {
       const supabase = createClient()
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+      // Convert phone to generated email format: phone@rimmarsa.com
+      const cleanPhone = phone.replace(/[\s+\-()]/g, '')
+      const generatedEmail = `${cleanPhone}@rimmarsa.com`
+
+      // Try to authenticate with Supabase Auth first
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: generatedEmail,
         password,
       })
 
-      if (error) throw error
+      // If auth fails, try vendor table authentication
+      if (authError) {
+        console.log('Auth failed, trying vendor table authentication')
 
-      if (data.user) {
+        // Look up vendor by phone
+        const { data: vendorData, error: vendorError } = await supabase
+          .from('vendors')
+          .select('id, business_name, password_hash, is_active, is_approved')
+          .eq('phone', phone)
+          .single()
+
+        if (vendorError || !vendorData) {
+          throw new Error('رقم الهاتف أو كلمة المرور غير صحيحة')
+        }
+
+        if (!vendorData.is_active) {
+          throw new Error('حسابك غير نشط. يرجى الاتصال بالدعم')
+        }
+
+        if (!vendorData.is_approved) {
+          throw new Error('حسابك لم تتم الموافقة عليه بعد. يرجى الانتظار حتى تتم مراجعة طلبك')
+        }
+
+        // Verify password using RPC function
+        const { data: passwordValid, error: verifyError } = await supabase.rpc('verify_vendor_password', {
+          vendor_phone: phone,
+          password_attempt: password
+        })
+
+        if (verifyError || !passwordValid) {
+          throw new Error('رقم الهاتف أو كلمة المرور غير صحيحة')
+        }
+
+        // Store vendor session in localStorage
+        localStorage.setItem('vendor_id', vendorData.id)
+        localStorage.setItem('vendor_name', vendorData.business_name)
+        toast.success('تم تسجيل الدخول بنجاح!')
+
+        // Redirect to vendor dashboard
+        setTimeout(() => {
+          router.push('/vendor/dashboard')
+        }, 500)
+      } else if (authData.user) {
         toast.success('تم تسجيل الدخول بنجاح!')
 
         // Redirect to home or profile
@@ -163,18 +208,18 @@ export default function LoginPage() {
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
 
               <form onSubmit={handleLogin} className="relative space-y-6">
-                {/* Email Input */}
+                {/* Phone Input */}
                 <div>
                   <label className="block text-sm font-medium text-gray-200 mb-2">
-                    البريد الإلكتروني
+                    رقم الهاتف
                   </label>
                   <div className="relative group">
-                    <Mail className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary-400 transition-colors" />
+                    <Phone className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary-400 transition-colors" />
                     <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="example@email.com"
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+222 XX XX XX XX"
                       className="w-full pr-12 pl-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-400/50 transition-all"
                       dir="ltr"
                     />
