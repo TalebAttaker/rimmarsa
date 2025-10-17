@@ -160,7 +160,7 @@ export default function AddProductPage() {
         const filePath = `products/${fileName}`
 
         const { error: uploadError } = await supabase.storage
-          .from('product-images')
+          .from('images')
           .upload(filePath, image, {
             cacheControl: '3600',
             upsert: false
@@ -169,7 +169,7 @@ export default function AddProductPage() {
         if (uploadError) throw uploadError
 
         const { data: { publicUrl } } = supabase.storage
-          .from('product-images')
+          .from('images')
           .getPublicUrl(filePath)
 
         uploadedUrls.push(publicUrl)
@@ -205,22 +205,22 @@ export default function AddProductPage() {
       // Upload images first
       const imageUrls = await uploadImages()
 
-      // Create product
+      // Create product using secure RPC function
       const supabase = createClient()
-      const { error } = await supabase.from('products').insert([{
-        vendor_id: vendorId,
-        name: formData.name,
-        name_ar: formData.name_ar || formData.name,
-        description: formData.description,
-        price: parseFloat(formData.price),
-        compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : null,
-        category_id: formData.category_id,
-        region_id: formData.region_id || null,
-        city_id: formData.city_id || null,
-        stock_quantity: parseInt(formData.stock_quantity) || 0,
-        is_active: formData.is_active,
-        images: imageUrls
-      }])
+      const { data: productId, error } = await supabase.rpc('vendor_insert_product', {
+        p_vendor_id: vendorId,
+        p_name: formData.name,
+        p_name_ar: formData.name_ar || formData.name,
+        p_description: formData.description || '',
+        p_price: parseFloat(formData.price),
+        p_compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : null,
+        p_category_id: formData.category_id,
+        p_region_id: formData.region_id || null,
+        p_city_id: formData.city_id || null,
+        p_stock_quantity: parseInt(formData.stock_quantity) || 0,
+        p_is_active: formData.is_active,
+        p_images: imageUrls
+      })
 
       if (error) throw error
 
@@ -230,7 +230,8 @@ export default function AddProductPage() {
       }, 1000)
     } catch (error) {
       console.error('Error creating product:', error)
-      toast.error('فشل في إضافة المنتج')
+      const errorMessage = error instanceof Error ? error.message : 'فشل في إضافة المنتج'
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
