@@ -13,6 +13,7 @@ import {
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import toast, { Toaster } from 'react-hot-toast'
+import MobileBottomNav from '@/components/mobile/MobileBottomNav'
 
 type Product = Database['public']['Tables']['products']['Row']
 type Category = Database['public']['Tables']['categories']['Row']
@@ -162,7 +163,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-20 md:pb-0">
       <Toaster position="top-center" />
 
       {/* Hero Section with Search */}
@@ -688,6 +689,9 @@ export default function ProductsPage() {
           </main>
         </div>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   )
 }
