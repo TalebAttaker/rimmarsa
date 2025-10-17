@@ -28,9 +28,9 @@ type VendorProfile = {
   store_name: string
   vendor_name: string
   total_products: number
-  city: string
-  state: string
-  whatsapp_number: string
+  city: string | null
+  state: string | null
+  whatsapp_number: string | null
   description: string | null
   member_since: string
 }
@@ -42,7 +42,7 @@ type Product = {
   price: number
   images: string[]
   category_id: string
-  views: number
+  views_count: number
   created_at: string
 }
 
@@ -228,13 +228,15 @@ export default function VendorProfilePage() {
                     <span className="text-white/80">منتج</span>
                   </div>
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 border border-white/20">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-5 h-5" />
-                    <span className="font-bold">{vendor.city}</span>
-                    <span className="text-white/80">{vendor.state}</span>
+                {(vendor.city || vendor.state) && (
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 border border-white/20">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-5 h-5" />
+                      {vendor.city && <span className="font-bold">{vendor.city}</span>}
+                      {vendor.state && <span className="text-white/80">{vendor.state}</span>}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 border border-white/20">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-5 h-5" />
@@ -329,7 +331,7 @@ export default function VendorProfilePage() {
                       <div className="absolute bottom-4 left-4 right-4">
                         <div className="flex items-center gap-2 text-white text-sm">
                           <TrendingUp className="w-4 h-4" />
-                          {product.views.toLocaleString()} مشاهدة
+                          {product.views_count?.toLocaleString() || 0} مشاهدة
                         </div>
                       </div>
                     </div>
