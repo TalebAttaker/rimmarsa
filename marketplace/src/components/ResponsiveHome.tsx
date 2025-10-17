@@ -1,6 +1,5 @@
 'use client'
 
-import { useIsMobile } from '@/hooks/useIsMobile'
 import MobileHome from './mobile/MobileHome'
 import MobileLayout from './mobile/MobileLayout'
 import ModernNavbar from './modern-navbar'
@@ -41,22 +40,23 @@ interface ResponsiveHomeProps {
 }
 
 export default function ResponsiveHome({ categories, products }: ResponsiveHomeProps) {
-  const isMobile = useIsMobile()
+  // Use CSS media queries for responsive design instead of JS detection
+  // This works better with SSR and has no flash
 
-  if (isMobile) {
-    // Mobile Version - App-like UI
-    return (
-      <MobileLayout>
-        <MobileHome
-          categories={categories}
-          products={products}
-        />
-      </MobileLayout>
-    )
-  }
-
-  // Desktop Version - Original Design
   return (
+    <>
+      {/* Mobile Version - Hidden on desktop with CSS */}
+      <div className="md:hidden">
+        <MobileLayout>
+          <MobileHome
+            categories={categories}
+            products={products}
+          />
+        </MobileLayout>
+      </div>
+
+      {/* Desktop Version - Hidden on mobile with CSS */}
+      <div className="hidden md:block">
     <div className="min-h-screen bg-white">
       {/* Modern Navbar */}
       <ModernNavbar />
@@ -161,5 +161,7 @@ export default function ResponsiveHome({ categories, products }: ResponsiveHomeP
       {/* Modern Footer */}
       <ModernFooter />
     </div>
+      </div>
+    </>
   )
 }

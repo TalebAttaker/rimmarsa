@@ -1,7 +1,6 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { useIsMobile } from '@/hooks/useIsMobile'
 import MobileBottomNav from './MobileBottomNav'
 
 interface MobileLayoutProps {
@@ -10,14 +9,7 @@ interface MobileLayoutProps {
 }
 
 export default function MobileLayout({ children, showBottomNav = true }: MobileLayoutProps) {
-  const isMobile = useIsMobile()
-
-  if (!isMobile) {
-    // Desktop: render children as-is
-    return <>{children}</>
-  }
-
-  // Mobile: add bottom navigation and padding
+  // Mobile layout wrapper with bottom navigation
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Content with bottom padding for nav */}
