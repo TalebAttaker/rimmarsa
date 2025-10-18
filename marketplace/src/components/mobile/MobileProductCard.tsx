@@ -40,10 +40,10 @@ export default function MobileProductCard({
       <Link href={`/products/${id}`}>
         <motion.div
           whileTap={{ scale: 0.98 }}
-          className="bg-white rounded-2xl overflow-hidden shadow-md active:shadow-lg transition-all duration-300"
+          className="bg-gray-800/50 backdrop-blur-md rounded-2xl overflow-hidden shadow-lg border border-yellow-500/20 active:shadow-xl active:shadow-yellow-500/20 transition-all duration-300"
         >
           {/* Image Container */}
-          <div className="relative aspect-square bg-gray-100">
+          <div className="relative aspect-square bg-gray-900">
             <img
               src={imageUrl}
               alt={name}
@@ -68,21 +68,21 @@ export default function MobileProductCard({
             </motion.button>
 
             {/* Sale Badge (if applicable) */}
-            <div className="absolute bottom-2 right-2 px-2 py-1 bg-secondary-500 rounded-lg">
-              <span className="text-xs font-bold text-white">جديد</span>
+            <div className="absolute bottom-2 right-2 px-2 py-1 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg shadow-lg">
+              <span className="text-xs font-bold text-black">جديد</span>
             </div>
           </div>
 
           {/* Product Info */}
           <div className="p-3 space-y-2">
             {/* Title */}
-            <h3 className="font-bold text-gray-900 text-sm line-clamp-2 min-h-[2.5rem]">
+            <h3 className="font-bold text-gray-100 text-sm line-clamp-2 min-h-[2.5rem]">
               {name}
             </h3>
 
             {/* Location */}
             {city && (
-              <div className="flex items-center gap-1 text-gray-500">
+              <div className="flex items-center gap-1 text-gray-400">
                 <MapPin className="w-3 h-3" />
                 <span className="text-xs">{city}</span>
               </div>
@@ -91,15 +91,15 @@ export default function MobileProductCard({
             {/* Price & Rating */}
             <div className="flex items-center justify-between pt-1">
               <div>
-                <span className="text-lg font-bold text-primary-600">
+                <span className="text-lg font-bold text-yellow-400">
                   {price.toLocaleString('ar-MR')}
                 </span>
-                <span className="text-xs text-gray-500 mr-1">أوقية</span>
+                <span className="text-xs text-gray-400 mr-1">أوقية</span>
               </div>
 
-              <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg">
+              <div className="flex items-center gap-1 bg-yellow-500/20 px-2 py-1 rounded-lg">
                 <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                <span className="text-xs font-semibold text-gray-700">4.5</span>
+                <span className="text-xs font-semibold text-yellow-400">4.5</span>
               </div>
             </div>
           </div>

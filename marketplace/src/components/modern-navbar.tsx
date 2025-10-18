@@ -134,11 +134,11 @@ export default function ModernNavbar() {
                 whileTap={{ scale: 0.95 }}
               >
                 <Link
-                  href="/login"
+                  href="/account"
                   className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black rounded-xl font-semibold shadow-lg shadow-yellow-500/50 hover:shadow-xl hover:shadow-yellow-500/60 transition-all duration-300"
                 >
                   <FiUser className="w-4 h-4" />
-                  تسجيل الدخول
+                  حسابي
                 </Link>
               </motion.div>
             </div>
@@ -252,19 +252,19 @@ export default function ModernNavbar() {
                 className="space-y-3"
               >
                 <Link
-                  href="/login"
+                  href="/account"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-semibold shadow-lg shadow-yellow-500/50"
                 >
                   <FiUser />
-                  تسجيل الدخول
+                  حسابي
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/vendor-registration"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl border-2 border-yellow-500 text-yellow-400 font-semibold hover:bg-yellow-500/10 transition-colors duration-300"
                 >
-                  إنشاء حساب
+                  كن بائعاً
                 </Link>
               </motion.div>
             </div>

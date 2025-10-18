@@ -39,7 +39,7 @@ export default function MobileHome({ categories, products }: MobileHomeProps) {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       {/* Hero Section */}
       <MobileHero />
 
@@ -72,7 +72,7 @@ export default function MobileHome({ categories, products }: MobileHomeProps) {
 
       {/* Product Tabs */}
       <div className="px-4 py-4">
-        <div className="flex items-center gap-2 bg-white rounded-2xl p-1 shadow-sm">
+        <div className="flex items-center gap-2 bg-gray-800/50 backdrop-blur-md rounded-2xl p-1 shadow-lg border border-yellow-500/20">
           {tabs.map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -83,8 +83,8 @@ export default function MobileHome({ categories, products }: MobileHomeProps) {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
                   isActive
-                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md'
-                    : 'text-gray-600'
+                    ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-black shadow-md shadow-yellow-500/50'
+                    : 'text-gray-300 hover:text-yellow-400'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -116,7 +116,7 @@ export default function MobileHome({ categories, products }: MobileHomeProps) {
         <Link href="/products">
           <motion.button
             whileTap={{ scale: 0.98 }}
-            className="w-full mt-4 py-4 bg-white border-2 border-primary-500 text-primary-600 rounded-2xl font-bold shadow-sm"
+            className="w-full mt-4 py-4 bg-gray-800/50 backdrop-blur-md border-2 border-yellow-500 text-yellow-400 rounded-2xl font-bold shadow-lg hover:bg-yellow-500/10 transition-all duration-300"
           >
             عرض جميع المنتجات
           </motion.button>
@@ -129,21 +129,21 @@ export default function MobileHome({ categories, products }: MobileHomeProps) {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-r from-secondary-500 to-secondary-600 rounded-2xl p-6 shadow-lg"
+          className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-2xl p-6 shadow-lg shadow-yellow-500/30"
         >
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <Zap className="w-5 h-5 text-yellow-300" />
-                <h3 className="text-white font-bold">كن بائعاً</h3>
+                <Zap className="w-5 h-5 text-black" />
+                <h3 className="text-black font-bold">كن بائعاً</h3>
               </div>
-              <p className="text-white/90 text-sm mb-3">
+              <p className="text-black/80 text-sm mb-3">
                 ابدأ البيع اليوم واربح عمولات حصرية
               </p>
               <Link href="/vendor-registration">
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  className="px-6 py-2 bg-white text-secondary-600 rounded-xl font-bold text-sm shadow-lg"
+                  className="px-6 py-2 bg-black text-yellow-400 rounded-xl font-bold text-sm shadow-lg hover:bg-gray-900 transition-colors duration-300"
                 >
                   سجّل الآن
                 </motion.button>
@@ -155,25 +155,25 @@ export default function MobileHome({ categories, products }: MobileHomeProps) {
 
         {/* Features Grid */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
+          <div className="bg-gray-800/50 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-yellow-500/20 text-center">
             <div className="text-3xl mb-2">🚚</div>
-            <div className="text-xs font-semibold text-gray-900">توصيل سريع</div>
-            <div className="text-xs text-gray-500">لجميع المدن</div>
+            <div className="text-xs font-semibold text-yellow-400">توصيل سريع</div>
+            <div className="text-xs text-gray-400">لجميع المدن</div>
           </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
+          <div className="bg-gray-800/50 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-yellow-500/20 text-center">
             <div className="text-3xl mb-2">🛡️</div>
-            <div className="text-xs font-semibold text-gray-900">دفع آمن</div>
-            <div className="text-xs text-gray-500">حماية 100%</div>
+            <div className="text-xs font-semibold text-yellow-400">دفع آمن</div>
+            <div className="text-xs text-gray-400">حماية 100%</div>
           </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
+          <div className="bg-gray-800/50 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-yellow-500/20 text-center">
             <div className="text-3xl mb-2">💬</div>
-            <div className="text-xs font-semibold text-gray-900">دعم 24/7</div>
-            <div className="text-xs text-gray-500">نحن هنا دائماً</div>
+            <div className="text-xs font-semibold text-yellow-400">دعم 24/7</div>
+            <div className="text-xs text-gray-400">نحن هنا دائماً</div>
           </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
+          <div className="bg-gray-800/50 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-yellow-500/20 text-center">
             <div className="text-3xl mb-2">🎁</div>
-            <div className="text-xs font-semibold text-gray-900">عروض يومية</div>
-            <div className="text-xs text-gray-500">خصومات حصرية</div>
+            <div className="text-xs font-semibold text-yellow-400">عروض يومية</div>
+            <div className="text-xs text-gray-400">خصومات حصرية</div>
           </div>
         </div>
       </div>

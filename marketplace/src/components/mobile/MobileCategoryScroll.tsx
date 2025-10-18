@@ -28,10 +28,10 @@ const categoryColors = [
 
 export default function MobileCategoryScroll({ categories }: MobileCategoryScrollProps) {
   return (
-    <div className="py-4 bg-gray-50">
+    <div className="py-4">
       <div className="px-4 mb-3 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-gray-900">الفئات</h2>
-        <Link href="/products" className="text-sm text-primary-600 font-medium">
+        <h2 className="text-lg font-bold text-yellow-400">الفئات</h2>
+        <Link href="/products" className="text-sm text-yellow-500 font-medium hover:text-yellow-400 transition-colors">
           عرض الكل ←
         </Link>
       </div>
@@ -65,7 +65,7 @@ export default function MobileCategoryScroll({ categories }: MobileCategoryScrol
                     </div>
 
                     {/* Category Name */}
-                    <p className="text-xs font-medium text-gray-700 text-center line-clamp-2 leading-tight">
+                    <p className="text-xs font-medium text-gray-300 text-center line-clamp-2 leading-tight">
                       {category.name_ar || category.name}
                     </p>
                   </div>

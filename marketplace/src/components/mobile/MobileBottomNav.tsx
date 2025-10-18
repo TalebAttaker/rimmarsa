@@ -34,7 +34,7 @@ const navItems = [
     bgColor: 'bg-yellow-500/20'
   },
   {
-    href: '/login',
+    href: '/account',
     icon: User,
     label: 'حسابي',
     activeColor: 'text-yellow-400',
