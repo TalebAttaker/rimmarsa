@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Award
 } from 'lucide-react'
+import MobileBottomNav from '@/components/mobile/MobileBottomNav'
 
 export default function AccountPage() {
   const [activeTab, setActiveTab] = useState<'stats' | 'subscription'>('stats')
@@ -378,6 +379,9 @@ export default function AccountPage() {
 
       {/* Bottom Spacing for Mobile Nav */}
       <div className="h-24 md:hidden"></div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   )
 }
