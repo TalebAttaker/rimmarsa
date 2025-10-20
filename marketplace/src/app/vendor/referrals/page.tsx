@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
-import { Users, Copy, CheckCircle, Gift, TrendingUp, Clock, Award } from 'lucide-react'
+import { Users, Copy, CheckCircle, Gift, TrendingUp, Download, Award, Share2 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 import VendorLayout from '@/components/vendor/VendorLayout'
+import jsPDF from 'jspdf'
+import 'jspdf-autotable'
 
 interface Vendor {
   id: string
@@ -13,36 +15,29 @@ interface Vendor {
   promo_code: string | null
 }
 
-interface Referral {
+interface ReferredUser {
   id: string
-  referred_vendor_id: string
-  referred_customer_email: string | null
-  referral_code: string
-  commission_earned: number
-  status: string
+  full_name: string
+  phone: string
   created_at: string
-  referred_vendor?: {
-    business_name: string
-    email: string
-    created_at: string
-  }
 }
 
 interface ReferralStats {
   total: number
-  completed: number
-  pending: number
-  totalCommission: number
+  thisMonth: number
+}
+
+// Extend jsPDF type to include autoTable
+interface jsPDFWithAutoTable extends jsPDF {
+  autoTable: (options: Record<string, unknown>) => void
 }
 
 export default function VendorReferralsPage() {
   const [vendor, setVendor] = useState<Vendor | null>(null)
-  const [referrals, setReferrals] = useState<Referral[]>([])
+  const [referredUsers, setReferredUsers] = useState<ReferredUser[]>([])
   const [stats, setStats] = useState<ReferralStats>({
     total: 0,
-    completed: 0,
-    pending: 0,
-    totalCommission: 0
+    thisMonth: 0
   })
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
@@ -63,42 +58,53 @@ export default function VendorReferralsPage() {
         return
       }
 
-      // Get vendor info
+      // Get vendor info - FIX: use user_id instead of id
       const { data: vendorData, error: vendorError } = await supabase
         .from('vendors')
         .select('id, business_name, promo_code')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .single()
 
-      if (vendorError) throw vendorError
+      if (vendorError) {
+        console.error('Error fetching vendor:', vendorError)
+        toast.error('فشل في تحميل بيانات البائع')
+        setLoading(false)
+        return
+      }
 
       setVendor(vendorData)
 
-      // Get referrals
-      const { data: referralsData, error: referralsError } = await supabase
-        .from('referrals')
-        .select(`
-          *,
-          referred_vendor:vendors!referred_vendor_id(
-            business_name,
-            email,
-            created_at
-          )
-        `)
-        .eq('referrer_id', user.id)
-        .order('created_at', { ascending: false })
+      // Get referred users - vendors who registered with this vendor's promo code
+      if (vendorData.promo_code) {
+        const { data: referralsData, error: referralsError } = await supabase
+          .from('vendors')
+          .select('id, business_name, owner_name, phone, created_at')
+          .eq('referral_code', vendorData.promo_code)
+          .order('created_at', { ascending: false })
 
-      if (referralsError) throw referralsError
+        if (referralsError) {
+          console.error('Error fetching referrals:', referralsError)
+        } else {
+          const users = (referralsData || []).map(v => ({
+            id: v.id,
+            full_name: v.business_name || v.owner_name || 'غير متوفر',
+            phone: v.phone || 'غير متوفر',
+            created_at: v.created_at
+          }))
 
-      setReferrals(referralsData || [])
+          setReferredUsers(users)
 
-      // Calculate stats
-      const total = referralsData?.length || 0
-      const completed = referralsData?.filter(r => r.status === 'completed').length || 0
-      const pending = referralsData?.filter(r => r.status === 'pending').length || 0
-      const totalCommission = referralsData?.reduce((sum, r) => sum + Number(r.commission_earned || 0), 0) || 0
+          // Calculate stats
+          const total = users.length
+          const thisMonth = users.filter(u => {
+            const date = new Date(u.created_at)
+            const now = new Date()
+            return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+          }).length
 
-      setStats({ total, completed, pending, totalCommission })
+          setStats({ total, thisMonth })
+        }
+      }
     } catch (error) {
       console.error('Error fetching data:', error)
       toast.error('فشل في تحميل البيانات')
@@ -116,10 +122,76 @@ export default function VendorReferralsPage() {
     }
   }
 
-  const shareReferralLink = () => {
-    const referralUrl = `${window.location.origin}/vendor-registration?ref=${vendor?.promo_code}`
-    navigator.clipboard.writeText(referralUrl)
-    toast.success('تم نسخ رابط الإحالة!')
+  const shareReferralLink = async () => {
+    if (!vendor?.promo_code) return
+
+    const shareText = `انضم إلى ريمارسا باستخدام كود الإحالة الخاص بي: ${vendor.promo_code}\n\nاحصل على مزايا حصرية!\n\nhttps://www.rimmarsa.com/vendor-registration?ref=${vendor.promo_code}`
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'كود الإحالة - ريمارسا',
+          text: shareText
+        })
+        toast.success('تم المشاركة بنجاح!')
+      } catch {
+        // User cancelled or error occurred
+        copyPromoCode()
+      }
+    } else {
+      copyPromoCode()
+    }
+  }
+
+  const downloadPDF = () => {
+    if (referredUsers.length === 0) {
+      toast.error('لا يوجد مستخدمون لتحميلهم')
+      return
+    }
+
+    try {
+      const doc = new jsPDF()
+
+      // Title
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(20)
+      doc.text('Referral Report - Rimmarsa', 105, 20, { align: 'center' })
+
+      doc.setFontSize(12)
+      doc.text(`Vendor: ${vendor?.business_name || ''}`, 105, 30, { align: 'center' })
+      doc.text(`Promo Code: ${vendor?.promo_code || ''}`, 105, 38, { align: 'center' })
+      doc.text(`Total Referrals: ${referredUsers.length}`, 105, 46, { align: 'center' })
+      doc.text(`Date: ${new Date().toLocaleDateString('ar-MR')}`, 105, 54, { align: 'center' })
+
+      // Table
+      const tableData = referredUsers.map((user, index) => [
+        index + 1,
+        user.full_name,
+        user.phone,
+        new Date(user.created_at).toLocaleDateString('ar-MR')
+      ])
+
+      ;(doc as jsPDFWithAutoTable).autoTable({
+        startY: 65,
+        head: [['#', 'Name', 'Phone', 'Registration Date']],
+        body: tableData,
+        theme: 'grid',
+        styles: {
+          font: 'helvetica',
+          fontSize: 10
+        },
+        headStyles: {
+          fillColor: [234, 179, 8], // Yellow
+          textColor: [0, 0, 0]
+        }
+      })
+
+      doc.save(`referrals-${vendor?.promo_code}-${new Date().toISOString().split('T')[0]}.pdf`)
+      toast.success('تم تحميل الملف بنجاح!')
+    } catch (error) {
+      console.error('Error generating PDF:', error)
+      toast.error('فشل تحميل الملف')
+    }
   }
 
   if (loading) {
@@ -168,25 +240,26 @@ export default function VendorReferralsPage() {
                     <div className="text-4xl font-bold tracking-wider">
                       {vendor.promo_code}
                     </div>
-                    <button
-                      onClick={copyPromoCode}
-                      className="p-3 bg-white/20 hover:bg-white/30 rounded-xl transition-colors"
-                    >
-                      {copied ? (
-                        <CheckCircle className="w-6 h-6" />
-                      ) : (
-                        <Copy className="w-6 h-6" />
-                      )}
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={copyPromoCode}
+                        className="p-3 bg-white/20 hover:bg-white/30 rounded-xl transition-colors"
+                      >
+                        {copied ? (
+                          <CheckCircle className="w-6 h-6" />
+                        ) : (
+                          <Copy className="w-6 h-6" />
+                        )}
+                      </button>
+                      <button
+                        onClick={shareReferralLink}
+                        className="p-3 bg-white/20 hover:bg-white/30 rounded-xl transition-colors"
+                      >
+                        <Share2 className="w-6 h-6" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-                <button
-                  onClick={shareReferralLink}
-                  className="w-full py-3 bg-black/20 hover:bg-black/30 backdrop-blur-xl rounded-xl font-semibold transition-colors"
-                >
-                  نسخ رابط الإحالة
-                </button>
               </>
             ) : (
               <div className="bg-black/20 backdrop-blur-xl rounded-2xl p-6">
@@ -197,7 +270,7 @@ export default function VendorReferralsPage() {
         </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -205,49 +278,23 @@ export default function VendorReferralsPage() {
             className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-yellow-500/20"
           >
             <div className="flex items-center gap-3 mb-2">
-              <Users className="w-5 h-5 text-yellow-400" />
+              <Users className="w-6 h-6 text-yellow-400" />
               <span className="text-gray-400 text-sm">إجمالي الإحالات</span>
             </div>
-            <div className="text-3xl font-bold text-white">{stats.total}</div>
+            <div className="text-4xl font-bold text-yellow-400">{stats.total}</div>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-green-500/20"
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <CheckCircle className="w-5 h-5 text-green-400" />
-              <span className="text-gray-400 text-sm">مكتملة</span>
-            </div>
-            <div className="text-3xl font-bold text-white">{stats.completed}</div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-blue-500/20"
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <Clock className="w-5 h-5 text-blue-400" />
-              <span className="text-gray-400 text-sm">قيد الانتظار</span>
-            </div>
-            <div className="text-3xl font-bold text-white">{stats.pending}</div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
             className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-yellow-500/20"
           >
             <div className="flex items-center gap-3 mb-2">
-              <TrendingUp className="w-5 h-5 text-yellow-400" />
-              <span className="text-gray-400 text-sm">العمولة المكتسبة</span>
+              <TrendingUp className="w-6 h-6 text-yellow-400" />
+              <span className="text-gray-400 text-sm">نشط هذا الشهر</span>
             </div>
-            <div className="text-3xl font-bold text-white">{stats.totalCommission.toLocaleString()} أوقية</div>
+            <div className="text-4xl font-bold text-yellow-400">{stats.thisMonth}</div>
           </motion.div>
         </div>
 
@@ -255,60 +302,61 @@ export default function VendorReferralsPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.3 }}
           className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-yellow-500/20 overflow-hidden"
         >
-          <div className="p-6 border-b border-yellow-500/20">
+          <div className="p-6 border-b border-yellow-500/20 flex items-center justify-between">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <Award className="w-6 h-6 text-yellow-400" />
-              البائعون المحالون
+              المستخدمون المُحالون ({referredUsers.length})
             </h3>
+            {referredUsers.length > 0 && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={downloadPDF}
+                className="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-xl transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                <span className="hidden md:inline">تحميل PDF</span>
+              </motion.button>
+            )}
           </div>
 
-          {referrals.length > 0 ? (
+          {referredUsers.length > 0 ? (
             <div className="divide-y divide-yellow-500/10">
-              {referrals.map((referral, index) => (
+              {referredUsers.map((user, index) => (
                 <motion.div
-                  key={referral.id}
+                  key={user.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className="p-6 hover:bg-yellow-500/5 transition-colors"
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <h4 className="text-lg font-semibold text-white mb-1">
-                        {referral.referred_vendor?.business_name || 'بائع محال'}
-                      </h4>
-                      <p className="text-sm text-gray-400 mb-2">
-                        {referral.referred_vendor?.email}
-                      </p>
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span>
-                          تاريخ التسجيل: {new Date(referral.created_at).toLocaleDateString('ar-MR')}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          رمز الإحالة: <span className="font-mono text-yellow-400">{referral.referral_code}</span>
-                        </span>
+                      <div className="flex items-center gap-2 mb-2">
+                        <CheckCircle className="w-4 h-4 text-green-400" />
+                        <h4 className="text-lg font-semibold text-white">
+                          {user.full_name}
+                        </h4>
                       </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          referral.status === 'completed'
-                            ? 'bg-green-500/20 text-green-400'
-                            : referral.status === 'pending'
-                            ? 'bg-blue-500/20 text-blue-400'
-                            : 'bg-gray-500/20 text-gray-400'
-                        }`}
-                      >
-                        {referral.status === 'completed' ? 'مكتمل' : referral.status === 'pending' ? 'قيد الانتظار' : referral.status}
-                      </span>
-                      {referral.commission_earned > 0 && (
-                        <span className="text-yellow-400 font-semibold">
-                          +{Number(referral.commission_earned).toLocaleString()} أوقية
-                        </span>
-                      )}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <p className="text-gray-500">الهاتف</p>
+                          <p className="text-gray-300 font-mono">{user.phone}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">تاريخ التسجيل</p>
+                          <p className="text-gray-300">
+                            {new Date(user.created_at).toLocaleDateString('ar-MR', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -317,9 +365,9 @@ export default function VendorReferralsPage() {
           ) : (
             <div className="p-12 text-center">
               <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400 mb-2">لا توجد إحالات بعد</p>
+              <p className="text-gray-400 mb-2">لم تحصل على إحالات بعد</p>
               <p className="text-gray-500 text-sm">
-                شارك رمزك الترويجي مع البائعين الآخرين لتبدأ في كسب العمولات
+                شارك كود الإحالة الخاص بك لتبدأ في كسب العمولات!
               </p>
             </div>
           )}
