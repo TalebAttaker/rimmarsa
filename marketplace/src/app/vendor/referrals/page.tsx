@@ -48,21 +48,22 @@ export default function VendorReferralsPage() {
 
   const fetchData = async () => {
     try {
-      const supabase = createClient()
-
-      // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
-      if (userError || !user) {
+      // Check localStorage for vendor session (same as VendorLayout)
+      const vendorSession = localStorage.getItem('vendor')
+      if (!vendorSession) {
         toast.error('يجب تسجيل الدخول أولاً')
         window.location.href = '/vendor/login'
         return
       }
 
-      // Get vendor info - FIX: use user_id instead of id
+      const vendorFromStorage = JSON.parse(vendorSession)
+      const supabase = createClient()
+
+      // Get full vendor info including promo_code
       const { data: vendorData, error: vendorError } = await supabase
         .from('vendors')
         .select('id, business_name, promo_code')
-        .eq('user_id', user.id)
+        .eq('id', vendorFromStorage.id)
         .single()
 
       if (vendorError) {
