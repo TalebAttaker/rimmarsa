@@ -45,8 +45,8 @@ const navItems = [
 export default function MobileBottomNav() {
   const pathname = usePathname()
 
-  // Don't show on vendor or admin pages
-  if (pathname?.startsWith('/vendor') || pathname?.startsWith('/fassalapremierprojectbsk')) {
+  // Only hide on vendor dashboard and admin pages, but keep visible on public vendor pages like /vendors
+  if (pathname?.startsWith('/vendor/') || pathname?.startsWith('/fassalapremierprojectbsk')) {
     return null
   }
 
