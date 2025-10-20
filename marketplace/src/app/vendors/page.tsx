@@ -156,7 +156,7 @@ export default function VendorsPage() {
               <Verified className="w-8 h-8 md:w-10 md:h-10 text-white" />
             </div>
             <p className="text-xl md:text-2xl text-secondary-100 mb-8">
-              {totalVendors.toLocaleString()} متجر موثوق في جميع أنحاء موريتانيا
+              كل المتاجر هنا موثقة تماما ومضمونة
             </p>
 
             {/* Search Bar */}
