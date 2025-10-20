@@ -133,10 +133,10 @@ export default function VendorProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 md:from-gray-900 md:via-gray-800 md:to-black flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">جاري التحميل...</p>
+          <div className="w-16 h-16 border-4 border-primary-500/30 md:border-gray-700 border-t-primary-500 md:border-t-yellow-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 md:text-gray-300">جاري التحميل...</p>
         </div>
       </div>
     )
@@ -147,15 +147,15 @@ export default function VendorProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 md:from-gray-900 md:via-gray-800 md:to-black">
       <Toaster position="top-center" />
 
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-primary-600 via-primary-500 to-primary-700 text-white overflow-hidden">
+      <div className="relative bg-gradient-to-br from-primary-600 via-primary-500 to-primary-700 md:from-gray-900 md:via-black md:to-gray-800 text-white overflow-hidden">
         {/* Animated Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl transform translate-x-1/2 translate-y-1/2"></div>
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white md:bg-yellow-400 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white md:bg-yellow-500 rounded-full blur-3xl transform translate-x-1/2 translate-y-1/2"></div>
         </div>
 
         <div className="container mx-auto px-4 py-16 relative z-10">
@@ -194,7 +194,7 @@ export default function VendorProfilePage() {
                 </div>
               </div>
               {/* Verified Badge */}
-              <div className="absolute -bottom-3 -right-3 bg-green-500 text-white rounded-full p-3 shadow-lg">
+              <div className="absolute -bottom-3 -right-3 bg-green-500 md:bg-yellow-500 text-white md:text-black rounded-full p-3 shadow-lg">
                 <CheckCircle className="w-6 h-6" />
               </div>
             </motion.div>
@@ -207,11 +207,10 @@ export default function VendorProfilePage() {
               className="flex-1 text-center md:text-right"
               dir="rtl"
             >
-              <div className="flex items-center gap-3 justify-center md:justify-start mb-2">
+              <div className="flex items-center gap-3 justify-center md:justify-start mb-6">
                 <h1 className="text-4xl md:text-5xl font-bold">{vendor.store_name}</h1>
-                <Award className="w-8 h-8 text-secondary-400" />
+                <Award className="w-8 h-8 text-secondary-400 md:text-yellow-400" />
               </div>
-              <p className="text-xl text-white/90 mb-4">بواسطة {vendor.vendor_name}</p>
 
               {vendor.description && (
                 <p className="text-lg text-white/80 leading-relaxed mb-6 max-w-2xl">
@@ -269,9 +268,16 @@ export default function VendorProfilePage() {
 
         {/* Wave Decoration */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="w-full">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="w-full md:hidden">
             <path
               fill="#ffffff"
+              fillOpacity="1"
+              d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
+            ></path>
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="w-full hidden md:block">
+            <path
+              fill="#111827"
               fillOpacity="1"
               d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
             ></path>
@@ -282,18 +288,18 @@ export default function VendorProfilePage() {
       {/* Products Section */}
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col sm:flex-row items-center justify-between mb-8" dir="rtl">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0 flex items-center gap-3">
-            <ShoppingBag className="w-8 h-8 text-primary-600" />
+          <h2 className="text-3xl font-bold text-gray-900 md:text-white mb-4 sm:mb-0 flex items-center gap-3">
+            <ShoppingBag className="w-8 h-8 text-primary-600 md:text-yellow-400" />
             المنتجات ({products.length})
           </h2>
 
           {/* Sort Dropdown */}
           <div className="flex items-center gap-2">
-            <span className="text-gray-600 text-sm">ترتيب حسب:</span>
+            <span className="text-gray-600 md:text-gray-300 text-sm">ترتيب حسب:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'newest' | 'price-low' | 'price-high')}
-              className="px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+              className="px-4 py-2 border border-gray-300 md:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 md:focus:ring-yellow-500 bg-white md:bg-gray-800 md:text-white"
             >
               <option value="newest">الأحدث</option>
               <option value="price-low">السعر: من الأقل للأعلى</option>
@@ -313,9 +319,9 @@ export default function VendorProfilePage() {
               >
                 <Link
                   href={`/products/${product.id}`}
-                  className="group block bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
+                  className="group block bg-white md:bg-gray-800/50 md:backdrop-blur-xl rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl md:hover:shadow-yellow-500/20 md:border md:border-yellow-500/30 transition-all duration-300"
                 >
-                  <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                  <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-200 md:from-gray-700 md:to-gray-800 overflow-hidden">
                     {product.images && product.images[0] ? (
                       <img
                         src={product.images[0]}
@@ -337,10 +343,10 @@ export default function VendorProfilePage() {
                     </div>
                   </div>
                   <div className="p-4" dir="rtl">
-                    <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors">
+                    <h3 className="font-bold text-gray-900 md:text-white mb-2 line-clamp-2 group-hover:text-primary-600 md:group-hover:text-yellow-400 transition-colors">
                       {product.name}
                     </h3>
-                    <p className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
+                    <p className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 md:from-yellow-400 md:to-yellow-500 bg-clip-text text-transparent">
                       {product.price.toLocaleString()} أوقية
                     </p>
                   </div>
@@ -352,18 +358,18 @@ export default function VendorProfilePage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-3xl shadow-lg p-16 text-center"
+            className="bg-white md:bg-gray-800/50 md:backdrop-blur-xl rounded-3xl shadow-lg md:border md:border-yellow-500/30 p-16 text-center"
           >
-            <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Package className="w-16 h-16 text-gray-400" />
+            <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 md:from-gray-700 md:to-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Package className="w-16 h-16 text-gray-400 md:text-gray-500" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">لا توجد منتجات حالياً</h3>
-            <p className="text-gray-600 mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 md:text-white mb-3">لا توجد منتجات حالياً</h3>
+            <p className="text-gray-600 md:text-gray-300 mb-6">
               هذا البائع لم يضف أي منتجات بعد. تحقق مرة أخرى لاحقاً!
             </p>
             <Link
               href="/vendors"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-primary-500/30 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 md:from-yellow-500 md:to-yellow-600 text-white md:text-black font-semibold rounded-xl hover:shadow-lg hover:shadow-primary-500/30 md:hover:shadow-yellow-500/50 transition-all"
             >
               <ChevronLeft className="w-4 h-4 rotate-180" />
               تصفح بائعين آخرين
@@ -374,22 +380,22 @@ export default function VendorProfilePage() {
 
       {/* Contact Section */}
       {vendor.whatsapp_number && (
-        <div className="bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-16">
+        <div className="bg-gradient-to-br from-primary-50 via-white to-secondary-50 md:from-gray-900 md:via-gray-800 md:to-black py-16">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center"
+              className="bg-white md:bg-gray-800/50 md:backdrop-blur-xl rounded-3xl shadow-2xl md:border md:border-yellow-500/30 p-8 md:p-12 text-center"
               dir="rtl"
             >
-              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageCircle className="w-10 h-10 text-white" />
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 md:from-yellow-500 md:to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <MessageCircle className="w-10 h-10 text-white md:text-black" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-bold text-gray-900 md:text-white mb-4">
                 لديك استفسار عن المنتجات؟
               </h2>
-              <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              <p className="text-lg text-gray-600 md:text-gray-300 mb-8 max-w-2xl mx-auto">
                 تواصل مباشرة مع {vendor.store_name} عبر واتساب للحصول على معلومات أكثر عن المنتجات والأسعار
               </p>
               <motion.button
