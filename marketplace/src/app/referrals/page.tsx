@@ -29,13 +29,29 @@ type ReferredUser = {
   created_at: string
 }
 
+type VendorData = {
+  id: string
+  user_id: string
+  is_approved: boolean
+  promo_code: string | null
+  business_name: string
+  owner_name: string
+  phone: string
+  created_at: string
+}
+
+// Extend jsPDF type to include autoTable
+interface jsPDFWithAutoTable extends jsPDF {
+  autoTable: (options: Record<string, unknown>) => void
+}
+
 export default function ReferralsPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [vendorStatus, setVendorStatus] = useState<VendorStatus>('none')
   const [promoCode, setPromoCode] = useState('')
   const [referredUsers, setReferredUsers] = useState<ReferredUser[]>([])
-  const [vendorData, setVendorData] = useState<any>(null)
+  const [vendorData, setVendorData] = useState<VendorData | null>(null)
 
   useEffect(() => {
     checkVendorStatus()
@@ -138,7 +154,7 @@ export default function ReferralsPage() {
           text: shareText
         })
         toast.success('تم المشاركة بنجاح!')
-      } catch (error) {
+      } catch {
         // User cancelled or error occurred
         copyPromoCode()
       }
@@ -176,7 +192,7 @@ export default function ReferralsPage() {
         new Date(user.created_at).toLocaleDateString('ar-MR')
       ])
 
-      ;(doc as any).autoTable({
+      ;(doc as jsPDFWithAutoTable).autoTable({
         startY: 55,
         head: [['#', 'Name', 'Phone', 'Registration Date']],
         body: tableData,
