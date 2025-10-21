@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { signInAdmin } from '@/lib/auth/admin-auth'
+import { signInVendorWithPhone } from '@/lib/auth/vendor-auth'
 import { authRateLimit, getClientIp } from '@/lib/rate-limit'
-import { adminLoginSchema, getValidationErrors } from '@/lib/validation/schemas'
+import { vendorLoginSchema, getValidationErrors } from '@/lib/validation/schemas'
 import { z } from 'zod'
 
 export async function POST(request: NextRequest) {
@@ -11,10 +11,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
 
     // 1. Validate input with Zod
-    const validatedData = adminLoginSchema.parse(body)
+    const validatedData = vendorLoginSchema.parse(body)
 
     // 2. Rate limiting (5 attempts per 15 minutes)
-    const identifier = `admin_${validatedData.email}_${ip}`
+    const identifier = `vendor_${validatedData.phoneDigits}_${ip}`
     const rateLimitResult = await authRateLimit(identifier)
 
     if (!rateLimitResult.success) {
@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Authenticate with Supabase Auth
-    const { user, session, admin } = await signInAdmin(
-      validatedData.email,
+    const { user, session, vendor } = await signInVendorWithPhone(
+      validatedData.phoneDigits,
       validatedData.password
     )
 
@@ -37,11 +37,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        admin: {
-          id: admin.id,
-          email: admin.email,
-          name: admin.name,
-          role: admin.role,
+        vendor: {
+          id: vendor.id,
+          business_name: vendor.business_name,
+          phone: vendor.phone,
+          logo_url: vendor.logo_url,
+          is_verified: vendor.is_verified,
         },
         session: {
           access_token: session?.access_token,
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
       {
         status: 200,
         headers: {
-          'Set-Cookie': `sb-admin-token=${session?.access_token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`,
+          'Set-Cookie': `sb-access-token=${session?.access_token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`,
         },
       }
     )
@@ -68,12 +69,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Admin login error:', error)
+    console.error('Vendor login error:', error)
 
     // Return generic error (prevent user enumeration)
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+        error: error instanceof Error ? error.message : 'رقم الهاتف أو كلمة المرور غير صحيحة',
       },
       { status: 401 }
     )
