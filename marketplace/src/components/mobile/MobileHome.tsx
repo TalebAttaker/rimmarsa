@@ -125,6 +125,34 @@ export default function MobileHome({ categories, products }: MobileHomeProps) {
 
       {/* Floating Action Sections */}
       <div className="px-4 pb-8 space-y-3">
+        {/* Download Vendor App Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 shadow-lg shadow-blue-500/30"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-5 h-5 text-white" />
+                <h3 className="text-white font-bold">حمل تطبيق البائع</h3>
+              </div>
+              <p className="text-white/90 text-sm mb-3">
+                أدر متجرك من هاتفك في أي وقت
+              </p>
+              <Link href="/download">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-2 bg-white text-blue-600 rounded-xl font-bold text-sm shadow-lg hover:bg-gray-100 transition-colors duration-300"
+                >
+                  تحميل التطبيق
+                </motion.button>
+              </Link>
+            </div>
+            <div className="text-6xl opacity-20">📱</div>
+          </div>
+        </motion.div>
+
         {/* Become Vendor Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
