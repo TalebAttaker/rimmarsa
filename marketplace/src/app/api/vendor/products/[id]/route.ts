@@ -22,7 +22,7 @@ const supabaseAdmin = createClient<Database>(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   // Verify vendor authentication
   const authResult = await requireVendor(request)
@@ -31,6 +31,7 @@ export async function PATCH(
   }
 
   const vendor = authResult.vendor!
+  const params = await props.params
   const productId = params.id
 
   try {
@@ -95,7 +96,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   // Verify vendor authentication
   const authResult = await requireVendor(request)
@@ -104,6 +105,7 @@ export async function DELETE(
   }
 
   const vendor = authResult.vendor!
+  const params = await props.params
   const productId = params.id
 
   try {
