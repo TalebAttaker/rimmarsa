@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import fs from 'fs';
-import path from 'path';
 
 /**
  * GET /api/download/vendor-app
- * Securely download the Rimmarsa Vendor APK
+ * Track and redirect to vendor APK download
  *
  * This endpoint:
  * 1. Tracks download statistics
- * 2. Serves the APK from public folder
- * 3. Sets proper headers for APK download
+ * 2. Redirects to the static APK file
  */
 export async function GET(request: NextRequest) {
   try {
@@ -22,50 +19,31 @@ export async function GET(request: NextRequest) {
                'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
-    // Log download attempt (optional - for analytics)
-    try {
-      await supabase.from('app_downloads').insert({
-        app_name: 'vendor-app',
-        version: '1.0.0',
-        ip_address: ip,
-        user_agent: userAgent,
-        downloaded_at: new Date().toISOString()
-      });
-    } catch (error) {
-      // Non-critical - continue even if logging fails
+    // Log download attempt (non-blocking)
+    supabase.from('app_downloads').insert({
+      app_name: 'vendor-app',
+      version: '1.0.0',
+      ip_address: ip,
+      user_agent: userAgent,
+      downloaded_at: new Date().toISOString()
+    }).then(() => {
+      console.log('Download tracked successfully');
+    }).catch((error) => {
       console.error('Failed to log download:', error);
-    }
+    });
 
-    // Serve APK from public folder
-    const apkFileName = 'vendor-app-1.0.0.apk';
-    const apkPath = path.join(process.cwd(), 'public', 'apps', apkFileName);
+    // Redirect to the static APK file
+    // Vercel serves files from public/ folder automatically at root path
+    const apkUrl = '/apps/vendor-app-1.0.0.apk';
 
-    // Check if file exists
-    if (!fs.existsSync(apkPath)) {
-      return NextResponse.json(
-        { error: 'APK file not found. Please contact support.' },
-        { status: 404 }
-      );
-    }
-
-    // Read the file
-    const fileBuffer = fs.readFileSync(apkPath);
-
-    // Return APK with proper headers
-    return new NextResponse(fileBuffer, {
-      status: 200,
+    return NextResponse.redirect(new URL(apkUrl, request.url), {
+      status: 302,
       headers: {
-        'Content-Type': 'application/vnd.android.package-archive',
-        'Content-Disposition': `attachment; filename="rimmarsa-vendor-${fileBuffer.length}.apk"`,
-        'Content-Length': fileBuffer.length.toString(),
-        'Cache-Control': 'public, max-age=3600',
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '1; mode=block'
+        'Cache-Control': 'no-cache'
       }
     });
   } catch (error) {
-    console.error('Error downloading APK:', error);
+    console.error('Error processing download:', error);
     return NextResponse.json(
       { error: 'An error occurred while downloading the app. Please try again.' },
       { status: 500 }
