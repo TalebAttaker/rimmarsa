@@ -11,8 +11,8 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../services/supabase';
+import SecureTokenManager from '../../services/secureStorage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function VendorLoginScreen({ navigation }) {
@@ -38,9 +38,12 @@ export default function VendorLoginScreen({ navigation }) {
       if (error) throw error;
 
       if (data && data.success) {
-        // Store vendor data
-        await AsyncStorage.setItem('vendor', JSON.stringify(data.vendor));
-        await AsyncStorage.setItem('vendorLoginTime', Date.now().toString());
+        // Store vendor data securely
+        await SecureTokenManager.saveSession(data.vendor);
+        await SecureTokenManager.saveVendorId(data.vendor.id);
+
+        // Store login timestamp securely
+        await SecureTokenManager.saveItem('vendorLoginTime', Date.now().toString());
 
         // Navigate to dashboard
         navigation.replace('VendorDashboard');

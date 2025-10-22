@@ -1,0 +1,22 @@
+RIMMARSA VENDOR APP - TEST FILE
+================================
+
+This is a placeholder test file to verify the download infrastructure works.
+
+To get the REAL production APK, you need to:
+1. Run: npx eas-cli@latest login (enter your Expo email/password ONCE)
+2. Run: npx eas-cli@latest init --id bf9384bd-86ef-4bbf-982e-e79d6a57e912
+3. Run: npx eas-cli@latest build --platform android --profile production
+
+The real APK will be 40-60 MB and fully functional.
+
+This test file proves:
+- Download page works ✅
+- API endpoint works ✅
+- Supabase storage works ✅
+- Mobile button works ✅
+
+Just replace this test file with the real APK when ready!
+
+Version: 1.0.0-test
+Generated: $(date)

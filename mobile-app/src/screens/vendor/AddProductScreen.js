@@ -11,7 +11,7 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import SecureTokenManager from '../../services/secureStorage';
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../../services/supabase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -72,7 +72,7 @@ export default function AddProductScreen({ navigation }) {
 
   const loadVendorAndData = async () => {
     try {
-      const vendorData = await AsyncStorage.getItem('vendor');
+      const vendorData = await SecureTokenManager.getItem('vendor');
       if (!vendorData) {
         navigation.replace('VendorLogin');
         return;

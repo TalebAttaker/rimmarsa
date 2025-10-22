@@ -11,7 +11,7 @@ import {
   RefreshControl,
   Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import SecureTokenManager from '../../services/secureStorage';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../services/supabase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -37,7 +37,7 @@ export default function VendorProductsScreen({ navigation }) {
 
   const loadVendorAndProducts = async () => {
     try {
-      const vendorData = await AsyncStorage.getItem('vendor');
+      const vendorData = await SecureTokenManager.getItem('vendor');
       if (!vendorData) {
         navigation.replace('VendorLogin');
         return;

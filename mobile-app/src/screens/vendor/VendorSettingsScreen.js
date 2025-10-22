@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import SecureTokenManager from '../../services/secureStorage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function VendorSettingsScreen({ navigation }) {
@@ -19,8 +19,8 @@ export default function VendorSettingsScreen({ navigation }) {
         style: 'destructive',
         onPress: async () => {
           try {
-            await AsyncStorage.removeItem('vendor');
-            await AsyncStorage.removeItem('vendorLoginTime');
+            await SecureTokenManager.deleteItem('vendor');
+            await SecureTokenManager.deleteItem('vendorLoginTime');
             navigation.replace('VendorLogin');
           } catch (error) {
             console.error('Error logging out:', error);
