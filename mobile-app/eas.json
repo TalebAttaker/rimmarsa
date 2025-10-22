@@ -4,8 +4,10 @@
   },
   "build": {
     "production": {
+      "node": "20.19.4",
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease"
       },
       "env": {
         "SUPABASE_URL": "https://rfyqzuuuumgdoomyhqcu.supabase.co",
