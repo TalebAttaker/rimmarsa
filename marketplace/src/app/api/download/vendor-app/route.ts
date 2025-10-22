@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import fs from 'fs';
+import path from 'path';
 
 /**
  * GET /api/download/vendor-app
@@ -7,9 +9,8 @@ import { createClient } from '@/lib/supabase/server';
  *
  * This endpoint:
  * 1. Tracks download statistics
- * 2. Serves the APK from Supabase Storage
+ * 2. Serves the APK from public folder
  * 3. Sets proper headers for APK download
- * 4. Can be extended to add authentication if needed
  */
 export async function GET(request: NextRequest) {
   try {
@@ -35,41 +36,29 @@ export async function GET(request: NextRequest) {
       console.error('Failed to log download:', error);
     }
 
-    // Get APK URL from Supabase Storage
-    // TODO: Upload APK to Supabase Storage bucket 'public/apps/vendor-app.apk'
+    // Serve APK from public folder
     const apkFileName = 'vendor-app-1.0.0.apk';
-    const { data: urlData } = supabase.storage
-      .from('public')
-      .getPublicUrl(`apps/${apkFileName}`);
+    const apkPath = path.join(process.cwd(), 'public', 'apps', apkFileName);
 
-    if (!urlData?.publicUrl) {
+    // Check if file exists
+    if (!fs.existsSync(apkPath)) {
       return NextResponse.json(
         { error: 'APK file not found. Please contact support.' },
         { status: 404 }
       );
     }
 
-    // Fetch the APK from Supabase Storage
-    const apkResponse = await fetch(urlData.publicUrl);
-
-    if (!apkResponse.ok) {
-      return NextResponse.json(
-        { error: 'Failed to retrieve APK file. Please try again later.' },
-        { status: 500 }
-      );
-    }
-
-    // Get the APK data
-    const apkBuffer = await apkResponse.arrayBuffer();
+    // Read the file
+    const fileBuffer = fs.readFileSync(apkPath);
 
     // Return APK with proper headers
-    return new NextResponse(apkBuffer, {
+    return new NextResponse(fileBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.android.package-archive',
-        'Content-Disposition': `attachment; filename="${apkFileName}"`,
-        'Content-Length': apkBuffer.byteLength.toString(),
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Content-Disposition': `attachment; filename="rimmarsa-vendor-${fileBuffer.length}.apk"`,
+        'Content-Length': fileBuffer.length.toString(),
+        'Cache-Control': 'public, max-age=3600',
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block'
