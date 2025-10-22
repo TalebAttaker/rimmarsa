@@ -8,7 +8,6 @@ export default {
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "dark",
-    newArchEnabled: true,
     splash: {
       image: "./assets/splash-icon.png",
       resizeMode: "contain",
@@ -23,7 +22,6 @@ export default {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#0F172A"
       },
-      edgeToEdgeEnabled: true,
       package: "com.rimmarsa.mobile",
       permissions: [
         "READ_EXTERNAL_STORAGE",
