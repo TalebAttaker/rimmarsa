@@ -42,6 +42,12 @@ export default {
         }
       ]
     ],
+    updates: {
+      url: "https://u.expo.dev/bf9384bd-86ef-4bbf-982e-e79d6a57e912"
+    },
+    runtimeVersion: {
+      policy: "appVersion"
+    },
     extra: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
