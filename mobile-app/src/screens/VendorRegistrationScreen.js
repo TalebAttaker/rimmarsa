@@ -13,7 +13,7 @@ import {
 import { Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import SecureTokenManager from '../services/secureStorage';
 import { supabase } from '../services/supabase';
 
 export default function VendorRegistrationScreen({ navigation }) {
@@ -297,7 +297,7 @@ export default function VendorRegistrationScreen({ navigation }) {
 
       if (error) throw error;
 
-      await AsyncStorage.setItem('vendor_registration_phone', formData.phone);
+      await SecureTokenManager.saveItem('vendor_registration_phone', formData.phone);
 
       Alert.alert(
         'نجح',
