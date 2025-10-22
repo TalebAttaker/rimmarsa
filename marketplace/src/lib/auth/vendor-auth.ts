@@ -44,10 +44,12 @@ export async function signInVendorWithPhone(phoneDigits: string, password: strin
     throw new Error('حساب البائع غير موجود')
   }
 
+  // Check if vendor is active
   if (!vendor.is_active) {
     throw new Error('حسابك غير نشط')
   }
 
+  // Check if vendor is approved
   if (!vendor.is_approved) {
     throw new Error('حسابك لم تتم الموافقة عليه بعد')
   }

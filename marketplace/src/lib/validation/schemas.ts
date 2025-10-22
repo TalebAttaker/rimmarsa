@@ -119,7 +119,7 @@ export const vendorRegistrationSchema = z.object({
   password: passwordSchema,
 
   package_plan: z.enum(['1_month', '2_months'], {
-    errorMap: () => ({ message: 'خطة الاشتراك غير صحيحة' }),
+    message: 'خطة الاشتراك غير صحيحة',
   }),
 
   referred_by_code: z
@@ -177,15 +177,20 @@ export const productFilterSchema = z
 // FILE UPLOAD SCHEMAS
 // ============================================================================
 
-export const imageUploadSchema = z.object({
-  file: z
-    .instanceof(File)
-    .refine((file) => file.size <= 5 * 1024 * 1024, 'حجم الملف يجب أن لا يتجاوز 5 ميجابايت')
-    .refine(
-      (file) => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
-      'نوع الملف يجب أن يكون JPEG أو PNG أو WebP'
-    ),
-})
+// Only create schema if File is defined (browser environment)
+export const imageUploadSchema = typeof File !== 'undefined'
+  ? z.object({
+      file: z
+        .instanceof(File)
+        .refine((file) => file.size <= 5 * 1024 * 1024, 'حجم الملف يجب أن لا يتجاوز 5 ميجابايت')
+        .refine(
+          (file) => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
+          'نوع الملف يجب أن يكون JPEG أو PNG أو WebP'
+        ),
+    })
+  : z.object({
+      file: z.any()
+    })
 
 // ============================================================================
 // ADMIN SCHEMAS
@@ -194,7 +199,7 @@ export const imageUploadSchema = z.object({
 export const vendorApprovalSchema = z.object({
   vendor_request_id: z.string().uuid('معرف الطلب غير صحيح'),
   action: z.enum(['approve', 'reject'], {
-    errorMap: () => ({ message: 'الإجراء غير صحيح' }),
+    message: 'الإجراء غير صحيح',
   }),
   rejection_reason: z.string().max(500).optional(),
 })
@@ -209,8 +214,8 @@ export function validateAndSanitize<T>(schema: z.ZodSchema<T>, data: unknown): T
 }
 
 // Helper to return validation errors as friendly JSON
-export function getValidationErrors(error: z.ZodError) {
-  return error.errors.map((err) => ({
+export function getValidationErrors(error: z.ZodError<unknown>) {
+  return error.issues.map((err) => ({
     field: err.path.join('.'),
     message: err.message,
   }))

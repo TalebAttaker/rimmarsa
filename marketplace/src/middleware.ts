@@ -8,7 +8,8 @@ export async function middleware(request: NextRequest) {
 
   // 1. Geographic Access Control (CRITICAL SECURITY)
   // Block all traffic from outside Mauritania
-  const country = request.geo?.country || request.headers.get('x-vercel-ip-country')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const country = (request as any).geo?.country || request.headers.get('x-vercel-ip-country')
 
   if (!isCountryMauritania(country)) {
     return new NextResponse(
