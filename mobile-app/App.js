@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { I18nManager, Platform } from 'react-native';
+import React from 'react';
+import { Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -9,12 +9,6 @@ import VendorLoginScreen from './src/screens/vendor/VendorLoginScreen';
 import VendorNavigator from './src/navigation/VendorNavigator';
 
 const Stack = createStackNavigator();
-
-// Force RTL layout for Arabic
-if (!I18nManager.isRTL) {
-  I18nManager.forceRTL(true);
-  I18nManager.allowRTL(true);
-}
 
 const theme = {
   colors: {
