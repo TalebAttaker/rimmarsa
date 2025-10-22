@@ -45,10 +45,10 @@ describe('SQL Security Utilities', () => {
     })
 
     it('should throw TypeError for non-string input', () => {
-      expect(() => escapePostgresLikePattern(null as any)).toThrow(TypeError)
-      expect(() => escapePostgresLikePattern(undefined as any)).toThrow(TypeError)
-      expect(() => escapePostgresLikePattern(123 as any)).toThrow(TypeError)
-      expect(() => escapePostgresLikePattern({} as any)).toThrow(TypeError)
+      expect(() => escapePostgresLikePattern(null as unknown as string)).toThrow(TypeError)
+      expect(() => escapePostgresLikePattern(undefined as unknown as string)).toThrow(TypeError)
+      expect(() => escapePostgresLikePattern(123 as unknown as string)).toThrow(TypeError)
+      expect(() => escapePostgresLikePattern({} as unknown as string)).toThrow(TypeError)
     })
   })
 
