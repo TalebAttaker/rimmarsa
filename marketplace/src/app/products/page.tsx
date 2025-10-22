@@ -14,6 +14,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import toast, { Toaster } from 'react-hot-toast'
 import MobileBottomNav from '@/components/mobile/MobileBottomNav'
+import { sanitizeSearchQuery } from '@/lib/security/sql-utils'
 
 type Product = Database['public']['Tables']['products']['Row']
 type Category = Database['public']['Tables']['categories']['Row']
@@ -91,7 +92,15 @@ export default function ProductsPage() {
       if (selectedRegion) query = query.eq('region_id', selectedRegion)
       if (selectedCity) query = query.eq('city_id', selectedCity)
       if (searchQuery) {
-        query = query.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`)
+        try {
+          const safeQuery = sanitizeSearchQuery(searchQuery)
+          query = query.or(`name.ilike.%${safeQuery}%,description.ilike.%${safeQuery}%`)
+        } catch (error) {
+          console.error('Search query validation error:', error)
+          toast.error('استعلام البحث يحتوي على أحرف غير صالحة')
+          setLoading(false)
+          return
+        }
       }
       if (minPrice) query = query.gte('price', parseFloat(minPrice))
       if (maxPrice) query = query.lte('price', parseFloat(maxPrice))

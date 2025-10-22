@@ -52,7 +52,7 @@ export default function VendorProductsPage() {
 
     const vendor = JSON.parse(storedVendor)
     setVendorId(vendor.id)
-    fetchProducts(vendor.id)
+    fetchProducts() // No longer needs vendor ID - server-side auth handles it
   }, [router])
 
   useEffect(() => {
@@ -72,19 +72,30 @@ export default function VendorProductsPage() {
     setFilteredProducts(filtered)
   }, [searchQuery, statusFilter, products])
 
-  const fetchProducts = async (vendorId: string) => {
+  const fetchProducts = async () => {
     try {
-      const supabase = createClient()
+      // Use secure API route with server-side authentication
+      const response = await fetch('/api/vendor/products', {
+        method: 'GET',
+        credentials: 'include', // Include HttpOnly cookies
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
 
-      const { data, error } = await supabase
-        .from('products')
-        .select('*, categories(*)')
-        .eq('vendor_id', vendorId)
-        .order('created_at', { ascending: false })
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Session expired, redirect to login
+          localStorage.removeItem('vendor')
+          router.push('/vendor/login')
+          return
+        }
+        throw new Error('Failed to fetch products')
+      }
 
-      if (error) throw error
-      setProducts(data || [])
-      setFilteredProducts(data || [])
+      const data = await response.json()
+      setProducts(data.products || [])
+      setFilteredProducts(data.products || [])
     } catch (error) {
       console.error('Error fetching products:', error)
       toast.error('فشل في تحميل المنتجات')
@@ -95,17 +106,34 @@ export default function VendorProductsPage() {
 
   const toggleProductStatus = async (productId: string, currentStatus: boolean) => {
     try {
-      const supabase = createClient()
+      // Use secure API route with ownership verification
+      const response = await fetch(`/api/vendor/products/${productId}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          is_active: !currentStatus,
+        }),
+      })
 
-      const { error } = await supabase
-        .from('products')
-        .update({ is_active: !currentStatus })
-        .eq('id', productId)
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('vendor')
+          router.push('/vendor/login')
+          return
+        }
+        if (response.status === 403) {
+          toast.error('غير مصرح لك بتعديل هذا المنتج')
+          return
+        }
+        throw new Error('Failed to update product')
+      }
 
-      if (error) throw error
-
+      const data = await response.json()
       toast.success(currentStatus ? 'تم إخفاء المنتج' : 'تم تفعيل المنتج')
-      if (vendorId) fetchProducts(vendorId)
+      fetchProducts() // Refresh list
     } catch (error) {
       console.error('Error toggling product status:', error)
       toast.error('فشل في تحديث حالة المنتج')
@@ -116,17 +144,31 @@ export default function VendorProductsPage() {
     if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return
 
     try {
-      const supabase = createClient()
+      // Use secure API route with ownership verification
+      const response = await fetch(`/api/vendor/products/${productId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
 
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', productId)
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('vendor')
+          router.push('/vendor/login')
+          return
+        }
+        if (response.status === 403) {
+          toast.error('غير مصرح لك بحذف هذا المنتج')
+          return
+        }
+        throw new Error('Failed to delete product')
+      }
 
-      if (error) throw error
-
-      toast.success('تم حذف المنتج بنجاح')
-      if (vendorId) fetchProducts(vendorId)
+      const data = await response.json()
+      toast.success(data.message || 'تم حذف المنتج بنجاح')
+      fetchProducts() // Refresh list
     } catch (error) {
       console.error('Error deleting product:', error)
       toast.error('فشل في حذف المنتج')

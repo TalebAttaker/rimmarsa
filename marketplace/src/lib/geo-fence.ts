@@ -26,8 +26,14 @@ function ipToNumber(ip: string): number {
 }
 
 export function isIpInMauritania(ip: string): boolean {
-  // Allow localhost/private IPs in development
-  if (process.env.NODE_ENV === 'development') {
+  // SECURITY FIX (VULN-006): Explicit localhost allowance with separate flag
+  // Only allow localhost when BOTH conditions are true:
+  // 1. NODE_ENV === 'development'
+  // 2. ALLOW_LOCALHOST === 'true' (explicit opt-in)
+  if (
+    process.env.NODE_ENV === 'development' &&
+    process.env.ALLOW_LOCALHOST === 'true'
+  ) {
     if (
       ip === 'unknown' ||
       ip.startsWith('127.') ||
@@ -40,7 +46,14 @@ export function isIpInMauritania(ip: string): boolean {
   }
 
   // Allow whitelisted IPs (for testing, VPN, etc.)
-  const whitelist = process.env.IP_WHITELIST?.split(',') || []
+  // Use IP_WHITELIST_TEST for development/testing
+  // Use IP_WHITELIST for production exceptions (requires documentation)
+  const whitelist = (
+    process.env.NODE_ENV === 'production'
+      ? process.env.IP_WHITELIST
+      : process.env.IP_WHITELIST_TEST
+  )?.split(',') || []
+
   if (whitelist.includes(ip)) {
     return true
   }
@@ -55,12 +68,22 @@ export function isIpInMauritania(ip: string): boolean {
 
 // Alternative: Use Vercel geolocation header (more accurate and easier)
 export function isCountryMauritania(country: string | null): boolean {
-  // Allow in development
-  if (process.env.NODE_ENV === 'development') {
+  // SECURITY FIX (VULN-006): NEVER bypass geo-fence based on NODE_ENV alone!
+  // Only allow specific countries via explicit whitelist
+
+  // Check for explicit country whitelist (for testing/VPN scenarios)
+  const allowedCountries = process.env.GEO_WHITELIST?.split(',') || []
+  if (allowedCountries.includes(country || '')) {
     return true
   }
 
   // Vercel provides 'x-vercel-ip-country' header
   // MR = Mauritania (ISO 3166-1 alpha-2 code)
+  // Allow MR OR if country is null (local development)
+  if (country === null && process.env.NODE_ENV === 'development' && process.env.ALLOW_LOCALHOST === 'true') {
+    // Only in development with explicit flag
+    return true
+  }
+
   return country === 'MR'
 }

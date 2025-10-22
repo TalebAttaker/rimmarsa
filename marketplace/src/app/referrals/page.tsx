@@ -65,8 +65,8 @@ export default function ReferralsPage() {
       const { data: { user } } = await supabase.auth.getUser()
 
       if (!user) {
-        // Not logged in, redirect to login
-        router.push('/login')
+        // Not logged in, redirect to vendor login
+        router.push('/vendor/login')
         return
       }
 
@@ -254,10 +254,10 @@ export default function ReferralsPage() {
             التسجيل كبائع
           </motion.button>
           <button
-            onClick={() => router.push('/account')}
+            onClick={() => router.push('/')}
             className="w-full mt-4 py-3 text-gray-400 hover:text-yellow-400 transition-colors"
           >
-            العودة إلى الحساب
+            العودة إلى الصفحة الرئيسية
           </button>
         </motion.div>
         <MobileBottomNav />
@@ -289,10 +289,10 @@ export default function ReferralsPage() {
             <p className="text-lg font-bold text-yellow-400">1-3 أيام عمل</p>
           </div>
           <button
-            onClick={() => router.push('/account')}
+            onClick={() => router.push('/vendor/dashboard')}
             className="w-full py-4 bg-gray-700 text-white font-semibold rounded-xl hover:bg-gray-600 transition-colors"
           >
-            العودة إلى الحساب
+            العودة إلى لوحة التحكم
           </button>
         </motion.div>
         <MobileBottomNav />
@@ -310,7 +310,7 @@ export default function ReferralsPage() {
         <div className="container mx-auto max-w-4xl">
           <div className="flex items-center justify-between mb-6">
             <button
-              onClick={() => router.push('/account')}
+              onClick={() => router.push('/vendor/dashboard')}
               className="text-black hover:text-gray-800 font-semibold"
             >
               ← العودة

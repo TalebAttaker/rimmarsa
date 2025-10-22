@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { requireAdmin } from '@/lib/auth/admin-middleware'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,9 +31,11 @@ const supabaseAdmin = createClient(
  */
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Add admin authentication check here
-    // const session = await getSession(request)
-    // if (!session || session.role !== 'admin') return 401
+    // Verify admin authentication
+    const authResult = await requireAdmin(request)
+    if (!authResult.success) {
+      return authResult.response!
+    }
 
     // Call the security summary function
     const { data, error } = await supabaseAdmin.rpc('get_security_summary')

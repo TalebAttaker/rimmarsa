@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
 import { Phone, Lock, Store, ArrowRight } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
@@ -30,50 +29,48 @@ export default function VendorLoginPage() {
     setLoading(true)
 
     try {
-      const supabase = createClient()
-
-      // Full phone number with +222 prefix
-      const fullPhone = `+222${phoneDigits}`
-
-      // Look up vendor by phone
-      const { data: vendorData, error: vendorError } = await supabase
-        .from('vendors')
-        .select('id, business_name, password_hash, is_active, is_approved')
-        .eq('phone', fullPhone)
-        .single()
-
-      if (vendorError || !vendorData) {
-        throw new Error('رقم الهاتف أو كلمة المرور غير صحيحة')
-      }
-
-      if (!vendorData.is_active) {
-        throw new Error('حسابك غير نشط. يرجى الاتصال بالدعم')
-      }
-
-      if (!vendorData.is_approved) {
-        throw new Error('حسابك لم تتم الموافقة عليه بعد. يرجى الانتظار حتى تتم مراجعة طلبك')
-      }
-
-      // Verify password using RPC function
-      const { data: passwordValid, error: verifyError } = await supabase.rpc('verify_vendor_password', {
-        vendor_phone: fullPhone,
-        password_attempt: password
+      // SECURITY FIX (FIX-009): Use secure API endpoint instead of direct Supabase calls
+      // This ensures server-side authentication and HttpOnly cookie-based session management
+      const response = await fetch('/api/vendor/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Important: Include cookies in request
+        body: JSON.stringify({
+          phoneDigits,
+          password,
+        }),
       })
 
-      if (verifyError || !passwordValid) {
-        throw new Error('رقم الهاتف أو كلمة المرور غير صحيحة')
+      const data = await response.json()
+
+      if (!response.ok) {
+        // Handle specific error cases
+        if (response.status === 429) {
+          throw new Error(data.error || 'محاولات تسجيل دخول كثيرة جداً. يرجى المحاولة بعد 15 دقيقة')
+        }
+        throw new Error(data.error || 'رقم الهاتف أو كلمة المرور غير صحيحة')
       }
 
-      // Store vendor session in localStorage (format expected by dashboard)
+      if (!data.success || !data.vendor) {
+        throw new Error('فشل تسجيل الدخول')
+      }
+
+      // Store ONLY non-sensitive vendor data in localStorage for UI purposes
+      // Authentication tokens are now in secure HttpOnly cookies (set by API)
       const vendorSession = {
-        id: vendorData.id,
-        business_name: vendorData.business_name,
-        phone: fullPhone
+        id: data.vendor.id,
+        business_name: data.vendor.business_name,
+        phone: data.vendor.phone,
+        logo_url: data.vendor.logo_url,
+        is_verified: data.vendor.is_verified,
+        // NOTE: No tokens stored here! Tokens are in HttpOnly cookies only
       }
       localStorage.setItem('vendor', JSON.stringify(vendorSession))
       localStorage.setItem('vendorLoginTime', Date.now().toString())
 
-      toast.success(`مرحباً ${vendorData.business_name}!`)
+      toast.success(`مرحباً ${data.vendor.business_name}!`)
 
       // Redirect to dashboard
       setTimeout(() => {

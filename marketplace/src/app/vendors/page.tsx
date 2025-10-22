@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import toast, { Toaster } from 'react-hot-toast'
 import MobileBottomNav from '@/components/mobile/MobileBottomNav'
+import { sanitizeSearchQuery } from '@/lib/security/sql-utils'
 
 type Vendor = Database['public']['Tables']['vendors']['Row']
 type Region = Database['public']['Tables']['regions']['Row']
@@ -70,7 +71,15 @@ export default function VendorsPage() {
       if (selectedRegion) query = query.eq('region_id', selectedRegion)
       if (selectedCity) query = query.eq('city_id', selectedCity)
       if (searchQuery) {
-        query = query.or(`business_name.ilike.%${searchQuery}%,owner_name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`)
+        try {
+          const safeQuery = sanitizeSearchQuery(searchQuery)
+          query = query.or(`business_name.ilike.%${safeQuery}%,owner_name.ilike.%${safeQuery}%,description.ilike.%${safeQuery}%`)
+        } catch (error) {
+          console.error('Search query validation error:', error)
+          toast.error('استعلام البحث يحتوي على أحرف غير صالحة')
+          setLoading(false)
+          return
+        }
       }
 
       const { data: vendorsData, count } = await query

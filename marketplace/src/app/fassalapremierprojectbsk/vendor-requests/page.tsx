@@ -129,17 +129,20 @@ export default function VendorRequestsPage() {
     setProcessing(true)
 
     try {
-      const supabase = createClient()
+      // Call the new secure API route to approve the vendor
+      const response = await fetch('/api/admin/vendors/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ request_id: request.id }),
+      })
 
-      // Call the database function to approve the vendor request
-      const { data, error } = await supabase
-        .rpc('approve_vendor_request', {
-          request_id: request.id
-        })
+      const data = await response.json()
 
-      if (error) throw error
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to approve vendor')
+      }
 
-      toast.success(`Vendor approved! Account created for ${request.business_name}`)
+      toast.success(`✅ Vendor approved! Account created for ${request.business_name}`)
       fetchRequests()
       setShowDetailsModal(false)
     } catch (error: unknown) {

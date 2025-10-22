@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
       validatedData.password
     )
 
-    // 4. Return success with session
+    // 4. Return success WITHOUT exposing tokens in response body
+    // SECURITY FIX (VULN-004): Tokens only in HttpOnly cookies, never in JSON
     return NextResponse.json(
       {
         success: true,
@@ -44,16 +45,16 @@ export async function POST(request: NextRequest) {
           logo_url: vendor.logo_url,
           is_verified: vendor.is_verified,
         },
-        session: {
-          access_token: session?.access_token,
-          refresh_token: session?.refresh_token,
-          expires_at: session?.expires_at,
-        },
+        // NO SESSION TOKENS IN RESPONSE - Tokens only in HttpOnly cookies!
       },
       {
         status: 200,
         headers: {
-          'Set-Cookie': `sb-access-token=${session?.access_token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`,
+          // Set BOTH access and refresh tokens as HttpOnly cookies
+          'Set-Cookie': [
+            `sb-access-token=${session?.access_token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`,
+            `sb-refresh-token=${session?.refresh_token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${7 * 24 * 60 * 60}`, // 7 days
+          ].join(', '),
         },
       }
     )
