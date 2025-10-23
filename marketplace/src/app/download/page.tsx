@@ -19,11 +19,10 @@ export default function DownloadPage() {
     setIsAndroid(/android/i.test(userAgent));
   }, []);
 
-  const appVersion = "1.0.0";
-  const releaseDate = "2025-10-22";
-  // TODO: Replace with actual APK URL from Supabase Storage or CDN
+  const appVersion = "1.2.0";
+  const releaseDate = "2025-01-23";
   const apkUrl = "/api/download/vendor-app";
-  const apkSize = "~45 MB";
+  const apkSize = "~30 MB";
   const apkChecksum = ""; // Will be generated after build
 
   return (
@@ -222,6 +221,16 @@ export default function DownloadPage() {
             <h2 className="text-2xl font-bold text-white mb-6">مميزات التطبيق</h2>
 
             <div className="grid md:grid-cols-2 gap-6">
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
+                <div>
+                  <h3 className="text-white font-semibold mb-1">التسجيل كبائع</h3>
+                  <p className="text-gray-400 text-sm">
+                    تسجيل جديد مع رفع المستندات والاختيار بين الباقات
+                  </p>
+                </div>
+              </div>
+
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
                 <div>

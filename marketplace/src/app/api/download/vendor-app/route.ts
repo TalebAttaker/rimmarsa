@@ -6,12 +6,32 @@ import { createClient } from '@/lib/supabase/server';
  * Track and redirect to vendor APK download
  *
  * This endpoint:
- * 1. Tracks download statistics
- * 2. Redirects to the static APK file
+ * 1. Fetches the latest app version from database
+ * 2. Tracks download statistics
+ * 3. Redirects to the APK download URL
  */
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
+
+    // Get the latest active vendor app version from database
+    const { data: versionData, error: versionError } = await supabase
+      .from('app_versions')
+      .select('version, download_url')
+      .eq('app_name', 'vendor')
+      .eq('is_active', true)
+      .order('released_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    // Fallback to hardcoded version if database query fails
+    const version = versionData?.version || '1.2.0';
+    const downloadUrl = versionData?.download_url ||
+      'https://rfyqzuuuumgdoomyhqcu.supabase.co/storage/v1/object/public/apps/vendor-app-1.2.0.apk';
+
+    if (versionError) {
+      console.error('Error fetching version:', versionError);
+    }
 
     // Get user IP and user agent for analytics
     const ip = request.headers.get('x-forwarded-for') ||
@@ -21,25 +41,24 @@ export async function GET(request: NextRequest) {
 
     // Log download attempt (non-blocking)
     supabase.from('app_downloads').insert({
-      app_name: 'vendor-app',
-      version: '1.0.0',
+      app_name: 'vendor',
+      version: version,
       ip_address: ip,
       user_agent: userAgent,
       downloaded_at: new Date().toISOString()
     }).then(() => {
-      console.log('Download tracked successfully');
+      console.log(`Download tracked: vendor v${version}`);
     }).catch((error) => {
       console.error('Failed to log download:', error);
     });
 
-    // Redirect to the static APK file
-    // Vercel serves files from public/ folder automatically at root path
-    const apkUrl = '/apps/vendor-app-1.0.0.apk';
-
-    return NextResponse.redirect(new URL(apkUrl, request.url), {
+    // Redirect to the APK download URL
+    return NextResponse.redirect(downloadUrl, {
       status: 302,
       headers: {
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
       }
     });
   } catch (error) {
