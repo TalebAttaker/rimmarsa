@@ -53,14 +53,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Redirect to the APK download URL
-    return NextResponse.redirect(downloadUrl, {
-      status: 302,
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
-    });
+    return NextResponse.redirect(new URL(downloadUrl), 302);
   } catch (error) {
     console.error('Error processing download:', error);
     return NextResponse.json(
