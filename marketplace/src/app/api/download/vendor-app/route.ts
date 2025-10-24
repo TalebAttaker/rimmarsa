@@ -39,17 +39,13 @@ export async function GET(request: NextRequest) {
                'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
-    // Log download attempt (non-blocking)
-    supabase.from('app_downloads').insert({
+    // Log download attempt (non-blocking - fire and forget)
+    void supabase.from('app_downloads').insert({
       app_name: 'vendor',
       version: version,
       ip_address: ip,
       user_agent: userAgent,
       downloaded_at: new Date().toISOString()
-    }).then(() => {
-      console.log(`Download tracked: vendor v${version}`);
-    }).catch((error) => {
-      console.error('Failed to log download:', error);
     });
 
     // Redirect to the APK download URL
