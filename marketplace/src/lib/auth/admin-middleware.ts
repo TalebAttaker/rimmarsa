@@ -1,17 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '../database.types'
 
-const supabaseAdmin = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
+// Lazy initialization to avoid runtime errors during build
+let supabaseAdmin: SupabaseClient<Database> | null = null
+
+function getSupabaseAdmin() {
+  if (!supabaseAdmin) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!url || !key) {
+      throw new Error('Missing Supabase environment variables')
+    }
+
+    supabaseAdmin = createClient<Database>(url, key, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    })
   }
-)
+  return supabaseAdmin
+}
 
 export interface AdminAuthResult {
   success: boolean
@@ -49,7 +60,7 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AdminAuthRe
     }
 
     // Verify the token with Supabase Auth
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+    const { data: { user }, error: authError } = await getSupabaseAdmin().auth.getUser(token)
 
     if (authError || !user) {
       return {
@@ -78,7 +89,7 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AdminAuthRe
     }
 
     // Fetch admin from admins table using user_id
-    const { data: admin, error: adminError } = await supabaseAdmin
+    const { data: admin, error: adminError } = await getSupabaseAdmin()
       .from('admins')
       .select('*')
       .eq('user_id', user.id)
@@ -87,7 +98,7 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AdminAuthRe
     if (adminError || !admin) {
       // Try fallback with admin_id from metadata
       if (adminId) {
-        const { data: adminById, error: adminByIdError } = await supabaseAdmin
+        const { data: adminById, error: adminByIdError } = await getSupabaseAdmin()
           .from('admins')
           .select('*')
           .eq('id', adminId)

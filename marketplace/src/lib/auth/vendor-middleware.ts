@@ -1,17 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '../database.types'
 
-const supabaseAdmin = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
+// Lazy initialization to avoid runtime errors during build
+let supabaseAdmin: SupabaseClient<Database> | null = null
+
+function getSupabaseAdmin() {
+  if (!supabaseAdmin) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!url || !key) {
+      throw new Error('Missing Supabase environment variables')
+    }
+
+    supabaseAdmin = createClient<Database>(url, key, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    })
   }
-)
+  return supabaseAdmin
+}
 
 export interface VendorAuthResult {
   success: boolean
@@ -47,7 +58,7 @@ export async function verifyVendorAuth(request: NextRequest): Promise<VendorAuth
     }
 
     // Verify the token with Supabase Auth
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+    const { data: { user }, error: authError } = await getSupabaseAdmin().auth.getUser(token)
 
     if (authError || !user) {
       return {
@@ -61,7 +72,7 @@ export async function verifyVendorAuth(request: NextRequest): Promise<VendorAuth
     }
 
     // Fetch vendor from vendors table using user_id
-    const { data: vendor, error: vendorError } = await supabaseAdmin
+    const { data: vendor, error: vendorError } = await getSupabaseAdmin()
       .from('vendors')
       .select('*')
       .eq('user_id', user.id)

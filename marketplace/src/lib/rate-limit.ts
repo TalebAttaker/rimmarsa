@@ -1,17 +1,26 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
-// Create a Supabase client with service role for rate limiting
-// This bypasses RLS since rate_limits table is service-role only
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
+// Lazy initialization to avoid runtime errors during build
+let supabaseAdmin: SupabaseClient | null = null
+
+function getSupabaseAdmin() {
+  if (!supabaseAdmin) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!url || !key) {
+      throw new Error('Missing Supabase environment variables')
+    }
+
+    supabaseAdmin = createClient(url, key, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    })
   }
-)
+  return supabaseAdmin
+}
 
 interface RateLimitResult {
   success: boolean
@@ -35,7 +44,7 @@ export async function checkRateLimit(
 ): Promise<RateLimitResult> {
   try {
     // Call the check_rate_limit function in Supabase
-    const { data, error } = await supabaseAdmin.rpc('check_rate_limit', {
+    const { data, error } = await getSupabaseAdmin().rpc('check_rate_limit', {
       p_identifier: identifier,
       p_endpoint: endpoint,
       p_max_requests: maxRequests,
@@ -83,7 +92,7 @@ export async function globalRateLimit(identifier: string): Promise<RateLimitResu
  */
 export async function authRateLimit(identifier: string): Promise<RateLimitResult> {
   try {
-    const { data, error } = await supabaseAdmin.rpc('check_auth_rate_limit', {
+    const { data, error } = await getSupabaseAdmin().rpc('check_auth_rate_limit', {
       p_identifier: identifier,
     })
 
