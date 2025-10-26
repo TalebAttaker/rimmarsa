@@ -1,22 +1,28 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '../database.types'
 
-// Create admin client for auth operations
-const supabaseAdmin = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-)
+/**
+ * Create admin client for auth operations (lazy initialization)
+ */
+function getSupabaseAdmin() {
+  return createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  )
+}
 
 /**
  * Sign in admin with email and password
  */
 export async function signInAdmin(email: string, password: string) {
+  const supabaseAdmin = getSupabaseAdmin()
+
   // Attempt sign in with Supabase Auth
   const { data, error } = await supabaseAdmin.auth.signInWithPassword({
     email,
@@ -29,7 +35,7 @@ export async function signInAdmin(email: string, password: string) {
   }
 
   // Fetch admin details from admins table
-  const { data: admin, error: adminError } = await supabaseAdmin
+  const { data: admin, error: adminError } = await getSupabaseAdmin()
     .from('admins')
     .select('*')
     .eq('email', email)
@@ -47,6 +53,8 @@ export async function signInAdmin(email: string, password: string) {
  * Create Supabase Auth user for admin
  */
 export async function createAdminAuthUser(adminId: string, email: string, password: string) {
+  const supabaseAdmin = getSupabaseAdmin()
+
   try {
     // Check if auth user already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
@@ -87,7 +95,7 @@ export async function createAdminAuthUser(adminId: string, email: string, passwo
  * Get current admin from session
  */
 export async function getCurrentAdmin(userId: string) {
-  const { data: admin, error } = await supabaseAdmin
+  const { data: admin, error } = await getSupabaseAdmin()
     .from('admins')
     .select('*')
     .eq('user_id', userId)
