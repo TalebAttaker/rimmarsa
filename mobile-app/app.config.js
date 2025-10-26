@@ -2,7 +2,7 @@ export default {
   expo: {
     name: "ريمارسا - البائع",
     slug: "rimmarsa",
-    version: "1.3.0",
+    version: "1.4.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "dark",
@@ -17,11 +17,6 @@ export default {
         backgroundColor: "#0F172A"
       },
       package: "com.rimmarsa.mobile"
-    },
-    extra: {
-      eas: {
-        projectId: "bf9384bd-86ef-4bbf-982e-e79d6a57e912"
-      }
     }
   }
 };
