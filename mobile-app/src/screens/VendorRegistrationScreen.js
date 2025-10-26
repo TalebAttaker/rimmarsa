@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
 import SecureTokenManager from '../services/secureStorage';
 import { supabase } from '../services/supabase';
 
@@ -122,18 +121,19 @@ export default function VendorRegistrationScreen({ navigation }) {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.8,
+      base64: true,
     });
 
     if (!result.canceled) {
-      uploadImage(result.assets[0].uri, type);
+      uploadImage(result.assets[0].uri, result.assets[0].base64, type);
     }
   };
 
-  const uploadImage = async (uri, type) => {
+  const uploadImage = async (uri, base64Data, type) => {
     setUploading((prev) => ({ ...prev, [type]: true }));
     setUploadProgress((prev) => ({ ...prev, [type]: 0 }));
 
-    // Simulate progress
+    // Simulate progress for better UX
     const progressInterval = setInterval(() => {
       setUploadProgress((prev) => {
         const current = prev[type];
@@ -148,19 +148,25 @@ export default function VendorRegistrationScreen({ navigation }) {
       const fileName = `${Date.now()}-${type}.jpg`;
       const filePath = `vendor-requests/${type}/${fileName}`;
 
-      // Read file as base64
-      const base64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+      // Convert base64 to ArrayBuffer using native atob
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
 
-      // Upload to Supabase
+      // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('images')
-        .upload(filePath, decode(base64), {
+        .upload(filePath, byteArray.buffer, {
           contentType: 'image/jpeg',
+          upsert: false,
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        throw new Error(uploadError.message);
+      }
 
       // Get public URL
       const {
@@ -186,42 +192,12 @@ export default function VendorRegistrationScreen({ navigation }) {
       }, 1000);
     } catch (error) {
       clearInterval(progressInterval);
-      Alert.alert('خطأ', 'فشل تحميل الصورة');
+      console.error('Upload error:', error);
+      Alert.alert('خطأ', `فشل تحميل الصورة: ${error.message}`);
       setUploadProgress((prev) => ({ ...prev, [type]: 0 }));
     } finally {
       setUploading((prev) => ({ ...prev, [type]: false }));
     }
-  };
-
-  const decode = (base64) => {
-    const chars =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-    let bufferLength = base64.length * 0.75;
-    const len = base64.length;
-    let p = 0;
-
-    if (base64[len - 1] === '=') {
-      bufferLength--;
-      if (base64[len - 2] === '=') {
-        bufferLength--;
-      }
-    }
-
-    const buffer = new ArrayBuffer(bufferLength);
-    const bytes = new Uint8Array(buffer);
-
-    for (let i = 0; i < len; i += 4) {
-      const encoded1 = chars.indexOf(base64[i]);
-      const encoded2 = chars.indexOf(base64[i + 1]);
-      const encoded3 = chars.indexOf(base64[i + 2]);
-      const encoded4 = chars.indexOf(base64[i + 3]);
-
-      bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
-      bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
-      bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
-    }
-
-    return buffer;
   };
 
   const validatePassword = (password) => {
