@@ -25,9 +25,9 @@ export async function GET(request: NextRequest) {
       .single();
 
     // Fallback to hardcoded version if database query fails
-    const version = versionData?.version || '1.2.0';
+    const version = versionData?.version || '1.3.0';
     const downloadUrl = versionData?.download_url ||
-      'https://rfyqzuuuumgdoomyhqcu.supabase.co/storage/v1/object/public/apps/vendor-app-1.2.0.apk';
+      'https://pub-6cf3ef49a27d47f7bc38b12620f38013.r2.dev/vendor-app-1.2.0.apk';
 
     if (versionError) {
       console.error('Error fetching version:', versionError);
