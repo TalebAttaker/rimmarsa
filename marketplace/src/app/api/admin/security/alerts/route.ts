@@ -2,17 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/auth/admin-middleware'
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-)
-
 /**
  * GET /api/admin/security/alerts
  *
@@ -38,8 +27,20 @@ export async function GET(request: NextRequest) {
       return authResult.response!
     }
 
+    // Create Supabase admin client at runtime
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    )
+
     // Call the security alerts function
-    const { data, error } = await supabaseAdmin.rpc('check_security_alerts')
+    const { data, error} = await supabaseAdmin.rpc('check_security_alerts')
 
     if (error) {
       console.error('Security alerts error:', error)
