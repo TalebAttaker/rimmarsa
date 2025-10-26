@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
+import { Buffer } from 'buffer';
 import SecureTokenManager from '../services/secureStorage';
 import { supabase } from '../services/supabase';
 import { colors, spacing, borderRadius, fontSize } from '../theme/colors';
@@ -149,18 +150,17 @@ export default function VendorRegistrationScreen({ navigation }) {
       const fileName = `${Date.now()}-${type}.jpg`;
       const filePath = `vendor-requests/${type}/${fileName}`;
 
-      // Convert base64 to ArrayBuffer using native atob
-      const byteCharacters = atob(base64Data);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
+      // FIX: Use Buffer for proper base64 decoding (more reliable than atob)
+      const buffer = Buffer.from(base64Data, 'base64');
+      const arrayBuffer = buffer.buffer.slice(
+        buffer.byteOffset,
+        buffer.byteOffset + buffer.byteLength
+      );
 
       // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('images')
-        .upload(filePath, byteArray.buffer, {
+        .upload(filePath, arrayBuffer, {
           contentType: 'image/jpeg',
           upsert: false,
         });

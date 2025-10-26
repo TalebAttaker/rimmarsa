@@ -16,7 +16,7 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import * as ImagePicker from 'expo-image-picker';
 
-const CURRENT_VERSION = '1.4.0';
+const CURRENT_VERSION = '1.5.0';
 const VERSION_CHECK_URL = 'https://www.rimmarsa.com/api/app-version';
 
 const supabase = createClient(
@@ -426,7 +426,7 @@ export default function App() {
               </Text>
             </TouchableOpacity>
 
-            <Text style={styles.version}>الإصدار 1.4.0</Text>
+            <Text style={styles.version}>الإصدار 1.5.0</Text>
           </ScrollView>
         </View>
       );
