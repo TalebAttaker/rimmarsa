@@ -10,19 +10,49 @@ import {
   LockClosedIcon
 } from '@heroicons/react/24/outline';
 
+interface AppVersion {
+  version: string;
+  buildNumber: number;
+  downloadUrl: string;
+  fileSize: number;
+  releasedAt: string;
+  releaseNotes: {
+    ar: string[];
+    en: string[];
+  };
+}
+
 export default function DownloadPage() {
   const [isAndroid, setIsAndroid] = useState(false);
+  const [versionInfo, setVersionInfo] = useState<AppVersion | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Detect if user is on Android
     const userAgent = navigator.userAgent || navigator.vendor;
     setIsAndroid(/android/i.test(userAgent));
+
+    // Fetch latest version info from API
+    fetch('/api/app-version?app=vendor')
+      .then(res => res.json())
+      .then(data => {
+        setVersionInfo(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch version info:', err);
+        setLoading(false);
+      });
   }, []);
 
-  const appVersion = "1.2.0";
-  const releaseDate = "2025-01-23";
+  const appVersion = versionInfo?.version || "1.3.0";
+  const releaseDate = versionInfo?.releasedAt
+    ? new Date(versionInfo.releasedAt).toLocaleDateString('ar-SA')
+    : "2025-10-26";
   const apkUrl = "/api/download/vendor-app";
-  const apkSize = "~30 MB";
+  const apkSize = versionInfo?.fileSize
+    ? `~${Math.round(versionInfo.fileSize / (1024 * 1024))} MB`
+    : "~60 MB";
   const apkChecksum = ""; // Will be generated after build
 
   return (
