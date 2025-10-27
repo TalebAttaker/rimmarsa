@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -103,16 +102,26 @@ export default function VendorRequestsPage() {
 
   const fetchRequests = async () => {
     try {
-      const supabase = createClient()
+      // Use admin API route instead of direct database access
+      const response = await fetch('/api/admin/vendors/requests', {
+        method: 'GET',
+        credentials: 'include', // Include cookies for authentication
+      })
 
-      const { data, error } = await supabase
-        .from('vendor_requests')
-        .select('*, regions(*), cities(*)')
-        .order('created_at', { ascending: false })
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          // Admin session expired, redirect to login
+          localStorage.removeItem('admin')
+          localStorage.removeItem('loginTime')
+          router.push('/fassalapremierprojectbsk/login')
+          return
+        }
+        throw new Error('Failed to fetch vendor requests')
+      }
 
-      if (error) throw error
-      setRequests(data || [])
-      setFilteredRequests(data || [])
+      const data = await response.json()
+      setRequests(data.requests || [])
+      setFilteredRequests(data.requests || [])
     } catch (error) {
       console.error('Error fetching requests:', error)
       toast.error('Failed to load vendor requests')
@@ -133,6 +142,7 @@ export default function VendorRequestsPage() {
       const response = await fetch('/api/admin/vendors/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Include cookies for authentication
         body: JSON.stringify({ request_id: request.id }),
       })
 
@@ -163,18 +173,23 @@ export default function VendorRequestsPage() {
     setProcessing(true)
 
     try {
-      const supabase = createClient()
-
-      const { error } = await supabase
-        .from('vendor_requests')
-        .update({
-          status: 'rejected',
+      // Use admin API route for rejection
+      const response = await fetch('/api/admin/vendors/requests', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          request_id: selectedRequest.id,
+          action: 'reject',
           rejection_reason: rejectionReason,
-          reviewed_at: new Date().toISOString()
-        })
-        .eq('id', selectedRequest.id)
+        }),
+      })
 
-      if (error) throw error
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to reject vendor')
+      }
 
       toast.success('Vendor request rejected')
       fetchRequests()
@@ -262,17 +277,23 @@ export default function VendorRequestsPage() {
     setProcessing(true)
 
     try {
-      const supabase = createClient()
-
-      const { error } = await supabase
-        .from('vendor_requests')
-        .update({
+      // Use admin API route for password reset
+      const response = await fetch('/api/admin/vendors/requests', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          request_id: selectedRequest.id,
+          action: 'reset_password',
           password: newPassword,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', selectedRequest.id)
+        }),
+      })
 
-      if (error) throw error
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'فشل تحديث كلمة المرور')
+      }
 
       toast.success('تم تحديث كلمة المرور بنجاح')
       setShowPasswordResetModal(false)
