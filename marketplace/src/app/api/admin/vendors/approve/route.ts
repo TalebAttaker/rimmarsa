@@ -2,17 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth/admin-middleware'
 import { createClient } from '@supabase/supabase-js'
 
-// Create admin client for auth operations
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-)
+// Create admin client for auth operations (lazy initialization)
+function getSupabaseAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  )
+}
 
 /**
  * POST /api/admin/vendors/approve
@@ -40,6 +42,9 @@ export async function POST(request: NextRequest) {
 
     const admin = authResult.admin!
     const { request_id } = await request.json()
+
+    // Initialize Supabase admin client
+    const supabaseAdmin = getSupabaseAdmin()
 
     if (!request_id) {
       return NextResponse.json(
