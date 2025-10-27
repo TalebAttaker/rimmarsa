@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { uploadImageToR2, requestUploadToken } from '@/lib/r2-upload'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -92,6 +93,7 @@ export default function VendorsPage() {
   const [submitting, setSubmitting] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const [uploadingPersonal, setUploadingPersonal] = useState(false)
+  const [uploadToken, setUploadToken] = useState<string | null>(null)
 
   useEffect(() => {
     // Check authentication
@@ -183,35 +185,43 @@ export default function VendorsPage() {
     setFormData(prev => ({ ...prev, promo_code: code }))
   }
 
+  // Request upload token when modal opens
+  useEffect(() => {
+    if (showModal && !uploadToken) {
+      requestUploadToken()
+        .then(token => {
+          setUploadToken(token)
+          console.log('Admin upload token acquired for R2 uploads')
+        })
+        .catch(error => {
+          console.error('Failed to get upload token:', error)
+          toast.error('Failed to get upload token')
+        })
+    }
+  }, [showModal, uploadToken])
+
   const handleImageUpload = async (file: File, type: 'logo' | 'personal') => {
     if (type === 'logo') setUploadingLogo(true)
     else setUploadingPersonal(true)
 
     try {
-      const supabase = createClient()
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
-      const filePath = `vendors/${type}/${fileName}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('images')
-        .upload(filePath, file)
-
-      if (uploadError) throw uploadError
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath)
+      // Upload to R2 using the secure upload endpoint
+      const result = await uploadImageToR2(
+        file,
+        type,
+        uploadToken || undefined
+      )
 
       if (type === 'logo') {
-        setFormData(prev => ({ ...prev, logo_url: publicUrl }))
+        setFormData(prev => ({ ...prev, logo_url: result.url }))
       } else {
-        setFormData(prev => ({ ...prev, personal_picture_url: publicUrl }))
+        setFormData(prev => ({ ...prev, personal_picture_url: result.url }))
       }
 
-      toast.success(`${type === 'logo' ? 'Logo' : 'Personal picture'} uploaded successfully!`)
+      toast.success(`${type === 'logo' ? 'Logo' : 'Personal picture'} uploaded to R2 successfully!`)
+      console.log(`Uploaded ${type} to R2:`, result.url)
     } catch (error: unknown) {
-      console.error('Error uploading image:', error)
+      console.error('Error uploading image to R2:', error)
       const errorMessage = error instanceof Error ? error.message : 'Failed to upload image'
       toast.error(errorMessage)
     } finally {

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { uploadMultipleImagesToR2, requestUploadToken } from '@/lib/r2-upload'
 import VendorLayout from '@/components/vendor/VendorLayout'
 import { motion } from 'framer-motion'
 import {
@@ -126,35 +127,21 @@ export default function AddProductPage() {
     if (images.length === 0) return []
 
     setUploadingImages(true)
-    const uploadedUrls: string[] = []
 
     try {
-      const supabase = createClient()
+      // Upload all product images to R2 using the secure upload endpoint
+      const uploadedUrls = await uploadMultipleImagesToR2(
+        images,
+        'product',
+        (current, total, percentage) => {
+          console.log(`Uploading image ${current}/${total} (${percentage}%)`)
+        }
+      )
 
-      for (const image of images) {
-        const fileExt = image.name.split('.').pop()
-        const fileName = `${vendorId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-        const filePath = `products/${fileName}`
-
-        const { error: uploadError } = await supabase.storage
-          .from('images')
-          .upload(filePath, image, {
-            cacheControl: '3600',
-            upsert: false
-          })
-
-        if (uploadError) throw uploadError
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('images')
-          .getPublicUrl(filePath)
-
-        uploadedUrls.push(publicUrl)
-      }
-
+      console.log(`Successfully uploaded ${uploadedUrls.length} images to R2`)
       return uploadedUrls
     } catch (error) {
-      console.error('Error uploading images:', error)
+      console.error('Error uploading images to R2:', error)
       throw new Error('فشل في رفع الصور')
     } finally {
       setUploadingImages(false)

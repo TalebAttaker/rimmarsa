@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { uploadImageToR2, requestUploadToken } from '@/lib/r2-upload'
 import { motion } from 'framer-motion'
 import {
   Store,
@@ -76,6 +77,7 @@ export default function VendorRegistrationPage() {
   const [loading, setLoading] = useState(true)
   const [pendingRequest, setPendingRequest] = useState<PendingRequest | null>(null)
   const [passwordError, setPasswordError] = useState('')
+  const [uploadToken, setUploadToken] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     business_name: '',
@@ -129,6 +131,21 @@ export default function VendorRegistrationPage() {
       setFilteredCities([])
     }
   }, [formData.region_id, cities, formData.city_id])
+
+  // Request upload token when reaching step 3 (documents upload)
+  useEffect(() => {
+    if (step === 3 && !uploadToken) {
+      requestUploadToken()
+        .then(token => {
+          setUploadToken(token)
+          console.log('Upload token acquired for R2 uploads')
+        })
+        .catch(error => {
+          console.error('Failed to get upload token:', error)
+          toast.error('فشل في الحصول على رمز التحميل. يرجى تحديث الصفحة.')
+        })
+    }
+  }, [step, uploadToken])
 
   const checkInitialPhone = () => {
     // Check if there's a phone in localStorage from previous attempt
@@ -258,36 +275,16 @@ export default function VendorRegistrationPage() {
     setUploading(prev => ({ ...prev, [type]: true }))
     setUploadProgress(prev => ({ ...prev, [type]: 0 }))
 
-    // Simulate progress for better UX
-    const progressInterval = setInterval(() => {
-      setUploadProgress(prev => {
-        const currentProgress = prev[type]
-        if (currentProgress < 90) {
-          return { ...prev, [type]: currentProgress + 10 }
-        }
-        return prev
-      })
-    }, 200)
-
     try {
-      const supabase = createClient()
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
-      const filePath = `vendor-requests/${type}/${fileName}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('images')
-        .upload(filePath, file)
-
-      if (uploadError) throw uploadError
-
-      // Complete the progress
-      clearInterval(progressInterval)
-      setUploadProgress(prev => ({ ...prev, [type]: 100 }))
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath)
+      // Upload to R2 using the secure upload endpoint
+      const result = await uploadImageToR2(
+        file,
+        type,
+        uploadToken || undefined,
+        (progress) => {
+          setUploadProgress(prev => ({ ...prev, [type]: progress.percentage }))
+        }
+      )
 
       const fieldMap = {
         nni: 'nni_image_url',
@@ -296,17 +293,19 @@ export default function VendorRegistrationPage() {
         payment: 'payment_screenshot_url'
       }
 
-      setFormData(prev => ({ ...prev, [fieldMap[type]]: publicUrl }))
-      toast.success('Image uploaded successfully!')
+      setFormData(prev => ({ ...prev, [fieldMap[type]]: result.url }))
+      toast.success('تم تحميل الصورة بنجاح!')
+
+      console.log(`Uploaded ${type} to R2:`, result.url)
+      console.log(`Remaining uploads: ${result.remaining_uploads}`)
 
       // Reset progress after a short delay
       setTimeout(() => {
         setUploadProgress(prev => ({ ...prev, [type]: 0 }))
       }, 1000)
     } catch (error: unknown) {
-      clearInterval(progressInterval)
-      console.error('Error uploading image:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to upload image'
+      console.error('Error uploading image to R2:', error)
+      const errorMessage = error instanceof Error ? error.message : 'فشل في تحميل الصورة'
       toast.error(errorMessage)
       setUploadProgress(prev => ({ ...prev, [type]: 0 }))
     } finally {

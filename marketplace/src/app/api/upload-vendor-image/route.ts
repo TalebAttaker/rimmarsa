@@ -50,7 +50,7 @@ function validateFileSignature(buffer: Buffer, mimeType: string): boolean {
  * Required: FormData with:
  * - 'token': Upload token from /api/vendor/request-upload-token
  * - 'image': Image file (max 10MB, JPEG/PNG/WebP only)
- * - 'type': Image type (nni, personal, store, payment)
+ * - 'type': Image type (nni, personal, store, payment, logo, product)
  */
 export async function POST(request: NextRequest) {
   try {
@@ -76,9 +76,9 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Validate image type
-    if (!type || !['nni', 'personal', 'store', 'payment'].includes(type)) {
+    if (!type || !['nni', 'personal', 'store', 'payment', 'logo', 'product'].includes(type)) {
       return NextResponse.json(
-        { error: 'Invalid image type. Must be: nni, personal, store, or payment' },
+        { error: 'Invalid image type. Must be: nni, personal, store, payment, logo, or product' },
         { status: 400 }
       );
     }
@@ -231,6 +231,6 @@ export async function GET() {
       allowed_types: ALLOWED_MIME_TYPES,
       file_signature_validation: true,
     },
-    acceptedTypes: ['nni', 'personal', 'store', 'payment']
+    acceptedTypes: ['nni', 'personal', 'store', 'payment', 'logo', 'product']
   });
 }
