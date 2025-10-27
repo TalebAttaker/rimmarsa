@@ -40,7 +40,55 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AdminAuthRe
       }
     }
 
-    // Verify the token with Supabase Auth
+    // Try to decode as custom session token first (base64 JSON)
+    try {
+      const decoded = JSON.parse(Buffer.from(token, 'base64').toString('utf-8'))
+
+      // Check if it's a custom admin session token
+      if (decoded.admin_id && decoded.email && decoded.role) {
+        // Verify token hasn't expired (1 hour from timestamp)
+        const tokenAge = Date.now() - decoded.timestamp
+        if (tokenAge > 3600000) { // 1 hour in milliseconds
+          return {
+            success: false,
+            error: 'Session expired',
+            response: NextResponse.json(
+              { error: 'Session expired, please login again', code: 'SESSION_EXPIRED' },
+              { status: 401 }
+            ),
+          }
+        }
+
+        // Fetch admin from database to verify it still exists
+        const { data: admin, error: adminError } = await getSupabaseAdmin()
+          .from('admins')
+          .select('*')
+          .eq('id', decoded.admin_id)
+          .eq('email', decoded.email)
+          .single()
+
+        if (adminError || !admin) {
+          return {
+            success: false,
+            error: 'Admin account not found',
+            response: NextResponse.json(
+              { error: 'Admin account not found', code: 'ADMIN_NOT_FOUND' },
+              { status: 403 }
+            ),
+          }
+        }
+
+        console.info(`Admin auth success (custom token): ${admin.email}`)
+        return {
+          success: true,
+          admin,
+        }
+      }
+    } catch (decodeError) {
+      // Not a custom token, continue to Supabase Auth validation
+    }
+
+    // Verify the token with Supabase Auth (fallback for legacy tokens)
     const { data: { user }, error: authError } = await getSupabaseAdmin().auth.getUser(token)
 
     if (authError || !user) {
