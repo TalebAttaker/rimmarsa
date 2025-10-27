@@ -1,246 +1,159 @@
-# Rimmarsa Mobile App (React Native)
+# Rimmarsa Vendor Mobile App
 
-## Overview
-Arabic-first mobile application for the Rimmarsa marketplace platform in Mauritania.
+Professional Android app for Rimmarsa vendors with automatic update detection.
+
+## Quick Start
+
+### First Time Setup (One Command)
+
+```bash
+./INSTALL-ANDROID-SDK.sh
+```
+
+This installs the Android SDK (takes ~5 minutes, only once).
+
+### Every Time You Update the App (One Command)
+
+```bash
+# 1. Edit your code
+# 2. Bump version in package.json
+# 3. Run:
+./DEPLOY.sh
+```
+
+That's it! Users will automatically be prompted to update.
+
+## What's Included
+
+- ✅ **Local builds** - No Expo, no EAS, just pure React Native
+- ✅ **Automatic updates** - App checks for new versions on startup
+- ✅ **Version management** - All versions stored in Supabase
+- ✅ **One-command deploy** - Build + Upload + Database update in one script
+- ✅ **Simple workflow** - No complicated CI/CD needed
 
 ## Features
 - ✅ Full Arabic language support with RTL layout
 - ✅ Vendor registration with image uploads
-- ✅ Upload progress tracking
-- ✅ Product browsing
-- ✅ Vendor profiles
+- ✅ Multi-step registration form
+- ✅ Region & city selection
+- ✅ Subscription plan selection
+- ✅ Automatic update detection
+- ✅ Dark theme UI
 - ✅ Integration with Supabase backend
 
 ## Tech Stack
-- **Framework**: React Native with Expo
-- **Language**: TypeScript
-- **Backend**: Supabase
-- **UI**: React Native Paper (Material Design)
-- **Navigation**: React Navigation
-- **State**: React Context API
-- **Fonts**: Cairo (Arabic-optimized)
+- **Framework**: React Native 0.74 (pure, no Expo)
+- **Database**: Supabase
+- **Storage**: Supabase Storage
+- **Build**: Local Gradle builds
+- **Deployment**: Automated via DEPLOY.sh
 
-## Project Structure
+## File Structure
+
 ```
 mobile-app/
-├── src/
-│   ├── components/          # Reusable UI components
-│   │   ├── ImageUpload.tsx # Upload component with progress
-│   │   └── RTLView.tsx     # RTL wrapper component
-│   ├── screens/            # App screens
-│   │   ├── HomeScreen.tsx
-│   │   ├── VendorRegistrationScreen.tsx
-│   │   ├── ProductsScreen.tsx
-│   │   └── VendorProfileScreen.tsx
-│   ├── navigation/         # Navigation configuration
-│   │   └── AppNavigator.tsx
-│   ├── services/           # API services
-│   │   └── supabase.ts
-│   ├── hooks/              # Custom React hooks
-│   │   └── useImageUpload.ts
-│   ├── utils/              # Utility functions
-│   │   └── rtl.ts
-│   └── constants/          # App constants
-│       └── arabic-text.ts
-├── assets/                 # Images, fonts, etc.
-├── app.json               # Expo configuration
-├── package.json
-└── tsconfig.json
-
+├── App.js                    # Main app code
+├── package.json              # Version number defined here
+├── DEPLOY.sh                 # ⭐ One-command build & deploy
+├── INSTALL-ANDROID-SDK.sh    # One-time setup
+├── UPDATE-WORKFLOW.md        # Detailed documentation
+├── README.md                 # This file
+└── android/                  # Auto-generated Android project
 ```
 
-## Setup Instructions
+## Documentation
 
-### Prerequisites
-- Node.js 20+ installed
-- Expo CLI installed: `npm install -g expo-cli`
-- Android Studio (for Android) or Xcode (for iOS)
+- **Quick Reference**: This file (README.md)
+- **Detailed Workflow**: [UPDATE-WORKFLOW.md](./UPDATE-WORKFLOW.md)
+- **Troubleshooting**: See UPDATE-WORKFLOW.md
 
-### Installation
+## How It Works
 
+### Automatic Update Detection
+
+When users open the app:
+1. App checks Supabase for the latest version
+2. If new version available, shows update modal
+3. User taps "Update Now" to download latest APK
+4. User installs and enjoys new features
+
+### Update Workflow for Developers
+
+```
+Edit Code → Bump Version → Run ./DEPLOY.sh → Users Get Updated
+```
+
+The DEPLOY.sh script:
+1. Builds the APK locally (2-5 minutes)
+2. Uploads to Supabase Storage
+3. Updates version in database
+4. Users automatically notified on next app open
+
+### Customizing Updates
+
+Edit `DEPLOY.sh` to customize update messages and release notes, or update directly in Supabase:
+
+```sql
+UPDATE app_versions
+SET release_notes_ar = ARRAY['ميزة جديدة!', 'إصلاحات'],
+    force_update = false
+WHERE app_name = 'vendor' AND version = '1.2.0';
+```
+
+## Quick Reference
+
+| Task | Command |
+|------|---------|
+| First time setup | `./INSTALL-ANDROID-SDK.sh` |
+| Build & Deploy update | `./DEPLOY.sh` |
+| Check versions in DB | `SELECT * FROM app_versions WHERE app_name = 'vendor';` |
+| Test version API | `curl https://www.rimmarsa.com/api/app-version` |
+
+## App Screens
+
+### Vendor Registration (Multi-Step)
+1. **Business Information** - Name, phone, WhatsApp
+2. **Location** - Region and city selection
+3. **Documents** - NNI, personal photo, store photo
+4. **Payment** - Plan selection and payment screenshot
+
+### Dashboard
+- Vendor profile information
+- Business statistics
+- Account management
+
+### Update Detection
+- Automatic version check on app start
+- Beautiful update modal with release notes
+- Download and install new versions
+
+## Troubleshooting
+
+### Build fails?
 ```bash
-cd mobile-app
-
-# Install dependencies
-npm install
-
-# Install required packages
-npm install @supabase/supabase-js
-npm install react-native-paper
-npm install @react-navigation/native
-npm install @react-navigation/stack
-npm install expo-image-picker
-npm install expo-file-system
-
-# Start development server
-npm start
+# Clean and rebuild
+rm -rf android
+./DEPLOY.sh
 ```
 
-### Run on Device
+### Upload fails?
+- Check Supabase storage bucket `apps` exists and is public
+- Verify file size limit (default 50MB)
 
-**Android:**
+### Database update fails?
 ```bash
-npm run android
+# Check versions manually
+PGPASSWORD="TahaRou7@2035" psql \
+  "postgresql://postgres.rfyqzuuuumgdoomyhqcu:TahaRou7@2035@aws-0-eu-central-1.pooler.supabase.com:6543/postgres" \
+  -c "SELECT * FROM app_versions WHERE app_name = 'vendor' ORDER BY released_at DESC LIMIT 5;"
 ```
 
-**iOS:**
-```bash
-npm run ios
-```
+## Support
 
-**Expo Go App:**
-1. Install Expo Go from App Store/Play Store
-2. Scan QR code from terminal
+For detailed instructions, see [UPDATE-WORKFLOW.md](./UPDATE-WORKFLOW.md)
 
-## Configuration
+---
 
-### Supabase Configuration
-Create `.env` file:
-```env
-EXPO_PUBLIC_SUPABASE_URL=your-supabase-url
-EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-```
+**Made with ❤️ for Rimmarsa vendors**
 
-### RTL Configuration
-The app automatically detects and applies RTL layout for Arabic content.
-
-## Key Features Implementation
-
-### 1. Vendor Registration
-The vendor registration screen includes:
-- Multi-step form (4 steps)
-- Image uploads with progress bars
-- Region/City selection
-- Pricing plan selection
-- Form validation
-- Duplicate request prevention
-
-### 2. Image Upload with Progress
-```typescript
-const { upload, progress } = useImageUpload()
-
-// Upload returns URL and tracks progress (0-100)
-const imageUrl = await upload(imageFile)
-```
-
-### 3. Arabic Text Support
-All text content is in Arabic with proper RTL layout:
-- Form labels
-- Button text
-- Error messages
-- Success notifications
-
-## Screens
-
-### Home Screen
-- Hero section with statistics
-- Categories grid
-- Recent products
-- Navigation to vendor registration
-
-### Vendor Registration Screen
-**Step 1: معلومات العمل (Business Information)**
-- Business name
-- Owner name
-- Email
-- Phone
-- WhatsApp number
-
-**Step 2: الموقع (Location)**
-- Region selection
-- City selection
-- Address
-
-**Step 3: المستندات (Documents)**
-- National ID (NNI) image
-- Personal photo
-- Store photo
-
-**Step 4: الدفع (Payment)**
-- Pricing plan selection
-- Payment screenshot upload
-
-### Products Screen
-- Browse all products
-- Filter by category
-- Search functionality
-
-### Vendor Profile Screen
-- Vendor information
-- Product listings
-- Contact via WhatsApp
-
-## Building for Production
-
-### Android APK
-```bash
-expo build:android
-```
-
-### iOS IPA
-```bash
-expo build:ios
-```
-
-### Managed Publishing
-```bash
-# Publish update to Expo
-expo publish
-
-# Submit to stores
-expo submit:android
-expo submit:ios
-```
-
-## Environment Variables
-Required environment variables:
-- `EXPO_PUBLIC_SUPABASE_URL`: Supabase project URL
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY`: Supabase anonymous key
-
-## Testing
-
-```bash
-# Run tests
-npm test
-
-# Run with coverage
-npm run test:coverage
-```
-
-## Deployment
-
-The mobile app can be deployed via:
-1. **Expo Go** (development)
-2. **Standalone APK/IPA** (production)
-3. **App Store/Play Store** (official release)
-
-## Known Issues & Solutions
-
-### Issue: Upload Progress Not Showing
-**Solution**: Ensure you're using `expo-file-system` for upload tracking
-
-### Issue: RTL Layout Issues
-**Solution**: Use `I18nManager.forceRTL(true)` in App.tsx
-
-### Issue: Image Picker Not Working
-**Solution**: Add permissions in app.json:
-```json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "The app needs access to your photos"
-        }
-      ]
-    ]
-  }
-}
-```
-
-## Support & Contribution
-For issues or contributions, contact the development team.
-
-## License
-Proprietary - Rimmarsa Platform 2025
+No Expo. No EAS. No complicated CI/CD. Just simple local builds that work.

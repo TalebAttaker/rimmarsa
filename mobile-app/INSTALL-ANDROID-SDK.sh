@@ -1,118 +1,107 @@
 #!/bin/bash
-
-# Install Android SDK and Build APK
-# This script does EVERYTHING needed to build the APK
-
-echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║                                                              ║"
-echo "║   📱 ANDROID SDK INSTALLATION & APK BUILD                    ║"
-echo "║                                                              ║"
-echo "╚══════════════════════════════════════════════════════════════╝"
-echo ""
-
 set -e
 
-# Configuration
-ANDROID_HOME="$HOME/Android/Sdk"
-ANDROID_SDK_ROOT="$ANDROID_HOME"
-CMDLINE_TOOLS_VERSION="11076708"  # Latest version
-BUILD_TOOLS_VERSION="36.0.0"
-PLATFORM_VERSION="android-36"
+################################################################################
+# Android SDK Installation Script for Rimmarsa Vendor App
+#
+# This script installs everything needed to build Android APKs locally
+# Run this ONCE before your first build
+#
+# Usage: ./INSTALL-ANDROID-SDK.sh
+################################################################################
 
-echo "Step 1: Creating Android SDK directory..."
-mkdir -p "$ANDROID_HOME/cmdline-tools"
-
+echo "📱 Android SDK Installation for Rimmarsa"
+echo "========================================"
 echo ""
-echo "Step 2: Downloading Android Command Line Tools..."
-cd /tmp
-wget -q --show-progress "https://dl.google.com/android/repository/commandlinetools-linux-${CMDLINE_TOOLS_VERSION}_latest.zip" -O cmdline-tools.zip
 
-echo ""
-echo "Step 3: Extracting Command Line Tools..."
-unzip -q cmdline-tools.zip
-mv cmdline-tools "$ANDROID_HOME/cmdline-tools/latest"
-rm cmdline-tools.zip
-
-echo ""
-echo "Step 4: Setting up environment variables..."
-export ANDROID_HOME="$HOME/Android/Sdk"
-export ANDROID_SDK_ROOT="$ANDROID_HOME"
-export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION"
-
-# Add to bashrc for future use
-echo "" >> ~/.bashrc
-echo "# Android SDK" >> ~/.bashrc
-echo "export ANDROID_HOME=$HOME/Android/Sdk" >> ~/.bashrc
-echo "export ANDROID_SDK_ROOT=\$ANDROID_HOME" >> ~/.bashrc
-echo "export PATH=\$PATH:\$ANDROID_HOME/cmdline-tools/latest/bin:\$ANDROID_HOME/platform-tools:\$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION" >> ~/.bashrc
-
-echo "✅ Environment configured"
-
-echo ""
-echo "Step 5: Installing Android SDK components..."
-echo "This will take a few minutes..."
-
-# Accept licenses
-yes | sdkmanager --licenses > /dev/null 2>&1 || true
-
-# Install required SDK components
-sdkmanager "platform-tools" "platforms;$PLATFORM_VERSION" "build-tools;$BUILD_TOOLS_VERSION" "ndk;27.1.12297006"
-
-echo "✅ Android SDK installed"
-
-echo ""
-echo "Step 6: Creating local.properties..."
-cd /home/taleb/rimmarsa/mobile-app/android
-echo "sdk.dir=$ANDROID_HOME" > local.properties
-echo "✅ local.properties created"
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Building APK..."
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-# Clean and build
-./gradlew clean
-./gradlew assembleRelease
-
-if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
+# Check if already installed
+if [ -d "$HOME/Android/Sdk" ]; then
+    echo "✅ Android SDK already installed at: $HOME/Android/Sdk"
     echo ""
-    echo "✅ APK built successfully!"
-
-    cd ..
-    cp android/app/build/outputs/apk/release/app-release.apk vendor-app-1.0.0.apk
-
-    SIZE=$(du -h vendor-app-1.0.0.apk | cut -f1)
-    echo "   Size: $SIZE"
-
-    # Generate checksum
-    echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "Generating SHA-256 checksum..."
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-    CHECKSUM=$(sha256sum vendor-app-1.0.0.apk | cut -d' ' -f1)
-    echo ""
-    echo "✅ Checksum: $CHECKSUM"
-    echo "$CHECKSUM" > checksum.txt
-
-    echo ""
-    echo "╔══════════════════════════════════════════════════════════════╗"
-    echo "║   ✅ APK READY!                                              ║"
-    echo "╚══════════════════════════════════════════════════════════════╝"
-    echo ""
-    echo "APK: $(pwd)/vendor-app-1.0.0.apk"
-    echo "Size: $SIZE"
-    echo "Checksum: $CHECKSUM"
-    echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "Next: Upload to Supabase"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo ""
-    echo "Go to: https://supabase.com/dashboard/project/rfyqzuuuumgdoomyhqcu/storage/buckets/public"
-    echo "Upload: vendor-app-1.0.0.apk to apps/ folder"
-    echo ""
-else
-    echo "❌ Build failed"
-    exit 1
+    echo "If you want to reinstall, run:"
+    echo "  rm -rf $HOME/Android/Sdk"
+    echo "  ./INSTALL-ANDROID-SDK.sh"
+    exit 0
 fi
+
+echo "Installing Android SDK..."
+echo ""
+
+# 1. Install Java
+echo "1️⃣  Installing Java 17..."
+sudo apt-get update -qq
+sudo apt-get install -y -qq openjdk-17-jdk wget unzip
+echo "✅ Java installed"
+echo ""
+
+# 2. Download Android Command Line Tools
+echo "2️⃣  Downloading Android Command Line Tools..."
+mkdir -p $HOME/Android/Sdk/cmdline-tools
+cd $HOME/Android/Sdk/cmdline-tools
+
+wget -q --show-progress https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+unzip -q commandlinetools-linux-9477386_latest.zip
+mv cmdline-tools latest
+rm commandlinetools-linux-9477386_latest.zip
+echo "✅ Command line tools downloaded"
+echo ""
+
+# 3. Set Environment Variables
+echo "3️⃣  Setting up environment variables..."
+export ANDROID_HOME=$HOME/Android/Sdk
+export ANDROID_SDK_ROOT=$ANDROID_HOME
+export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+
+# Add to .bashrc for persistence
+if ! grep -q "ANDROID_HOME" ~/.bashrc; then
+    echo "" >> ~/.bashrc
+    echo "# Android SDK" >> ~/.bashrc
+    echo "export ANDROID_HOME=\$HOME/Android/Sdk" >> ~/.bashrc
+    echo "export ANDROID_SDK_ROOT=\$ANDROID_HOME" >> ~/.bashrc
+    echo "export PATH=\$PATH:\$ANDROID_HOME/cmdline-tools/latest/bin:\$ANDROID_HOME/platform-tools" >> ~/.bashrc
+fi
+echo "✅ Environment variables set"
+echo ""
+
+# 4. Accept Licenses
+echo "4️⃣  Accepting Android SDK licenses..."
+yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1
+echo "✅ Licenses accepted"
+echo ""
+
+# 5. Install Required Packages
+echo "5️⃣  Installing Android SDK packages (this may take a few minutes)..."
+$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
+    "platform-tools" \
+    "platforms;android-34" \
+    "build-tools;34.0.0" \
+    "ndk;25.1.8937393" \
+    > /dev/null 2>&1
+echo "✅ SDK packages installed"
+echo ""
+
+# 6. Verify Installation
+echo "6️⃣  Verifying installation..."
+echo ""
+echo "Java version:"
+java -version
+echo ""
+echo "Android SDK location: $ANDROID_HOME"
+echo "SDK packages installed:"
+$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list | grep "installed" | head -5
+echo ""
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ INSTALLATION COMPLETE!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "📱 You can now build Android APKs!"
+echo ""
+echo "Next steps:"
+echo "1. Restart your terminal (or run: source ~/.bashrc)"
+echo "2. Navigate to mobile-app directory"
+echo "3. Run: ./DEPLOY.sh"
+echo ""
+echo "Environment variables added to ~/.bashrc"
+echo "They will be available in new terminal sessions."
+echo ""

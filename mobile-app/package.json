@@ -1,6 +1,6 @@
 {
   "name": "rimmarsa-mobile",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "main": "index.js",
   "scripts": {
     "start": "expo start",
@@ -8,13 +8,17 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.0.3",
     "@supabase/supabase-js": "^2.76.1",
     "buffer": "^6.0.3",
     "expo": "~51.0.0",
-    "expo-image-picker": "~15.0.7",
+    "expo-font": "~12.0.10",
+    "expo-image-picker": "~15.1.0",
+    "expo-linear-gradient": "~13.0.2",
     "expo-status-bar": "~1.12.1",
     "react": "18.2.0",
     "react-native": "0.74.5",
+    "react-native-animatable": "^1.4.0",
     "react-native-paper": "^5.14.5"
   },
   "devDependencies": {

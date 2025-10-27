@@ -1,0 +1,68 @@
+name: Fix Vercel Deployment
+
+on:
+  workflow_dispatch:  # Manual trigger
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Update Vercel Root Directory and Deploy
+        env:
+          VERCEL_TOKEN: r1Vqh284ZaIUW5HZNOOvncrR
+          PROJECT_ID: prj_6uHyeIifMWWrJ6ouBy1zmYAGI9o7
+        run: |
+          echo "🔍 Checking Vercel project configuration..."
+
+          # Get current project settings
+          PROJECT_INFO=$(curl -s -X GET \
+            "https://api.vercel.com/v9/projects/${PROJECT_ID}" \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            -H "Content-Type: application/json")
+
+          echo "Current root directory: $(echo $PROJECT_INFO | jq -r '.rootDirectory // "not set"')"
+
+          # Update root directory to marketplace
+          echo "🔧 Setting root directory to 'marketplace'..."
+          curl -s -X PATCH \
+            "https://api.vercel.com/v9/projects/${PROJECT_ID}" \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d '{"rootDirectory":"marketplace"}' | jq
+
+          echo "✅ Root directory updated!"
+
+          # Trigger deployment
+          echo "🚀 Triggering production deployment..."
+          DEPLOYMENT=$(curl -s -X POST \
+            "https://api.vercel.com/v13/deployments" \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "rimmarsa",
+              "project": "'"${PROJECT_ID}"'",
+              "target": "production",
+              "gitSource": {
+                "type": "github",
+                "ref": "main",
+                "repoId": "TalebAttaker/rimmarsa"
+              }
+            }')
+
+          echo "Deployment response:"
+          echo $DEPLOYMENT | jq
+
+          DEPLOY_URL=$(echo $DEPLOYMENT | jq -r '.url // "unknown"')
+          echo "✅ Deployment URL: https://${DEPLOY_URL}"
+          echo "🎉 Check status at: https://vercel.com/talebattaker/rimmarsa"

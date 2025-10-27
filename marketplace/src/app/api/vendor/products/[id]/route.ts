@@ -35,6 +35,7 @@ export async function PATCH(
   const vendor = authResult.vendor!
   const params = await props.params
   const productId = params.id
+  const supabaseAdmin = getSupabaseAdmin()
 
   try {
     const updates = await request.json()
@@ -109,6 +110,7 @@ export async function DELETE(
   const vendor = authResult.vendor!
   const params = await props.params
   const productId = params.id
+  const supabaseAdmin = getSupabaseAdmin()
 
   try {
     // CRITICAL: Verify ownership before deletion
