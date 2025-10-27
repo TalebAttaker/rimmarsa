@@ -1,19 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/auth/admin-middleware'
-
-function getSupabaseAdmin() {
-  return createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-  )
-}
+import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
 /**
  * GET /api/admin/security/traffic?hours=24

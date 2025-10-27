@@ -80,3 +80,4 @@ pids
 # Temporary folders
 tmp/
 temp/
+.cloudflare-r2-credentials

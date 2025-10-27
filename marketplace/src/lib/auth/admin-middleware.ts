@@ -1,28 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '../database.types'
-
-// Lazy initialization to avoid runtime errors during build
-let supabaseAdmin: SupabaseClient<Database> | null = null
-
-function getSupabaseAdmin() {
-  if (!supabaseAdmin) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-    if (!url || !key) {
-      throw new Error('Missing Supabase environment variables')
-    }
-
-    supabaseAdmin = createClient<Database>(url, key, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    })
-  }
-  return supabaseAdmin
-}
+import { getSupabaseAdmin } from '../supabase/admin'
 
 export interface AdminAuthResult {
   success: boolean

@@ -1,19 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
 import type { Database } from '../database.types'
-
-// Create admin client for auth operations (lazy initialization)
-function getSupabaseAdmin() {
-  return createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    }
-  )
-}
+import { getSupabaseAdmin } from '../supabase/admin'
 
 /**
  * Sign in vendor with phone number and password
