@@ -1,0 +1,549 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Rimmarsa Security Assessment",
+          "version": "1.0.0",
+          "informationUri": "https://rimmarsa.com/security",
+          "rules": [
+            {
+              "id": "VULN-001",
+              "name": "HardcodedR2Credentials",
+              "shortDescription": {
+                "text": "Hardcoded R2 credentials in source code"
+              },
+              "fullDescription": {
+                "text": "Cloudflare R2 access credentials (account ID, access key, secret key) are hardcoded directly in the source code, exposing the entire R2 bucket to unauthorized access."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/798.html",
+              "properties": {
+                "category": "security",
+                "severity": "critical",
+                "cvss": "9.8",
+                "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                "cwe": "CWE-798",
+                "owasp": "A02:2021-Cryptographic Failures"
+              }
+            },
+            {
+              "id": "VULN-002",
+              "name": "MissingSecurityHeaders",
+              "shortDescription": {
+                "text": "Missing critical security headers (CSP, HSTS, X-Frame-Options)"
+              },
+              "fullDescription": {
+                "text": "The application does not implement Content-Security-Policy, Strict-Transport-Security, X-Frame-Options, or other critical security headers, leaving it vulnerable to XSS, clickjacking, and protocol downgrade attacks."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/693.html",
+              "properties": {
+                "category": "security",
+                "severity": "critical",
+                "cvss": "8.1",
+                "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:N",
+                "cwe": "CWE-693",
+                "owasp": "A05:2021-Security Misconfiguration"
+              }
+            },
+            {
+              "id": "VULN-003",
+              "name": "ServiceRoleKeyFallback",
+              "shortDescription": {
+                "text": "Service role key fallback in admin authentication bypasses RLS"
+              },
+              "fullDescription": {
+                "text": "Admin authentication code falls back to using the service role key if the anon key is unavailable, which bypasses Row Level Security policies and allows unrestricted database access."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/284.html",
+              "properties": {
+                "category": "security",
+                "severity": "high",
+                "cvss": "7.5",
+                "cvssVector": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                "cwe": "CWE-284",
+                "owasp": "A01:2021-Broken Access Control"
+              }
+            },
+            {
+              "id": "VULN-004",
+              "name": "RateLimitingFailsOpen",
+              "shortDescription": {
+                "text": "Rate limiting fails open instead of closed on errors"
+              },
+              "fullDescription": {
+                "text": "When rate limit checks encounter errors, the system allows requests through rather than denying them, enabling attackers to bypass rate limits by crashing the rate limiter."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/770.html",
+              "properties": {
+                "category": "security",
+                "severity": "high",
+                "cvss": "7.5",
+                "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "cwe": "CWE-770",
+                "owasp": "A04:2021-Insecure Design"
+              }
+            },
+            {
+              "id": "VULN-005",
+              "name": "GeoFenceBypass",
+              "shortDescription": {
+                "text": "Geographic geo-fence can be bypassed via header manipulation"
+              },
+              "fullDescription": {
+                "text": "The geographic access control relies on the x-vercel-ip-country header which can be spoofed in non-production environments, allowing unauthorized geographic access."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/290.html",
+              "properties": {
+                "category": "security",
+                "severity": "high",
+                "cvss": "7.3",
+                "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+                "cwe": "CWE-290",
+                "owasp": "A07:2021-Identification and Authentication Failures"
+              }
+            },
+            {
+              "id": "VULN-006",
+              "name": "NoAdminSessionTimeout",
+              "shortDescription": {
+                "text": "Admin sessions have no inactivity timeout"
+              },
+              "fullDescription": {
+                "text": "Admin sessions persist for 7 days without checking for user inactivity, creating a window for unauthorized access if an admin leaves their computer unlocked."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/613.html",
+              "properties": {
+                "category": "security",
+                "severity": "high",
+                "cvss": "7.1",
+                "cvssVector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N",
+                "cwe": "CWE-613",
+                "owasp": "A07:2021-Identification and Authentication Failures"
+              }
+            },
+            {
+              "id": "VULN-007",
+              "name": "InsufficientFileValidation",
+              "shortDescription": {
+                "text": "File upload validation only checks magic numbers"
+              },
+              "fullDescription": {
+                "text": "File uploads are validated only by checking magic numbers (file signatures) without scanning for malware, validating dimensions, or checking for embedded malicious metadata or polyglot files."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/434.html",
+              "properties": {
+                "category": "security",
+                "severity": "high",
+                "cvss": "7.4",
+                "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+                "cwe": "CWE-434",
+                "owasp": "A03:2021-Injection"
+              }
+            },
+            {
+              "id": "VULN-008",
+              "name": "WeakPhoneBasedAuth",
+              "shortDescription": {
+                "text": "Weak vendor phone-based authentication"
+              },
+              "fullDescription": {
+                "text": "Vendors authenticate using only 8-digit phone numbers which are easier to enumerate than email addresses and can be reassigned by telecom providers."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/262.html",
+              "properties": {
+                "category": "security",
+                "severity": "medium",
+                "cvss": "6.5",
+                "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+                "cwe": "CWE-262",
+                "owasp": "A07:2021-Identification and Authentication Failures"
+              }
+            },
+            {
+              "id": "VULN-009",
+              "name": "NoAuditLogging",
+              "shortDescription": {
+                "text": "No audit logging for admin actions"
+              },
+              "fullDescription": {
+                "text": "Critical admin actions such as vendor approval/rejection, password resets, and admin user creation are not logged, preventing detection of insider threats and forensic investigations."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/778.html",
+              "properties": {
+                "category": "security",
+                "severity": "medium",
+                "cvss": "5.9",
+                "cvssVector": "CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:N/I:H/A:N",
+                "cwe": "CWE-778",
+                "owasp": "A09:2021-Security Logging and Monitoring Failures"
+              }
+            },
+            {
+              "id": "VULN-010",
+              "name": "MissingRBACEnforcement",
+              "shortDescription": {
+                "text": "Missing role-based access control enforcement on admin endpoints"
+              },
+              "fullDescription": {
+                "text": "Admin API endpoints check for authentication but do not validate that the authenticated user has admin role, allowing potential horizontal privilege escalation."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/862.html",
+              "properties": {
+                "category": "security",
+                "severity": "medium",
+                "cvss": "6.3",
+                "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+                "cwe": "CWE-862",
+                "owasp": "A01:2021-Broken Access Control"
+              }
+            },
+            {
+              "id": "VULN-011",
+              "name": "PlainTextPasswordStorage",
+              "shortDescription": {
+                "text": "Vendor registration passwords stored in plain text temporarily"
+              },
+              "fullDescription": {
+                "text": "Passwords from vendor registration forms are stored in plain text in the vendor_requests table until admin approval, exposing passwords if the database is compromised."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/256.html",
+              "properties": {
+                "category": "security",
+                "severity": "medium",
+                "cvss": "6.5",
+                "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                "cwe": "CWE-256",
+                "owasp": "A02:2021-Cryptographic Failures"
+              }
+            },
+            {
+              "id": "VULN-012",
+              "name": "MissingCSRFProtection",
+              "shortDescription": {
+                "text": "Missing CSRF protection on state-changing requests"
+              },
+              "fullDescription": {
+                "text": "API endpoints lack explicit CSRF token validation. While partially mitigated by SameSite=Strict cookies, defense-in-depth requires explicit CSRF tokens."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/352.html",
+              "properties": {
+                "category": "security",
+                "severity": "medium",
+                "cvss": "6.5",
+                "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N",
+                "cwe": "CWE-352",
+                "owasp": "A01:2021-Broken Access Control"
+              }
+            },
+            {
+              "id": "VULN-013",
+              "name": "UnvalidatedReferralCodes",
+              "shortDescription": {
+                "text": "Unvalidated referral codes enable commission fraud"
+              },
+              "fullDescription": {
+                "text": "Referral codes are not validated to ensure they belong to active, approved vendors, allowing attackers to use fake codes or self-refer to game the commission system."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/20.html",
+              "properties": {
+                "category": "security",
+                "severity": "medium",
+                "cvss": "5.3",
+                "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+                "cwe": "CWE-20",
+                "owasp": "A03:2021-Injection"
+              }
+            },
+            {
+              "id": "VULN-014",
+              "name": "DependencyVulnerabilities",
+              "shortDescription": {
+                "text": "High and moderate severity npm dependency vulnerabilities"
+              },
+              "fullDescription": {
+                "text": "Multiple high-severity vulnerabilities detected in dependencies including @vercel/node, esbuild, path-to-regexp, and undici."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/1035.html",
+              "properties": {
+                "category": "security",
+                "severity": "medium",
+                "cvss": "5.9",
+                "cvssVector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "cwe": "CWE-1035",
+                "owasp": "A06:2021-Vulnerable and Outdated Components"
+              }
+            },
+            {
+              "id": "VULN-015",
+              "name": "PotentialSQLInjection",
+              "shortDescription": {
+                "text": "Potential SQL injection via unsanitized search queries"
+              },
+              "fullDescription": {
+                "text": "Product and vendor search features use .ilike() which may be vulnerable to SQL injection if not properly parameterized by the Supabase client library."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/89.html",
+              "properties": {
+                "category": "security",
+                "severity": "medium",
+                "cvss": "6.3",
+                "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+                "cwe": "CWE-89",
+                "owasp": "A03:2021-Injection"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "VULN-001",
+          "level": "error",
+          "message": {
+            "text": "Hardcoded R2 credentials found in source code. Rotate immediately and move to environment variables."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/src/app/api/upload-vendor-image/route.ts"
+                },
+                "region": {
+                  "startLine": 6,
+                  "endLine": 10,
+                  "snippet": {
+                    "text": "const R2_ACCOUNT_ID = '932136e1e064884067a65d0d357297cf';\nconst R2_ACCESS_KEY_ID = 'd4963dcd29796040ac1062c4e6e59936';\nconst R2_SECRET_ACCESS_KEY = '7a9b56cea689661dbd115769c3fb371122080706b02ff674ddc686280bf81805';"
+                  }
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "Replace hardcoded credentials with environment variables"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "marketplace/src/app/api/upload-vendor-image/route.ts"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "startLine": 6,
+                        "endLine": 10
+                      },
+                      "insertedContent": {
+                        "text": "const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;\nconst R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;\nconst R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY;\n\nif (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY) {\n  throw new Error('Missing R2 credentials in environment variables');\n}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "VULN-002",
+          "level": "error",
+          "message": {
+            "text": "Missing critical security headers. Add CSP, HSTS, X-Frame-Options, and other security headers to next.config.js."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/next.config.js"
+                },
+                "region": {
+                  "startLine": 1,
+                  "endLine": 10
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "VULN-003",
+          "level": "warning",
+          "message": {
+            "text": "Service role key used as fallback in admin authentication. Remove fallback and fail fast if service role key is missing."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/src/lib/auth/admin-auth.ts"
+                },
+                "region": {
+                  "startLine": 10,
+                  "snippet": {
+                    "text": "process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!"
+                  }
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/src/lib/auth/vendor-auth.ts"
+                },
+                "region": {
+                  "startLine": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "VULN-004",
+          "level": "warning",
+          "message": {
+            "text": "Rate limiting fails open on errors. Change to fail-closed with circuit breaker pattern."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/src/lib/rate-limit.ts"
+                },
+                "region": {
+                  "startLine": 54,
+                  "endLine": 63
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "VULN-005",
+          "level": "warning",
+          "message": {
+            "text": "Geographic geo-fence can be bypassed. Add IP-based geolocation validation."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/src/middleware.ts"
+                },
+                "region": {
+                  "startLine": 12
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "VULN-006",
+          "level": "warning",
+          "message": {
+            "text": "No admin session inactivity timeout. Implement 15-minute inactivity check."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/src/middleware.ts"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "VULN-007",
+          "level": "warning",
+          "message": {
+            "text": "File upload validation only checks magic numbers. Add image reprocessing, metadata stripping, and malware scanning."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/src/app/api/upload-vendor-image/route.ts"
+                },
+                "region": {
+                  "startLine": 36,
+                  "endLine": 44
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "VULN-008",
+          "level": "note",
+          "message": {
+            "text": "Vendor authentication uses phone numbers which are less secure than email. Consider adding email as secondary factor."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/src/lib/auth/vendor-auth.ts"
+                },
+                "region": {
+                  "startLine": 22
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "VULN-009",
+          "level": "note",
+          "message": {
+            "text": "No audit logging for admin actions. Create admin_audit_log table and log all critical actions."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/src/app/api/admin/*"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "VULN-010",
+          "level": "note",
+          "message": {
+            "text": "Missing explicit admin role checks. Add requireAdmin() middleware to all admin endpoints."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/src/app/api/admin/*"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "VULN-011",
+          "level": "note",
+          "message": {
+            "text": "Vendor passwords stored in plain text in vendor_requests table. Hash passwords before storage."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "marketplace/src/app/vendor-registration/page.tsx"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

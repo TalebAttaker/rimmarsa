@@ -80,4 +80,72 @@ pids
 # Temporary folders
 tmp/
 temp/
+
+# Credentials and sensitive files
 .cloudflare-r2-credentials
+*.pem
+*.key
+*.cert
+*credentials*.json
+*secret*.json
+
+# Wrangler (Cloudflare Workers)
+.wrangler/
+wrangler.toml.local
+
+# Build artifacts
+dist/
+build/
+out/
+*.apk
+*.aab
+*.ipa
+
+# Mobile app specific
+mobile-app/android/app/build/
+mobile-app/ios/Pods/
+mobile-app/.expo/
+mobile-app/dist/
+
+# Documentation artifacts (keep source in git)
+docs/**/*.pdf
+docs/**/*.docx
+
+# Database dumps and backups
+*.sql.backup
+*.dump
+*.backup
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Package manager
+node_modules/
+.pnp/
+.pnp.js
+.yarn/
+.npm/
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Cache directories
+.cache/
+.next/
+.nuxt/
+.vercel/
+.turbo/

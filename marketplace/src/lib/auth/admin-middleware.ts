@@ -20,13 +20,16 @@ export interface AdminAuthResult {
  */
 export async function verifyAdminAuth(request: NextRequest): Promise<AdminAuthResult> {
   try {
-    // Extract token from Authorization header or cookie
+    // SECURITY: Extract token from Authorization header or cookie
+    // Check both sb-admin-token (new) and sb-access-token (legacy) cookies
     const authHeader = request.headers.get('Authorization')
-    const cookieToken = request.cookies.get('sb-access-token')?.value
+    const adminCookie = request.cookies.get('sb-admin-token')?.value
+    const accessCookie = request.cookies.get('sb-access-token')?.value
 
-    const token = authHeader?.replace('Bearer ', '') || cookieToken
+    const token = authHeader?.replace('Bearer ', '') || adminCookie || accessCookie
 
     if (!token) {
+      console.warn('Admin auth attempt with no token')
       return {
         success: false,
         error: 'No authentication token provided',
@@ -51,22 +54,32 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AdminAuthRe
       }
     }
 
-    // Check if user has admin role in metadata
+    // SECURITY: Check if user has admin role in metadata
+    // This is the first line of defense against privilege escalation
     const userRole = user.user_metadata?.role
     const adminId = user.user_metadata?.admin_id
 
     if (userRole !== 'admin') {
+      console.warn(
+        `SECURITY ALERT: Unauthorized admin access attempt by user ${user.id} (${user.email}). ` +
+        `Role: ${userRole || 'none'}. IP: ${request.headers.get('x-forwarded-for') || 'unknown'}`
+      )
       return {
         success: false,
         error: 'User is not an admin',
         response: NextResponse.json(
-          { error: 'Insufficient permissions', code: 'FORBIDDEN' },
+          {
+            error: 'Forbidden: Admin role required',
+            code: 'FORBIDDEN',
+            message: 'This incident has been logged.'
+          },
           { status: 403 }
         ),
       }
     }
 
-    // Fetch admin from admins table using user_id
+    // SECURITY: Fetch admin from admins table using user_id
+    // This is the second line of defense - verify admin record exists
     const { data: admin, error: adminError } = await getSupabaseAdmin()
       .from('admins')
       .select('*')
@@ -83,6 +96,7 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AdminAuthRe
           .single()
 
         if (!adminByIdError && adminById) {
+          console.info(`Admin auth success: ${adminById.email} (fallback by admin_id)`)
           return {
             success: true,
             admin: adminById,
@@ -90,17 +104,30 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AdminAuthRe
         }
       }
 
+      console.error(
+        `SECURITY ALERT: User ${user.id} (${user.email}) has admin role in metadata ` +
+        `but no matching record in admins table. Potential data corruption or security breach.`
+      )
+
       return {
         success: false,
         error: 'Admin record not found',
         response: NextResponse.json(
-          { error: 'Admin account not found', code: 'ADMIN_NOT_FOUND' },
+          {
+            error: 'Admin account not found in database',
+            code: 'ADMIN_NOT_FOUND',
+            message: 'Please contact system administrator. Your account may need to be reactivated.'
+          },
           { status: 403 }
         ),
       }
     }
 
-    // Success - return admin data
+    // SECURITY: Success - user is authenticated and authorized
+    console.info(
+      `Admin auth success: ${admin.email} (user_id: ${user.id}, admin_id: ${admin.id})`
+    )
+
     return {
       success: true,
       admin,
@@ -111,7 +138,11 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AdminAuthRe
       success: false,
       error: 'Authentication verification failed',
       response: NextResponse.json(
-        { error: 'Internal authentication error', code: 'AUTH_ERROR' },
+        {
+          error: 'Internal authentication error',
+          code: 'AUTH_ERROR',
+          details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+        },
         { status: 500 }
       ),
     }

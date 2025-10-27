@@ -1,20 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireVendor } from '@/lib/auth/vendor-middleware'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/database.types'
-
-function getSupabaseAdmin() {
-  return createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    }
-  )
-}
+import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
 /**
  * PATCH /api/vendor/products/[id]

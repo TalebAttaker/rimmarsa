@@ -4,6 +4,13 @@ Welcome to the Rimmarsa documentation. All project documentation has been organi
 
 ---
 
+## Project Organization
+
+- **[Week 1 Completion](./WEEK1-COMPLETION.md)** - Documentation reorganization summary
+- **[Week 2 Organization](./WEEK-2-ORGANIZATION.md)** - Script consolidation and developer tooling
+
+---
+
 ## Documentation Structure
 
 ### [Architecture](./architecture/)

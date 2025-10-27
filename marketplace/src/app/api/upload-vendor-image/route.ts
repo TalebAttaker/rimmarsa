@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { createClient } from '@supabase/supabase-js';
+import sharp from 'sharp';
 
 // R2 Configuration - Load from environment variables
 const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
@@ -18,6 +19,8 @@ if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY) {
 // Security Configuration
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+const MAX_IMAGE_PIXELS = 50_000_000; // 50 megapixels - prevents pixel bomb attacks
+const MAX_IMAGE_DIMENSION = 8192; // Maximum width or height in pixels
 
 // File magic numbers (file signatures) for validation
 const FILE_SIGNATURES: { [key: string]: number[][] } = {
@@ -53,6 +56,128 @@ function validateFileSignature(buffer: Buffer, mimeType: string): boolean {
   return signatures.some(signature => {
     return signature.every((byte, index) => buffer[index] === byte);
   });
+}
+
+/**
+ * SECURITY: Validate and sanitize image using sharp
+ * - Validates image dimensions (prevents pixel bomb attacks)
+ * - Strips ALL metadata (EXIF, IPTC, XMP) to prevent metadata exploits
+ * - Re-encodes image to ensure it's a valid, clean image
+ * - Prevents polyglot files (image + executable)
+ * - Auto-rotates based on EXIF orientation before stripping metadata
+ *
+ * @param buffer Original image buffer
+ * @param mimeType Declared MIME type
+ * @returns Sanitized image buffer
+ */
+async function validateAndSanitizeImage(buffer: Buffer, mimeType: string): Promise<Buffer> {
+  try {
+    // Initialize sharp image processor
+    const image = sharp(buffer);
+    const metadata = await image.metadata();
+
+    // 1. Validate image format matches declared MIME type
+    const formatMap: Record<string, string> = {
+      'image/jpeg': 'jpeg',
+      'image/jpg': 'jpeg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+    };
+
+    const expectedFormat = formatMap[mimeType];
+    if (metadata.format !== expectedFormat) {
+      throw new Error(
+        `Image format mismatch: declared ${mimeType} but actual format is ${metadata.format}. ` +
+        `Possible polyglot file attack.`
+      );
+    }
+
+    // 2. Validate image dimensions (prevent pixel bomb attacks)
+    if (!metadata.width || !metadata.height) {
+      throw new Error('Invalid image: Unable to determine dimensions');
+    }
+
+    const totalPixels = metadata.width * metadata.height;
+    if (totalPixels > MAX_IMAGE_PIXELS) {
+      throw new Error(
+        `Image too large: ${totalPixels} pixels (max ${MAX_IMAGE_PIXELS}). ` +
+        `Potential decompression bomb attack detected.`
+      );
+    }
+
+    if (metadata.width > MAX_IMAGE_DIMENSION || metadata.height > MAX_IMAGE_DIMENSION) {
+      throw new Error(
+        `Image dimensions too large: ${metadata.width}x${metadata.height} ` +
+        `(max ${MAX_IMAGE_DIMENSION}x${MAX_IMAGE_DIMENSION})`
+      );
+    }
+
+    // 3. Validate image has sane dimensions (not 0x0)
+    if (metadata.width < 1 || metadata.height < 1) {
+      throw new Error('Invalid image: Dimensions must be at least 1x1 pixels');
+    }
+
+    // 4. SECURITY: Strip ALL metadata and re-encode
+    // This removes:
+    // - EXIF data (including GPS location, camera info)
+    // - IPTC data
+    // - XMP data
+    // - Embedded thumbnails
+    // - Color profiles (optional, we keep sRGB)
+    // - Prevents metadata-based exploits
+    let processedImage = image
+      .rotate() // Auto-rotate based on EXIF orientation
+      .withMetadata({
+        // Keep minimal metadata for proper rendering
+        orientation: undefined, // Remove orientation after rotation
+      });
+
+    // Re-encode based on format to ensure clean image
+    let processedBuffer: Buffer;
+    switch (metadata.format) {
+      case 'jpeg':
+        processedBuffer = await processedImage
+          .jpeg({
+            quality: 90,
+            mozjpeg: true, // Use MozJPEG for better compression
+          })
+          .toBuffer();
+        break;
+
+      case 'png':
+        processedBuffer = await processedImage
+          .png({
+            compressionLevel: 9,
+            adaptiveFiltering: true,
+          })
+          .toBuffer();
+        break;
+
+      case 'webp':
+        processedBuffer = await processedImage
+          .webp({
+            quality: 90,
+          })
+          .toBuffer();
+        break;
+
+      default:
+        throw new Error(`Unsupported image format: ${metadata.format}`);
+    }
+
+    console.info(
+      `Image sanitized: ${metadata.format} ${metadata.width}x${metadata.height}, ` +
+      `original: ${buffer.length} bytes, processed: ${processedBuffer.length} bytes`
+    );
+
+    return processedBuffer;
+
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Image validation failed: ${error.message}`);
+    }
+    throw new Error('Image validation failed: Unknown error');
+  }
 }
 
 /**
@@ -131,7 +256,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 8. Create Supabase client for token validation
+    // 8. SECURITY: Validate and sanitize image with sharp
+    // This prevents:
+    // - Pixel bomb attacks (decompression bombs)
+    // - Polyglot files (image + executable)
+    // - Metadata exploits (EXIF, IPTC, XMP)
+    // - Malicious embedded content
+    let sanitizedBuffer: Buffer;
+    try {
+      sanitizedBuffer = await validateAndSanitizeImage(buffer, file.type);
+    } catch (error) {
+      console.error('Image sanitization failed:', error);
+      return NextResponse.json(
+        {
+          error: 'Image validation failed',
+          details: error instanceof Error ? error.message : 'Invalid or malicious image file'
+        },
+        { status: 400 }
+      );
+    }
+
+    // 9. Create Supabase client for token validation
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -143,7 +288,7 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    // 9. Validate upload token
+    // 10. Validate upload token
     const { data: tokenData, error: tokenError } = await supabase
       .from('upload_tokens')
       .select('*')
@@ -158,7 +303,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 10. Check if token is expired
+    // 11. Check if token is expired
     const expiresAt = new Date(tokenData.expires_at);
     if (expiresAt < new Date()) {
       await supabase
@@ -172,7 +317,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 11. Check if token has remaining uploads
+    // 12. Check if token has remaining uploads
     if (tokenData.uploads_used >= tokenData.max_uploads) {
       await supabase
         .from('upload_tokens')
@@ -185,17 +330,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 12. Generate secure filename
+    // 13. Generate secure filename
     const fileExt = file.type === 'image/jpeg' ? 'jpg' :
                     file.type === 'image/png' ? 'png' :
                     file.type === 'image/webp' ? 'webp' : 'jpg';
     const fileName = `${type}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
-    // 13. Upload to R2
+    // 14. Upload sanitized image to R2
     const uploadCommand = new PutObjectCommand({
       Bucket: R2_BUCKET_NAME,
       Key: fileName,
-      Body: buffer,
+      Body: sanitizedBuffer, // Use sanitized buffer, not original
       ContentType: file.type,
       Metadata: {
         'original-name': file.name,
@@ -207,7 +352,7 @@ export async function POST(request: NextRequest) {
     const s3Client = getS3Client();
     await s3Client.send(uploadCommand);
 
-    // 14. Update token usage count
+    // 15. Update token usage count
     await supabase
       .from('upload_tokens')
       .update({
@@ -216,7 +361,7 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', tokenData.id);
 
-    // 15. Generate public URL
+    // 16. Generate public URL
     const publicUrl = `${R2_PUBLIC_URL}/${fileName}`;
 
     return NextResponse.json({

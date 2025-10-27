@@ -1,0 +1,621 @@
+{
+  "project": "Rimmarsa Marketplace Refactoring",
+  "version": "1.0",
+  "created": "2025-10-27",
+  "totalTasks": 19,
+  "estimatedHours": 120,
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Quick Wins",
+      "duration": "Week 1 (20 hours)",
+      "impact": "15-20% code reduction, +20-40% velocity",
+      "risk": "LOW",
+      "tasks": [
+        {
+          "id": "1.1",
+          "title": "Rename Admin Directory",
+          "description": "Rename /app/fassalapremierprojectbsk/ to /app/admin/ for clarity",
+          "priority": "CRITICAL",
+          "effort": "2 hours",
+          "risk": "LOW",
+          "impact": "HIGH",
+          "files": [
+            "/home/taleb/rimmarsa/marketplace/src/app/fassalapremierprojectbsk/dashboard/page.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/fassalapremierprojectbsk/vendors/page.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/fassalapremierprojectbsk/vendor-requests/page.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/fassalapremierprojectbsk/cities/page.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/fassalapremierprojectbsk/regions/page.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/fassalapremierprojectbsk/referrals/page.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/fassalapremierprojectbsk/login/page.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/components/admin/AdminLayout.tsx"
+          ],
+          "steps": [
+            "Create new /app/admin/ directory",
+            "Move all files from /app/fassalapremierprojectbsk/",
+            "Update all import statements",
+            "Update navigation links",
+            "Test all admin routes",
+            "Delete old directory",
+            "Commit changes"
+          ],
+          "testing": [
+            "Admin login works",
+            "All admin pages load",
+            "Navigation links work",
+            "API calls from admin pages function"
+          ],
+          "rollback": "Git revert + rename back",
+          "dependencies": [],
+          "blockers": []
+        },
+        {
+          "id": "1.2",
+          "title": "Create Shared Supabase Admin Client",
+          "description": "Extract getSupabaseAdmin() into single shared utility",
+          "priority": "HIGH",
+          "effort": "1 hour",
+          "risk": "LOW",
+          "impact": "HIGH",
+          "linesOfCodeSaved": 120,
+          "files": [
+            "/home/taleb/rimmarsa/marketplace/src/lib/auth/vendor-auth.ts",
+            "/home/taleb/rimmarsa/marketplace/src/lib/auth/admin-auth.ts",
+            "/home/taleb/rimmarsa/marketplace/src/lib/auth/vendor-middleware.ts",
+            "/home/taleb/rimmarsa/marketplace/src/lib/auth/admin-middleware.ts",
+            "/home/taleb/rimmarsa/marketplace/src/lib/rate-limit.ts",
+            "/home/taleb/rimmarsa/marketplace/src/app/api/vendor/products/route.ts",
+            "/home/taleb/rimmarsa/marketplace/src/app/api/vendor/products/[id]/route.ts",
+            "/home/taleb/rimmarsa/marketplace/src/app/api/admin/vendors/approve/route.ts",
+            "/home/taleb/rimmarsa/marketplace/src/app/api/admin/security/traffic/route.ts",
+            "/home/taleb/rimmarsa/marketplace/src/app/api/admin/security/summary/route.ts",
+            "/home/taleb/rimmarsa/marketplace/src/app/api/admin/security/suspicious/route.ts"
+          ],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/src/lib/supabase/admin.ts"
+          ],
+          "steps": [
+            "Create /lib/supabase/admin.ts with improved implementation",
+            "Update 11 files to import from shared location",
+            "Remove local getSupabaseAdmin() functions",
+            "Run TypeScript compiler",
+            "Test critical API routes"
+          ],
+          "testing": [
+            "Vendor login works",
+            "Admin login works",
+            "Product creation works",
+            "Admin vendor approval works",
+            "Security alerts load"
+          ],
+          "rollback": "Git revert",
+          "dependencies": [],
+          "blockers": []
+        },
+        {
+          "id": "1.3",
+          "title": "Create Shared ImageUploadCard Component",
+          "description": "Extract duplicated image upload UI into reusable component",
+          "priority": "HIGH",
+          "effort": "4 hours",
+          "risk": "LOW",
+          "impact": "HIGH",
+          "linesOfCodeSaved": 250,
+          "files": [
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/page.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/fassalapremierprojectbsk/vendors/page.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor/products/add/page.tsx"
+          ],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/src/components/shared/ImageUploadCard.tsx"
+          ],
+          "steps": [
+            "Create /components/shared/ImageUploadCard.tsx",
+            "Extract common upload logic",
+            "Update vendor-registration/page.tsx (4 uploads)",
+            "Update admin/vendors/page.tsx (2 uploads)",
+            "Update vendor/products/add/page.tsx",
+            "Test all upload flows"
+          ],
+          "testing": [
+            "Upload image in vendor registration",
+            "Remove uploaded image",
+            "Progress indicator shows correctly",
+            "Different height variants work",
+            "Required indicator shows",
+            "All image types work"
+          ],
+          "rollback": "Git revert to before extraction",
+          "dependencies": [],
+          "blockers": []
+        },
+        {
+          "id": "1.4",
+          "title": "Create Shared Types File",
+          "description": "Centralize all type definitions in /lib/types/index.ts",
+          "priority": "HIGH",
+          "effort": "2 hours",
+          "risk": "LOW",
+          "impact": "MEDIUM",
+          "linesOfCodeSaved": 125,
+          "files": [],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/src/lib/types/index.ts"
+          ],
+          "steps": [
+            "Create /lib/types/index.ts",
+            "Define all common types (Region, City, Vendor, Product, Category, Admin)",
+            "Export from centralized location",
+            "Update all files using these types",
+            "Run TypeScript compiler"
+          ],
+          "testing": [
+            "TypeScript compilation succeeds",
+            "No type errors in updated files",
+            "IDE autocomplete works"
+          ],
+          "rollback": "Git revert",
+          "dependencies": [],
+          "blockers": []
+        },
+        {
+          "id": "1.5",
+          "title": "Document Naming Conventions",
+          "description": "Establish and document coding standards",
+          "priority": "MEDIUM",
+          "effort": "1 hour",
+          "risk": "NONE",
+          "impact": "MEDIUM",
+          "files": [],
+          "newFiles": [
+            "/home/taleb/rimmarsa/CODE-STANDARDS.md"
+          ],
+          "steps": [
+            "Document existing good patterns",
+            "Identify violations",
+            "Create enforcement guidelines"
+          ],
+          "testing": [],
+          "rollback": "N/A (documentation only)",
+          "dependencies": [],
+          "blockers": []
+        },
+        {
+          "id": "1.6",
+          "title": "Create Route Group Organization",
+          "description": "Use Next.js 15 route groups for better organization",
+          "priority": "MEDIUM",
+          "effort": "2 hours",
+          "risk": "LOW",
+          "impact": "MEDIUM",
+          "files": [],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/src/app/(public)/",
+            "/home/taleb/rimmarsa/marketplace/src/app/(vendor)/",
+            "/home/taleb/rimmarsa/marketplace/src/app/(admin)/"
+          ],
+          "steps": [
+            "Create route group directories",
+            "Move files to appropriate groups",
+            "Update import paths",
+            "Test all routes",
+            "Verify auth layouts apply correctly"
+          ],
+          "testing": [
+            "Public routes accessible without auth",
+            "Vendor routes require vendor auth",
+            "Admin routes require admin auth",
+            "Navigation works correctly"
+          ],
+          "rollback": "Git revert",
+          "dependencies": ["1.1"],
+          "blockers": []
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Structural Improvements",
+      "duration": "Week 2 (40 hours)",
+      "impact": "30-40% code reduction, +60-100% velocity",
+      "risk": "MEDIUM",
+      "tasks": [
+        {
+          "id": "2.1",
+          "title": "Create Centralized Error Handler",
+          "description": "Build consistent error handling system for all API routes",
+          "priority": "HIGH",
+          "effort": "4 hours",
+          "risk": "MEDIUM",
+          "impact": "HIGH",
+          "linesOfCodeSaved": 200,
+          "files": [],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/src/lib/api/error-handler.ts",
+            "/home/taleb/rimmarsa/marketplace/src/lib/api/response-builder.ts"
+          ],
+          "steps": [
+            "Create /lib/api/error-handler.ts",
+            "Create /lib/api/response-builder.ts",
+            "Define error classes (ApiError, UnauthorizedError, etc.)",
+            "Create withErrorHandling() wrapper",
+            "Update 15 API routes to use new handler",
+            "Test error scenarios"
+          ],
+          "testing": [
+            "Valid requests return 200",
+            "Validation errors return 400",
+            "Auth errors return 401",
+            "Server errors return 500",
+            "Error logs appear"
+          ],
+          "rollback": "Git revert, routes still work with old error handling",
+          "dependencies": [],
+          "blockers": []
+        },
+        {
+          "id": "2.2",
+          "title": "Extract Form Validation Hooks",
+          "description": "Create reusable validation hooks for password, phone, etc.",
+          "priority": "HIGH",
+          "effort": "6 hours",
+          "risk": "LOW",
+          "impact": "MEDIUM",
+          "linesOfCodeSaved": 120,
+          "files": [
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/page.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor/login/page.tsx"
+          ],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/src/lib/hooks/useFormValidation.ts"
+          ],
+          "steps": [
+            "Create /lib/hooks/useFormValidation.ts",
+            "Implement usePasswordValidation()",
+            "Implement usePhoneValidation()",
+            "Update 5+ files to use new hooks",
+            "Test all forms"
+          ],
+          "testing": [
+            "Password validation works",
+            "Phone validation works",
+            "Error messages display",
+            "Strength indicator shows"
+          ],
+          "rollback": "Git revert",
+          "dependencies": [],
+          "blockers": []
+        },
+        {
+          "id": "2.3",
+          "title": "Create Base Auth Utility",
+          "description": "Generic sign-in function to reduce duplication in vendor/admin auth",
+          "priority": "MEDIUM",
+          "effort": "4 hours",
+          "risk": "MEDIUM",
+          "impact": "MEDIUM",
+          "linesOfCodeSaved": 60,
+          "files": [
+            "/home/taleb/rimmarsa/marketplace/src/lib/auth/vendor-auth.ts",
+            "/home/taleb/rimmarsa/marketplace/src/lib/auth/admin-auth.ts"
+          ],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/src/lib/auth/base-auth.ts"
+          ],
+          "steps": [
+            "Create /lib/auth/base-auth.ts",
+            "Implement signInWithSupabase<T>()",
+            "Refactor vendor-auth.ts to use base function",
+            "Refactor admin-auth.ts to use base function",
+            "Test all auth flows"
+          ],
+          "testing": [
+            "Vendor login works",
+            "Admin login works",
+            "Error messages are user-friendly",
+            "Validation (is_active, is_approved) works"
+          ],
+          "rollback": "Git revert",
+          "dependencies": ["1.2"],
+          "blockers": []
+        },
+        {
+          "id": "2.4",
+          "title": "Split vendor-registration/page.tsx",
+          "description": "Break 1,097-line file into 7 smaller components",
+          "priority": "HIGH",
+          "effort": "6 hours",
+          "risk": "HIGH",
+          "impact": "HIGH",
+          "files": [
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/page.tsx"
+          ],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/hooks/useVendorRegistration.ts",
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/hooks/useImageUpload.ts",
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/hooks/useLocationData.ts",
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/components/BusinessInfoStep.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/components/LocationStep.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/components/DocumentsStep.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/components/PricingStep.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/components/RegistrationStepper.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/components/SuccessScreen.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/app/vendor-registration/components/PendingRequestScreen.tsx"
+          ],
+          "steps": [
+            "Extract hooks (useVendorRegistration, useImageUpload, useLocationData)",
+            "Extract step components (BusinessInfoStep, LocationStep, etc.)",
+            "Extract UI components (Stepper, SuccessScreen, etc.)",
+            "Refactor main page.tsx to orchestrate components",
+            "Test ENTIRE form flow after each extraction",
+            "Commit after each file extraction"
+          ],
+          "testing": [
+            "Complete registration flow works",
+            "Step navigation works",
+            "Form validation works",
+            "Image uploads work",
+            "Success screen shows",
+            "Pending request detection works"
+          ],
+          "rollback": "Git revert to last working commit",
+          "dependencies": ["1.3", "2.2"],
+          "blockers": [],
+          "notes": "HIGHEST RISK TASK - Test thoroughly after each extraction"
+        },
+        {
+          "id": "2.5",
+          "title": "Split admin/vendors/page.tsx",
+          "description": "Break 1,058-line file into 6 smaller components",
+          "priority": "HIGH",
+          "effort": "6 hours",
+          "risk": "HIGH",
+          "impact": "HIGH",
+          "files": [
+            "/home/taleb/rimmarsa/marketplace/src/app/admin/vendors/page.tsx"
+          ],
+          "newFiles": [],
+          "steps": [
+            "Extract hooks",
+            "Extract modal components",
+            "Extract table components",
+            "Refactor main page.tsx",
+            "Test all CRUD operations"
+          ],
+          "testing": [
+            "Vendor list loads",
+            "Create vendor works",
+            "Edit vendor works",
+            "Delete vendor works",
+            "Filters work",
+            "Search works"
+          ],
+          "rollback": "Git revert",
+          "dependencies": ["1.1", "1.3"],
+          "blockers": [],
+          "notes": "HIGH RISK - Test thoroughly"
+        },
+        {
+          "id": "2.6",
+          "title": "Split mobile VendorRegistrationScreen.js",
+          "description": "Break 1,430-line file into 8 smaller components",
+          "priority": "MEDIUM",
+          "effort": "4 hours",
+          "risk": "HIGH",
+          "impact": "HIGH",
+          "files": [
+            "/home/taleb/rimmarsa/mobile-app/src/screens/VendorRegistrationScreen.js"
+          ],
+          "newFiles": [],
+          "steps": [
+            "Extract hooks",
+            "Extract step components",
+            "Refactor main screen",
+            "Test on iOS and Android"
+          ],
+          "testing": [
+            "Complete registration works on iOS",
+            "Complete registration works on Android",
+            "Image picker works",
+            "Form validation works"
+          ],
+          "rollback": "Git revert",
+          "dependencies": [],
+          "blockers": []
+        },
+        {
+          "id": "2.7",
+          "title": "Implement Consistent Component Naming",
+          "description": "Rename all kebab-case components to PascalCase",
+          "priority": "LOW",
+          "effort": "4 hours",
+          "risk": "LOW",
+          "impact": "LOW",
+          "files": [
+            "/home/taleb/rimmarsa/marketplace/src/components/modern-hero.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/components/modern-navbar.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/components/modern-footer.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/components/modern-category-card.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/components/modern-product-card.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/components/how-it-works.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/components/features-section.tsx",
+            "/home/taleb/rimmarsa/marketplace/src/components/testimonials-section.tsx"
+          ],
+          "newFiles": [],
+          "steps": [
+            "Rename files to PascalCase",
+            "Update all import statements",
+            "Run TypeScript compiler"
+          ],
+          "testing": [
+            "TypeScript compilation succeeds",
+            "Home page renders",
+            "All components import properly"
+          ],
+          "rollback": "Git revert",
+          "dependencies": [],
+          "blockers": []
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Production-Ready",
+      "duration": "Week 3 (60 hours)",
+      "impact": "100%+ velocity improvement with tests",
+      "risk": "LOW",
+      "tasks": [
+        {
+          "id": "3.1",
+          "title": "Add Test Suite",
+          "description": "Implement unit, integration, and E2E tests",
+          "priority": "HIGH",
+          "effort": "30 hours",
+          "risk": "LOW",
+          "impact": "HIGH",
+          "files": [],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/tests/unit/lib/validation.test.ts",
+            "/home/taleb/rimmarsa/marketplace/tests/unit/lib/r2-upload.test.ts",
+            "/home/taleb/rimmarsa/marketplace/tests/unit/hooks/usePasswordValidation.test.ts",
+            "/home/taleb/rimmarsa/marketplace/tests/unit/hooks/usePhoneValidation.test.ts",
+            "/home/taleb/rimmarsa/marketplace/tests/integration/api/vendor-login.test.ts",
+            "/home/taleb/rimmarsa/marketplace/tests/integration/api/admin-login.test.ts",
+            "/home/taleb/rimmarsa/marketplace/tests/integration/api/product-crud.test.ts",
+            "/home/taleb/rimmarsa/marketplace/tests/integration/components/ImageUploadCard.test.tsx",
+            "/home/taleb/rimmarsa/marketplace/tests/e2e/vendor-registration.spec.ts",
+            "/home/taleb/rimmarsa/marketplace/tests/e2e/vendor-login.spec.ts",
+            "/home/taleb/rimmarsa/marketplace/tests/e2e/admin-approval.spec.ts"
+          ],
+          "steps": [
+            "Install test dependencies (Jest, React Testing Library, Playwright)",
+            "Configure Jest",
+            "Configure Playwright",
+            "Write unit tests (validation, utils, hooks)",
+            "Write integration tests (API routes, components)",
+            "Write E2E tests (critical user flows)",
+            "Set up CI/CD test runner"
+          ],
+          "testing": [
+            "All tests pass",
+            "70% code coverage achieved",
+            "E2E tests cover critical paths"
+          ],
+          "rollback": "N/A (tests are additive)",
+          "dependencies": ["2.1", "2.2", "2.4"],
+          "blockers": []
+        },
+        {
+          "id": "3.2",
+          "title": "Migrate localStorage Auth to Cookies",
+          "description": "Move auth from localStorage to HttpOnly cookies",
+          "priority": "MEDIUM",
+          "effort": "8 hours",
+          "risk": "MEDIUM",
+          "impact": "MEDIUM",
+          "files": [],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/src/lib/hooks/useAuth.ts",
+            "/home/taleb/rimmarsa/marketplace/src/app/api/vendor/me/route.ts",
+            "/home/taleb/rimmarsa/marketplace/src/app/api/admin/me/route.ts"
+          ],
+          "steps": [
+            "Create useAuth() hook that reads from cookies",
+            "Create /api/vendor/me route",
+            "Create /api/admin/me route",
+            "Update vendor layout",
+            "Update admin layout",
+            "Remove localStorage usage"
+          ],
+          "testing": [
+            "Vendor auth works",
+            "Admin auth works",
+            "Session persists",
+            "Logout works"
+          ],
+          "rollback": "Git revert",
+          "dependencies": [],
+          "blockers": []
+        },
+        {
+          "id": "3.3",
+          "title": "Create Service Layer",
+          "description": "Separate business logic into service classes",
+          "priority": "MEDIUM",
+          "effort": "16 hours",
+          "risk": "LOW",
+          "impact": "HIGH",
+          "files": [],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/src/lib/services/vendor.service.ts",
+            "/home/taleb/rimmarsa/marketplace/src/lib/services/product.service.ts",
+            "/home/taleb/rimmarsa/marketplace/src/lib/services/admin.service.ts",
+            "/home/taleb/rimmarsa/marketplace/src/lib/services/auth.service.ts"
+          ],
+          "steps": [
+            "Create service classes",
+            "Move business logic from API routes to services",
+            "Update API routes to use services",
+            "Add service tests"
+          ],
+          "testing": [
+            "All API routes still work",
+            "Service tests pass",
+            "Business logic is isolated"
+          ],
+          "rollback": "Git revert",
+          "dependencies": ["1.2"],
+          "blockers": []
+        },
+        {
+          "id": "3.4",
+          "title": "Add API Middleware Layer",
+          "description": "Consistent middleware for auth, rate limiting, validation",
+          "priority": "MEDIUM",
+          "effort": "6 hours",
+          "risk": "LOW",
+          "impact": "MEDIUM",
+          "files": [],
+          "newFiles": [
+            "/home/taleb/rimmarsa/marketplace/src/app/api/_middleware/",
+            "/home/taleb/rimmarsa/marketplace/src/lib/api/middleware.ts"
+          ],
+          "steps": [
+            "Create middleware utilities",
+            "Apply to all API routes",
+            "Test middleware behavior"
+          ],
+          "testing": [
+            "Auth middleware works",
+            "Rate limiting applies",
+            "Validation runs"
+          ],
+          "rollback": "Git revert",
+          "dependencies": ["2.1"],
+          "blockers": []
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalHours": 120,
+    "totalLinesOfCodeSaved": 875,
+    "estimatedVelocityIncrease": "100%+",
+    "riskLevel": "MEDIUM",
+    "recommendedApproach": "Incremental, 20% of sprint capacity",
+    "successMetrics": {
+      "codeReduction": "25%",
+      "testCoverage": "70%",
+      "developerVelocity": "+100%",
+      "bugRate": "-50%"
+    }
+  },
+  "notes": [
+    "Start with Phase 1 (Quick Wins) for immediate impact",
+    "Phase 2 can be done incrementally during feature development",
+    "Phase 3 (tests) can be implemented post-launch",
+    "Commit frequently, test after each change",
+    "Use feature branches for all refactoring work",
+    "Tag codebase before starting (v1.0.0-pre-refactor)"
+  ]
+}

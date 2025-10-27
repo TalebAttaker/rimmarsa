@@ -1,0 +1,1207 @@
+{
+  "project": "Rimmarsa Marketplace - Production Reorganization",
+  "version": "1.0.0",
+  "created": "2025-10-27",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Documentation Cleanup & Organization",
+      "duration_days": "1-2 days",
+      "priority": "high",
+      "tasks": [
+        {
+          "id": "TASK-001",
+          "title": "Create documentation directory structure",
+          "assignee": "devops",
+          "estimate_hours": 2,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Create /docs/ directory with subdirectories: getting-started, architecture, api, deployment, development, security, operations, release-notes",
+          "acceptance_criteria": [
+            "Directory structure created",
+            "README.md in each subdirectory",
+            "Index file created in /docs/"
+          ]
+        },
+        {
+          "id": "TASK-002",
+          "title": "Consolidate deployment documentation",
+          "assignee": "devops",
+          "estimate_hours": 4,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-001"],
+          "description": "Merge 10+ deployment-related markdown files into comprehensive deployment guides",
+          "files_to_consolidate": [
+            "DEPLOYMENT-COMPLETE-V1.3.0.md",
+            "DEPLOYMENT-COMPLETE.md",
+            "DEPLOYMENT-FIX-READY.md",
+            "DEPLOYMENT-STATUS-V1.3.0.md",
+            "DEPLOYMENT-STEPS.md",
+            "DEPLOYMENT-SUCCESS-v1.2.0.md",
+            "DEPLOYMENT_COMPLETE.md",
+            "DEPLOYMENT_FIX_SUMMARY.md"
+          ],
+          "target": "docs/deployment/web-deployment.md and mobile-deployment.md",
+          "acceptance_criteria": [
+            "Single comprehensive web deployment guide",
+            "Single comprehensive mobile deployment guide",
+            "No duplicate information",
+            "All deployment steps verified and updated"
+          ]
+        },
+        {
+          "id": "TASK-003",
+          "title": "Consolidate security documentation",
+          "assignee": "security",
+          "estimate_hours": 3,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-001"],
+          "description": "Merge security-related documents into organized security documentation",
+          "files_to_consolidate": [
+            "SECURITY-UPGRADE-V1.6.0.md",
+            "SECURITY_ASSESSMENT_VENDOR_MOBILE_APP.md",
+            "SECURITY_IMPLEMENTATION_GUIDE.md",
+            "SECURITY_QUICK_REFERENCE.md",
+            "SECURITY_README.md",
+            "MOBILE_APP_SECURITY_CHECKLIST.md"
+          ],
+          "target": "docs/security/",
+          "acceptance_criteria": [
+            "Organized security documentation by topic",
+            "Current security measures documented",
+            "Security gaps identified and documented",
+            "Security checklist created"
+          ]
+        },
+        {
+          "id": "TASK-004",
+          "title": "Consolidate R2 migration documentation",
+          "assignee": "backend",
+          "estimate_hours": 2,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": ["TASK-001"],
+          "description": "Merge R2 migration documents into single comprehensive guide",
+          "files_to_consolidate": [
+            "CLOUDFLARE-R2-SETUP.md",
+            "CLOUDFLARE-R2-UPLOAD-GUIDE.md",
+            "R2-MIGRATION-COMPLETE-WEB-AND-MOBILE.md",
+            "R2-MIGRATION-COMPLETE.md",
+            "R2-MIGRATION-TESTING-GUIDE.md",
+            "R2-UPLOAD-SUCCESS.md"
+          ],
+          "target": "docs/deployment/cloudflare-r2.md",
+          "acceptance_criteria": [
+            "Single R2 setup and usage guide",
+            "Migration steps documented",
+            "Testing procedures included"
+          ]
+        },
+        {
+          "id": "TASK-005",
+          "title": "Consolidate session summaries and release notes",
+          "assignee": "devops",
+          "estimate_hours": 2,
+          "priority": "low",
+          "status": "not_started",
+          "dependencies": ["TASK-001"],
+          "description": "Extract valuable information from session summaries and create proper release notes",
+          "files_to_consolidate": [
+            "SESSION-SUMMARY.md",
+            "SESSION-COMPLETE-SUMMARY.md",
+            "V1.5.0-RELEASE-NOTES.md"
+          ],
+          "target": "docs/release-notes/",
+          "acceptance_criteria": [
+            "Release notes created for each version",
+            "Session summaries archived or deleted",
+            "Changelog format established"
+          ]
+        },
+        {
+          "id": "TASK-006",
+          "title": "Archive or delete remaining documentation files",
+          "assignee": "devops",
+          "estimate_hours": 2,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": ["TASK-002", "TASK-003", "TASK-004", "TASK-005"],
+          "description": "Move remaining markdown files to archive or delete if obsolete",
+          "acceptance_criteria": [
+            "Root directory has max 5 markdown files (README, SPECIFICATION, etc.)",
+            "All documentation organized in /docs/",
+            "Archive created for historical documents",
+            "Obsolete files deleted"
+          ]
+        },
+        {
+          "id": "TASK-007",
+          "title": "Create API documentation",
+          "assignee": "backend",
+          "estimate_hours": 6,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-001"],
+          "description": "Document all API endpoints with request/response schemas, authentication requirements, and examples",
+          "target": "docs/api/",
+          "acceptance_criteria": [
+            "All vendor API endpoints documented",
+            "All admin API endpoints documented",
+            "All public API endpoints documented",
+            "Request/response schemas in JSON Schema format",
+            "Authentication requirements specified",
+            "Example requests and responses included"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Mobile App Refactoring",
+      "duration_days": "3-5 days",
+      "priority": "critical",
+      "tasks": [
+        {
+          "id": "TASK-101",
+          "title": "Create mobile app feature-based directory structure",
+          "assignee": "mobile",
+          "estimate_hours": 2,
+          "priority": "critical",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Create feature-based folder structure for mobile app",
+          "acceptance_criteria": [
+            "src/features/ directory created",
+            "Subdirectories: auth, registration, products, dashboard, analytics",
+            "Each feature has screens/, components/, hooks/ subdirectories",
+            "src/shared/ directory for shared code"
+          ]
+        },
+        {
+          "id": "TASK-102",
+          "title": "Extract authentication logic from App.js",
+          "assignee": "mobile",
+          "estimate_hours": 6,
+          "priority": "critical",
+          "status": "not_started",
+          "dependencies": ["TASK-101"],
+          "description": "Move all authentication-related code to features/auth/",
+          "files_created": [
+            "src/features/auth/screens/LoginScreen.tsx",
+            "src/features/auth/components/LoginForm.tsx",
+            "src/features/auth/hooks/useAuth.ts",
+            "src/features/auth/services/authService.ts"
+          ],
+          "lines_reduced_from_app": "~200-300 lines",
+          "acceptance_criteria": [
+            "Login functionality moved to auth feature",
+            "Authentication state management extracted",
+            "Auth hooks created",
+            "App.js reduced in size"
+          ]
+        },
+        {
+          "id": "TASK-103",
+          "title": "Extract registration logic from App.js",
+          "assignee": "mobile",
+          "estimate_hours": 8,
+          "priority": "critical",
+          "status": "not_started",
+          "dependencies": ["TASK-101"],
+          "description": "Move vendor registration (multi-step form) to features/registration/",
+          "files_created": [
+            "src/features/registration/screens/RegistrationScreen.tsx",
+            "src/features/registration/components/StepIndicator.tsx",
+            "src/features/registration/components/Step1BusinessInfo.tsx",
+            "src/features/registration/components/Step2LocationInfo.tsx",
+            "src/features/registration/components/Step3ContactInfo.tsx",
+            "src/features/registration/components/Step4DocumentUpload.tsx",
+            "src/features/registration/components/Step5PackageSelection.tsx",
+            "src/features/registration/hooks/useRegistration.ts"
+          ],
+          "lines_reduced_from_app": "~400-500 lines",
+          "acceptance_criteria": [
+            "Registration flow extracted to separate feature",
+            "Multi-step form components created",
+            "Registration state management extracted",
+            "Image upload logic separated"
+          ]
+        },
+        {
+          "id": "TASK-104",
+          "title": "Extract product management logic from App.js",
+          "assignee": "mobile",
+          "estimate_hours": 8,
+          "priority": "critical",
+          "status": "not_started",
+          "dependencies": ["TASK-101"],
+          "description": "Move product listing, add, edit functionality to features/products/",
+          "files_created": [
+            "src/features/products/screens/ProductListScreen.tsx",
+            "src/features/products/screens/AddProductScreen.tsx",
+            "src/features/products/screens/EditProductScreen.tsx",
+            "src/features/products/components/ProductCard.tsx",
+            "src/features/products/components/ProductForm.tsx",
+            "src/features/products/hooks/useProducts.ts",
+            "src/features/products/services/productService.ts"
+          ],
+          "lines_reduced_from_app": "~400-500 lines",
+          "acceptance_criteria": [
+            "Product management extracted to separate feature",
+            "Product list, add, edit screens created",
+            "Product API calls separated into service",
+            "Reusable product components created"
+          ]
+        },
+        {
+          "id": "TASK-105",
+          "title": "Extract dashboard and analytics from App.js",
+          "assignee": "mobile",
+          "estimate_hours": 6,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-101"],
+          "description": "Move dashboard and analytics to separate features",
+          "files_created": [
+            "src/features/dashboard/screens/DashboardScreen.tsx",
+            "src/features/dashboard/components/DashboardCard.tsx",
+            "src/features/dashboard/components/StatsOverview.tsx",
+            "src/features/analytics/screens/AnalyticsScreen.tsx",
+            "src/features/analytics/components/SalesChart.tsx",
+            "src/features/analytics/components/ViewsChart.tsx"
+          ],
+          "lines_reduced_from_app": "~200-300 lines",
+          "acceptance_criteria": [
+            "Dashboard screens separated",
+            "Analytics screens separated",
+            "Chart components created",
+            "Stats calculation logic extracted"
+          ]
+        },
+        {
+          "id": "TASK-106",
+          "title": "Create shared components library",
+          "assignee": "mobile",
+          "estimate_hours": 4,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-101"],
+          "description": "Extract reusable UI components to shared/components/",
+          "files_created": [
+            "src/shared/components/Button.tsx",
+            "src/shared/components/Input.tsx",
+            "src/shared/components/Card.tsx",
+            "src/shared/components/Modal.tsx",
+            "src/shared/components/LoadingSpinner.tsx",
+            "src/shared/components/ErrorMessage.tsx"
+          ],
+          "acceptance_criteria": [
+            "Common UI components extracted",
+            "Components are reusable",
+            "Consistent styling applied",
+            "TypeScript types defined"
+          ]
+        },
+        {
+          "id": "TASK-107",
+          "title": "Create configuration management system",
+          "assignee": "mobile",
+          "estimate_hours": 3,
+          "priority": "critical",
+          "status": "not_started",
+          "dependencies": ["TASK-101"],
+          "description": "Remove hardcoded values and create config system",
+          "files_created": [
+            "src/config/constants.ts",
+            "src/config/env.ts",
+            "src/config/api.ts"
+          ],
+          "hardcoded_values_to_remove": [
+            "SUPABASE_URL",
+            "SUPABASE_ANON_KEY",
+            "CURRENT_VERSION",
+            "VERSION_CHECK_URL",
+            "PRICING_PLANS"
+          ],
+          "acceptance_criteria": [
+            "All hardcoded credentials removed",
+            "Environment variables used for sensitive data",
+            "Constants file for app configuration",
+            "Version managed via config file"
+          ]
+        },
+        {
+          "id": "TASK-108",
+          "title": "Refactor App.js to navigation-only",
+          "assignee": "mobile",
+          "estimate_hours": 4,
+          "priority": "critical",
+          "status": "not_started",
+          "dependencies": ["TASK-102", "TASK-103", "TASK-104", "TASK-105", "TASK-106", "TASK-107"],
+          "description": "Reduce App.js to only navigation logic and app initialization",
+          "target_lines": "< 200 lines",
+          "current_lines": "1737 lines",
+          "acceptance_criteria": [
+            "App.js contains only navigation setup",
+            "All business logic moved to features",
+            "App.js under 200 lines",
+            "Clean separation of concerns achieved"
+          ]
+        },
+        {
+          "id": "TASK-109",
+          "title": "Convert mobile app to TypeScript",
+          "assignee": "mobile",
+          "estimate_hours": 12,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": ["TASK-108"],
+          "description": "Gradually convert .js files to .tsx with proper typing",
+          "acceptance_criteria": [
+            "All feature files converted to TypeScript",
+            "Proper type definitions for props and state",
+            "API response types defined",
+            "No 'any' types unless absolutely necessary"
+          ]
+        },
+        {
+          "id": "TASK-110",
+          "title": "Clean up mobile app build scripts",
+          "assignee": "devops",
+          "estimate_hours": 3,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": ["TASK-108"],
+          "description": "Consolidate 14+ build scripts into single documented build process",
+          "scripts_to_consolidate": [
+            "BUILD-APK-LOCALLY-NO-EAS.sh",
+            "BUILD-APK-NO-DEVICE.sh",
+            "BUILD-LOCAL-APK.sh",
+            "BUILD-LOCAL.sh",
+            "BUILD-SIMPLE.sh",
+            "DEPLOY-COMPLETE.sh",
+            "DEPLOY.sh",
+            "FRESH-BUILD.sh",
+            "ONE-COMMAND-BUILD.sh",
+            "SUPER-SIMPLE-BUILD.sh",
+            "auto-build-and-deploy.sh",
+            "build-and-upload.sh",
+            "quick-build.sh"
+          ],
+          "target": "Single build.sh script with options",
+          "acceptance_criteria": [
+            "One build script with clear options",
+            "Build documentation updated",
+            "Old scripts archived or deleted",
+            "CI/CD integration ready"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Security Hardening",
+      "duration_days": "2-3 days",
+      "priority": "critical",
+      "tasks": [
+        {
+          "id": "TASK-201",
+          "title": "Implement environment variables in mobile app",
+          "assignee": "mobile",
+          "estimate_hours": 3,
+          "priority": "critical",
+          "status": "not_started",
+          "dependencies": ["TASK-107"],
+          "description": "Replace all hardcoded credentials with environment variables",
+          "files_to_modify": [
+            "App.js",
+            "src/services/supabase.js",
+            "src/services/r2Upload.js"
+          ],
+          "acceptance_criteria": [
+            "No hardcoded credentials in codebase",
+            ".env.example created",
+            ".env added to .gitignore",
+            "Documentation updated with setup instructions"
+          ]
+        },
+        {
+          "id": "TASK-202",
+          "title": "Enable ESLint in production builds",
+          "assignee": "frontend",
+          "estimate_hours": 4,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Remove ignoreDuringBuilds from next.config.js and fix all linting errors",
+          "acceptance_criteria": [
+            "ESLint enabled in production",
+            "All existing linting errors fixed",
+            "Strict linting rules configured",
+            "Build succeeds with no errors"
+          ]
+        },
+        {
+          "id": "TASK-203",
+          "title": "Add input validation to all API routes",
+          "assignee": "backend",
+          "estimate_hours": 8,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Implement Zod schema validation for all API endpoints",
+          "files_to_modify": [
+            "src/app/api/vendor/login/route.ts",
+            "src/app/api/vendor/products/route.ts",
+            "src/app/api/admin/login/route.ts",
+            "src/app/api/upload-vendor-image/route.ts",
+            "All other API routes"
+          ],
+          "acceptance_criteria": [
+            "Zod schemas created for all endpoints",
+            "Input validation on all POST/PUT requests",
+            "Proper error messages returned",
+            "Security tested"
+          ]
+        },
+        {
+          "id": "TASK-204",
+          "title": "Rename admin route from obscure name",
+          "assignee": "frontend",
+          "estimate_hours": 2,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Rename /fassalapremierprojectbsk/ to /admin/ with proper authentication",
+          "files_to_modify": [
+            "All admin route files",
+            "Admin middleware",
+            "Admin layout components"
+          ],
+          "acceptance_criteria": [
+            "Admin routes at /admin/",
+            "Old route returns 404",
+            "All links updated",
+            "Authentication strengthened"
+          ]
+        },
+        {
+          "id": "TASK-205",
+          "title": "Implement CSRF protection",
+          "assignee": "backend",
+          "estimate_hours": 4,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Add CSRF token validation for state-changing operations",
+          "acceptance_criteria": [
+            "CSRF tokens generated for forms",
+            "Token validation in API routes",
+            "Session-based token storage",
+            "Security tested"
+          ]
+        },
+        {
+          "id": "TASK-206",
+          "title": "Implement API request signing for mobile app",
+          "assignee": "backend",
+          "estimate_hours": 6,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": ["TASK-201"],
+          "description": "Add request signing to prevent API abuse from mobile app",
+          "acceptance_criteria": [
+            "Request signatures implemented",
+            "Timestamp validation added",
+            "Replay attack prevention",
+            "Mobile app updated to sign requests"
+          ]
+        },
+        {
+          "id": "TASK-207",
+          "title": "Implement security monitoring and alerting",
+          "assignee": "backend",
+          "estimate_hours": 6,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Create monitoring dashboard and automated alerts for security events",
+          "acceptance_criteria": [
+            "Dashboard using existing security tables",
+            "Automated alerts for suspicious activity",
+            "Daily security reports",
+            "Integration with notification system"
+          ]
+        },
+        {
+          "id": "TASK-208",
+          "title": "Add audit logging for sensitive operations",
+          "assignee": "backend",
+          "estimate_hours": 4,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Implement audit logging for admin actions and vendor approvals",
+          "acceptance_criteria": [
+            "Audit log table created",
+            "Admin actions logged",
+            "Vendor approval/rejection logged",
+            "Log retention policy defined"
+          ]
+        },
+        {
+          "id": "TASK-209",
+          "title": "Implement HTTPS enforcement in mobile app",
+          "assignee": "mobile",
+          "estimate_hours": 2,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-107"],
+          "description": "Ensure mobile app only connects via HTTPS",
+          "acceptance_criteria": [
+            "HTTP connections blocked",
+            "Certificate pinning considered",
+            "Error handling for SSL failures",
+            "Security tested"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Testing Implementation",
+      "duration_days": "5-7 days",
+      "priority": "high",
+      "tasks": [
+        {
+          "id": "TASK-301",
+          "title": "Set up testing infrastructure",
+          "assignee": "qa",
+          "estimate_hours": 4,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Configure Jest, React Testing Library, Playwright for testing",
+          "acceptance_criteria": [
+            "Jest configured for unit tests",
+            "React Testing Library set up",
+            "Playwright configured for E2E tests",
+            "Test scripts added to package.json"
+          ]
+        },
+        {
+          "id": "TASK-302",
+          "title": "Write unit tests for utility functions",
+          "assignee": "backend",
+          "estimate_hours": 8,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-301"],
+          "description": "Create unit tests for all utility functions in /lib/",
+          "target_coverage": "90%",
+          "acceptance_criteria": [
+            "Tests for auth utilities",
+            "Tests for validation schemas",
+            "Tests for utility functions",
+            "90% code coverage achieved"
+          ]
+        },
+        {
+          "id": "TASK-303",
+          "title": "Write component tests for shared components",
+          "assignee": "frontend",
+          "estimate_hours": 12,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-301"],
+          "description": "Create tests for all UI components",
+          "acceptance_criteria": [
+            "Tests for all shared components",
+            "Accessibility tests included",
+            "Snapshot tests for complex components",
+            "80% component coverage"
+          ]
+        },
+        {
+          "id": "TASK-304",
+          "title": "Write API integration tests",
+          "assignee": "backend",
+          "estimate_hours": 16,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-301"],
+          "description": "Create integration tests for all API endpoints",
+          "endpoints_to_test": [
+            "/api/vendor/login",
+            "/api/vendor/products",
+            "/api/admin/login",
+            "/api/admin/vendors/approve",
+            "/api/upload-vendor-image",
+            "All other endpoints"
+          ],
+          "acceptance_criteria": [
+            "All endpoints have integration tests",
+            "Authentication tests included",
+            "Authorization tests included",
+            "Error case testing"
+          ]
+        },
+        {
+          "id": "TASK-305",
+          "title": "Write E2E tests for critical user flows",
+          "assignee": "qa",
+          "estimate_hours": 20,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-301"],
+          "description": "Create end-to-end tests for key workflows",
+          "flows_to_test": [
+            "Vendor registration flow",
+            "Vendor login flow",
+            "Product creation flow",
+            "Product editing flow",
+            "Admin vendor approval flow",
+            "Mobile app download flow"
+          ],
+          "acceptance_criteria": [
+            "All critical flows tested",
+            "Tests run in CI/CD pipeline",
+            "Screenshots captured on failure",
+            "Test reports generated"
+          ]
+        },
+        {
+          "id": "TASK-306",
+          "title": "Write mobile app tests",
+          "assignee": "mobile",
+          "estimate_hours": 16,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": ["TASK-301", "TASK-108"],
+          "description": "Create tests for refactored mobile app features",
+          "acceptance_criteria": [
+            "Unit tests for hooks and services",
+            "Component tests for screens",
+            "Integration tests for navigation",
+            "60% coverage for mobile app"
+          ]
+        },
+        {
+          "id": "TASK-307",
+          "title": "Set up continuous testing in CI/CD",
+          "assignee": "devops",
+          "estimate_hours": 4,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-302", "TASK-303", "TASK-304", "TASK-305"],
+          "description": "Configure automated test execution in GitHub Actions",
+          "acceptance_criteria": [
+            "Tests run on every PR",
+            "Test coverage reports generated",
+            "Failed tests block merging",
+            "Test results visible in PR"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "CI/CD Pipeline Setup",
+      "duration_days": "2-3 days",
+      "priority": "high",
+      "tasks": [
+        {
+          "id": "TASK-401",
+          "title": "Create GitHub Actions workflow for web deployment",
+          "assignee": "devops",
+          "estimate_hours": 4,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Automate web marketplace deployment to Vercel",
+          "file_created": ".github/workflows/deploy-web.yml",
+          "acceptance_criteria": [
+            "Auto-deploy on push to main",
+            "Run tests before deployment",
+            "Run linting before deployment",
+            "Deploy preview for PRs",
+            "Deployment status in PR"
+          ]
+        },
+        {
+          "id": "TASK-402",
+          "title": "Create GitHub Actions workflow for mobile app build",
+          "assignee": "devops",
+          "estimate_hours": 6,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": ["TASK-110"],
+          "description": "Automate mobile app build and upload on version tags",
+          "file_created": ".github/workflows/build-mobile.yml",
+          "acceptance_criteria": [
+            "Build triggered on version tags",
+            "APK built automatically",
+            "APK uploaded to R2",
+            "app_versions table updated",
+            "GitHub release created"
+          ]
+        },
+        {
+          "id": "TASK-403",
+          "title": "Create staging environment",
+          "assignee": "devops",
+          "estimate_hours": 6,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Set up staging environment for pre-production testing",
+          "acceptance_criteria": [
+            "Staging database created",
+            "Staging Vercel deployment configured",
+            "Staging environment variables set",
+            "Staging URL accessible",
+            "Data seeding scripts created"
+          ]
+        },
+        {
+          "id": "TASK-404",
+          "title": "Create database migration workflow",
+          "assignee": "backend",
+          "estimate_hours": 4,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Automate database migration execution",
+          "acceptance_criteria": [
+            "Migration scripts organized",
+            "Migration execution automated",
+            "Rollback procedures documented",
+            "Migration testing on staging",
+            "Production migration checklist"
+          ]
+        },
+        {
+          "id": "TASK-405",
+          "title": "Implement automated code quality checks",
+          "assignee": "devops",
+          "estimate_hours": 3,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": ["TASK-202"],
+          "description": "Add code quality gates in CI/CD pipeline",
+          "acceptance_criteria": [
+            "ESLint runs on every PR",
+            "Prettier format check",
+            "TypeScript type check",
+            "Code complexity check",
+            "Bundle size check"
+          ]
+        },
+        {
+          "id": "TASK-406",
+          "title": "Set up automated dependency updates",
+          "assignee": "devops",
+          "estimate_hours": 2,
+          "priority": "low",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Configure Dependabot for automated dependency updates",
+          "acceptance_criteria": [
+            "Dependabot configured",
+            "Auto-merge for patch updates",
+            "Security updates prioritized",
+            "Weekly update schedule"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "Monitoring & Observability",
+      "duration_days": "2-3 days",
+      "priority": "medium",
+      "tasks": [
+        {
+          "id": "TASK-501",
+          "title": "Set up error tracking with Sentry",
+          "assignee": "devops",
+          "estimate_hours": 4,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Implement Sentry for error tracking in web and mobile apps",
+          "acceptance_criteria": [
+            "Sentry configured for web app",
+            "Sentry configured for mobile app",
+            "Source maps uploaded",
+            "Error notifications configured",
+            "User context captured"
+          ]
+        },
+        {
+          "id": "TASK-502",
+          "title": "Enable Vercel Analytics",
+          "assignee": "devops",
+          "estimate_hours": 1,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Enable Vercel Analytics for web performance monitoring",
+          "acceptance_criteria": [
+            "Analytics enabled",
+            "Web Vitals tracking",
+            "Real User Monitoring active",
+            "Dashboard accessible"
+          ]
+        },
+        {
+          "id": "TASK-503",
+          "title": "Create business metrics dashboard",
+          "assignee": "backend",
+          "estimate_hours": 8,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Build dashboard for key business metrics",
+          "metrics": [
+            "Vendor registrations (daily/weekly/monthly)",
+            "Product uploads",
+            "App downloads",
+            "Referral conversions",
+            "Revenue tracking"
+          ],
+          "acceptance_criteria": [
+            "Dashboard page created",
+            "Real-time metrics displayed",
+            "Charts for trends",
+            "Export functionality",
+            "Admin-only access"
+          ]
+        },
+        {
+          "id": "TASK-504",
+          "title": "Set up uptime monitoring",
+          "assignee": "devops",
+          "estimate_hours": 2,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Configure uptime monitoring for critical endpoints",
+          "acceptance_criteria": [
+            "Uptime monitor configured (UptimeRobot/Pingdom)",
+            "Critical endpoints monitored",
+            "SMS/email alerts configured",
+            "Status page created",
+            "SLA targets defined"
+          ]
+        },
+        {
+          "id": "TASK-505",
+          "title": "Implement database monitoring",
+          "assignee": "backend",
+          "estimate_hours": 3,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Set up monitoring for database performance and health",
+          "acceptance_criteria": [
+            "Slow query logging enabled",
+            "Connection pool monitoring",
+            "Database size tracking",
+            "Automated backups verified",
+            "Alerts for anomalies"
+          ]
+        },
+        {
+          "id": "TASK-506",
+          "title": "Create operational runbooks",
+          "assignee": "devops",
+          "estimate_hours": 6,
+          "priority": "low",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Document procedures for common operational tasks",
+          "runbooks": [
+            "Incident response",
+            "Database backup and restore",
+            "Vendor approval process",
+            "Security incident response",
+            "Deployment rollback",
+            "Mobile app emergency update"
+          ],
+          "target": "docs/operations/",
+          "acceptance_criteria": [
+            "Runbooks created for all scenarios",
+            "Step-by-step procedures documented",
+            "Contact information included",
+            "Regular review schedule established"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "Performance Optimization",
+      "duration_days": "3-5 days",
+      "priority": "low",
+      "tasks": [
+        {
+          "id": "TASK-601",
+          "title": "Implement bundle analysis for web app",
+          "assignee": "frontend",
+          "estimate_hours": 2,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Add bundle analyzer to identify optimization opportunities",
+          "acceptance_criteria": [
+            "Bundle analyzer configured",
+            "Analysis run on production build",
+            "Large dependencies identified",
+            "Optimization plan created"
+          ]
+        },
+        {
+          "id": "TASK-602",
+          "title": "Optimize mobile app bundle size",
+          "assignee": "mobile",
+          "estimate_hours": 8,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": ["TASK-108"],
+          "description": "Reduce mobile app bundle size through code splitting and optimization",
+          "acceptance_criteria": [
+            "Bundle size measured",
+            "Code splitting implemented",
+            "Unused dependencies removed",
+            "20% size reduction achieved",
+            "APK size under 20MB"
+          ]
+        },
+        {
+          "id": "TASK-603",
+          "title": "Implement image optimization",
+          "assignee": "frontend",
+          "estimate_hours": 4,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Optimize image delivery for web and mobile",
+          "acceptance_criteria": [
+            "Next.js Image component used throughout",
+            "WebP format with fallbacks",
+            "Responsive images implemented",
+            "Lazy loading enabled",
+            "Mobile image caching strategy"
+          ]
+        },
+        {
+          "id": "TASK-604",
+          "title": "Add database indexes for common queries",
+          "assignee": "database",
+          "estimate_hours": 4,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Analyze and optimize database query performance",
+          "acceptance_criteria": [
+            "Slow queries identified",
+            "Indexes added for common queries",
+            "Query performance tested",
+            "Before/after metrics documented"
+          ]
+        },
+        {
+          "id": "TASK-605",
+          "title": "Implement caching strategy",
+          "assignee": "backend",
+          "estimate_hours": 6,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Add caching for frequently accessed data",
+          "acceptance_criteria": [
+            "Redis cache configured (if needed)",
+            "Category data cached",
+            "Region/city data cached",
+            "Cache invalidation strategy",
+            "Performance improvement measured"
+          ]
+        },
+        {
+          "id": "TASK-606",
+          "title": "Implement pagination for large lists",
+          "assignee": "backend",
+          "estimate_hours": 6,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Add pagination to product and vendor listings",
+          "acceptance_criteria": [
+            "API pagination implemented",
+            "Frontend pagination UI",
+            "Load more functionality",
+            "Performance tested with large datasets"
+          ]
+        },
+        {
+          "id": "TASK-607",
+          "title": "Implement mobile offline mode",
+          "assignee": "mobile",
+          "estimate_hours": 12,
+          "priority": "low",
+          "status": "not_started",
+          "dependencies": ["TASK-108"],
+          "description": "Add offline support for mobile app",
+          "acceptance_criteria": [
+            "Offline data storage implemented",
+            "Sync mechanism created",
+            "Offline indicator UI",
+            "Queue for pending actions",
+            "Conflict resolution strategy"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 8,
+      "name": "Code Quality & Cleanup",
+      "duration_days": "2-3 days",
+      "priority": "medium",
+      "tasks": [
+        {
+          "id": "TASK-701",
+          "title": "Remove old and backup files",
+          "assignee": "devops",
+          "estimate_hours": 2,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Clean up old, backup, and unused files from codebase",
+          "files_to_remove": [
+            "marketplace/src/app/vendors/page_old.tsx",
+            ".next/cache/webpack/**/index.pack.old",
+            "Any other *_old.* or *.backup files"
+          ],
+          "acceptance_criteria": [
+            "All backup files removed",
+            "All _old files removed",
+            "Git history preserved",
+            "Verification that removed files aren't referenced"
+          ]
+        },
+        {
+          "id": "TASK-702",
+          "title": "Configure Prettier for code formatting",
+          "assignee": "frontend",
+          "estimate_hours": 2,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Set up Prettier and format entire codebase",
+          "acceptance_criteria": [
+            "Prettier configured",
+            "Format script added",
+            "Pre-commit hook for formatting",
+            "Entire codebase formatted",
+            "CI check for formatting"
+          ]
+        },
+        {
+          "id": "TASK-703",
+          "title": "Enable TypeScript strict mode",
+          "assignee": "frontend",
+          "estimate_hours": 8,
+          "priority": "medium",
+          "status": "not_started",
+          "dependencies": ["TASK-202"],
+          "description": "Enable strict TypeScript checking and fix errors",
+          "acceptance_criteria": [
+            "Strict mode enabled",
+            "All type errors fixed",
+            "No 'any' types unless justified",
+            "Type coverage > 95%"
+          ]
+        },
+        {
+          "id": "TASK-704",
+          "title": "Enforce file size limits",
+          "assignee": "devops",
+          "estimate_hours": 2,
+          "priority": "low",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Add linting rule to prevent large files",
+          "acceptance_criteria": [
+            "ESLint rule for max file size (300 lines)",
+            "Pre-commit check",
+            "Exception list for justified cases",
+            "Documentation updated"
+          ]
+        },
+        {
+          "id": "TASK-705",
+          "title": "Consolidate environment file management",
+          "assignee": "devops",
+          "estimate_hours": 3,
+          "priority": "high",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Create clear hierarchy and documentation for environment variables",
+          "acceptance_criteria": [
+            ".env.example in all projects",
+            "Environment variable documentation",
+            "Clear naming conventions",
+            "Validation scripts for required variables"
+          ]
+        },
+        {
+          "id": "TASK-706",
+          "title": "Add code comments and documentation",
+          "assignee": "all",
+          "estimate_hours": 12,
+          "priority": "low",
+          "status": "not_started",
+          "dependencies": [],
+          "description": "Add JSDoc comments to all exported functions",
+          "acceptance_criteria": [
+            "All public API functions documented",
+            "Complex logic explained with comments",
+            "README files in major directories",
+            "Architecture decision records created"
+          ]
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_tasks": 72,
+    "total_estimated_hours": 358,
+    "total_estimated_days": "18-28 days",
+    "critical_priority_tasks": 8,
+    "high_priority_tasks": 31,
+    "medium_priority_tasks": 26,
+    "low_priority_tasks": 7,
+    "team_distribution": {
+      "frontend": 12,
+      "backend": 13,
+      "mobile": 14,
+      "devops": 16,
+      "qa": 4,
+      "database": 1,
+      "security": 1,
+      "all": 1
+    }
+  },
+  "notes": [
+    "Tasks can be executed in parallel within phases",
+    "Some tasks across phases can run concurrently (e.g., documentation + testing)",
+    "Actual duration depends on team size and availability",
+    "Testing implementation should be continuous throughout all phases",
+    "Security tasks should be reviewed by security specialist",
+    "Mobile app refactoring is the most critical and time-consuming phase"
+  ]
+}
