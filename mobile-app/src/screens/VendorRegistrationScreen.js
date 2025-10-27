@@ -24,6 +24,7 @@ import {
 import { Buffer } from 'buffer';
 import SecureTokenManager from '../services/secureStorage';
 import { supabase } from '../services/supabase';
+import { uploadImageToR2, requestUploadToken } from '../services/r2Upload';
 
 const { width, height } = Dimensions.get('window');
 
@@ -72,6 +73,8 @@ export default function VendorRegistrationScreen({ navigation }) {
     payment: false,
   });
 
+  const [uploadToken, setUploadToken] = useState(null);
+
   const PRICING_PLANS = [
     {
       id: '1_month',
@@ -107,6 +110,21 @@ export default function VendorRegistrationScreen({ navigation }) {
       }
     }
   }, [formData.region_id, cities]);
+
+  // Request upload token when reaching step 3 (documents)
+  useEffect(() => {
+    if (step === 3 && !uploadToken) {
+      requestUploadToken()
+        .then(token => {
+          setUploadToken(token);
+          console.log('Upload token acquired for R2 uploads');
+        })
+        .catch(error => {
+          console.error('Failed to get upload token:', error);
+          Alert.alert('خطأ', 'فشل في الحصول على رمز التحميل. يرجى تحديث الصفحة.');
+        });
+    }
+  }, [step, uploadToken]);
 
   const checkInitialPhone = async () => {
     try {
@@ -185,43 +203,18 @@ export default function VendorRegistrationScreen({ navigation }) {
     setUploading((prev) => ({ ...prev, [type]: true }));
     setUploadProgress((prev) => ({ ...prev, [type]: 0 }));
 
-    // Simulate progress for better UX
-    const progressInterval = setInterval(() => {
-      setUploadProgress((prev) => {
-        const current = prev[type];
-        if (current < 90) {
-          return { ...prev, [type]: current + 10 };
-        }
-        return prev;
-      });
-    }, 200);
-
     try {
-      const fileName = `${Date.now()}-${type}.jpg`;
-      const filePath = `vendor-requests/${type}/${fileName}`;
-
-      // FIX: Use Buffer for proper base64 decoding
-      const buffer = Buffer.from(base64Data, 'base64');
-      const arrayBuffer = buffer.buffer.slice(
-        buffer.byteOffset,
-        buffer.byteOffset + buffer.byteLength
+      // Upload to R2 via API with progress tracking
+      const result = await uploadImageToR2(
+        uri,
+        type,
+        uploadToken || undefined,
+        (progress) => {
+          setUploadProgress((prev) => ({ ...prev, [type]: progress }));
+        }
       );
 
-      const { error: uploadError } = await supabase.storage
-        .from('images')
-        .upload(filePath, arrayBuffer, {
-          contentType: 'image/jpeg',
-          upsert: false,
-        });
-
-      if (uploadError) throw new Error(uploadError.message);
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from('images').getPublicUrl(filePath);
-
-      clearInterval(progressInterval);
-      setUploadProgress((prev) => ({ ...prev, [type]: 100 }));
+      const publicUrl = result.url;
 
       const fieldMap = {
         nni: 'nni_image_url',
@@ -232,13 +225,14 @@ export default function VendorRegistrationScreen({ navigation }) {
 
       setFormData((prev) => ({ ...prev, [fieldMap[type]]: publicUrl }));
 
+      console.log(`Uploaded ${type} to R2:`, publicUrl);
+      console.log(`Remaining uploads: ${result.remaining_uploads}`);
       Alert.alert('نجح', 'تم تحميل الصورة بنجاح!');
 
       setTimeout(() => {
         setUploadProgress((prev) => ({ ...prev, [type]: 0 }));
       }, 1000);
     } catch (error) {
-      clearInterval(progressInterval);
       console.error('Upload error:', error);
       Alert.alert('خطأ', `فشل تحميل الصورة: ${error.message}`);
       setUploadProgress((prev) => ({ ...prev, [type]: 0 }));

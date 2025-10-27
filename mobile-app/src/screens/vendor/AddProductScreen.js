@@ -15,6 +15,7 @@ import SecureTokenManager from '../../services/secureStorage';
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../../services/supabase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { uploadMultipleImagesToR2 } from '../../services/r2Upload';
 
 const MAX_IMAGES = 6;
 
@@ -140,38 +141,18 @@ export default function AddProductScreen({ navigation }) {
     if (images.length === 0) return [];
 
     setUploadingImages(true);
-    const uploadedUrls = [];
 
     try {
-      for (const image of images) {
-        const uri = image.uri;
-        const fileExt = uri.split('.').pop();
-        const fileName = `${vendorId}/${Date.now()}-${Math.random()
-          .toString(36)
-          .substring(7)}.${fileExt}`;
-        const filePath = `products/${fileName}`;
+      // Upload all images to R2 via API with progress tracking
+      const uploadedUrls = await uploadMultipleImagesToR2(
+        images,
+        'product',
+        (current, total, percentage) => {
+          console.log(`Uploading image ${current}/${total} (${percentage}%)`);
+        }
+      );
 
-        // Fetch the image as a blob
-        const response = await fetch(uri);
-        const blob = await response.blob();
-
-        const { error: uploadError } = await supabase.storage
-          .from('product-images')
-          .upload(filePath, blob, {
-            cacheControl: '3600',
-            upsert: false,
-            contentType: image.type || 'image/jpeg',
-          });
-
-        if (uploadError) throw uploadError;
-
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from('product-images').getPublicUrl(filePath);
-
-        uploadedUrls.push(publicUrl);
-      }
-
+      console.log(`Successfully uploaded ${uploadedUrls.length} images to R2`);
       return uploadedUrls;
     } catch (error) {
       console.error('Error uploading images:', error);
