@@ -1,23 +1,27 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '../database.types'
 
-// Create admin client for auth operations
-const supabaseAdmin = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-)
+// Create admin client for auth operations (lazy initialization)
+function getSupabaseAdmin() {
+  return createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  )
+}
 
 /**
  * Sign in vendor with phone number and password
  * Phone number is converted to email format: 12345678@vendor.rimmarsa.com
  */
 export async function signInVendorWithPhone(phoneDigits: string, password: string) {
+  const supabaseAdmin = getSupabaseAdmin()
+
   // Generate email from phone
   const email = `${phoneDigits}@vendor.rimmarsa.com`
 
@@ -61,6 +65,8 @@ export async function signInVendorWithPhone(phoneDigits: string, password: strin
  * Create Supabase Auth user for approved vendor
  */
 export async function createVendorAuthUser(vendorId: string, password: string) {
+  const supabaseAdmin = getSupabaseAdmin()
+
   try {
     // Get vendor details
     const { data: vendor, error: vendorError } = await supabaseAdmin
@@ -123,6 +129,7 @@ export async function createVendorAuthUser(vendorId: string, password: string) {
  * Sign out vendor
  */
 export async function signOutVendor(accessToken: string) {
+  const supabaseAdmin = getSupabaseAdmin()
   const { error } = await supabaseAdmin.auth.admin.signOut(accessToken)
   if (error) throw error
 }
