@@ -170,6 +170,11 @@ export class VendorApprovalService {
       throw new ConflictError('التاجر لديه حساب مسبقاً')
     }
 
+    // Validate password is provided
+    if (!vendorRequest.password) {
+      throw new AppError('كلمة المرور مفقودة في طلب التاجر', 400)
+    }
+
     // Create auth user for existing vendor
     const { data: authData, error: authError } =
       await supabase.auth.admin.createUser({
@@ -209,6 +214,11 @@ export class VendorApprovalService {
     email: string
   ): Promise<{ authUserId: string; vendorId: string }> {
     const supabase = getSupabaseAdmin()
+
+    // Validate password is provided
+    if (!vendorRequest.password) {
+      throw new AppError('كلمة المرور مفقودة في طلب التاجر', 400)
+    }
 
     // 1. Create Supabase Auth user
     const { data: authData, error: authError } =

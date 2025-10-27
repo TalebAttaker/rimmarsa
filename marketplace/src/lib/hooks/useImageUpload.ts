@@ -68,7 +68,7 @@ export function useImageUpload(uploadToken: string | null) {
     setUploadProgress((prev) => ({ ...prev, [type]: 0 }))
 
     try {
-      const url = await uploadImageToR2(
+      const result = await uploadImageToR2(
         file,
         type,
         uploadToken,
@@ -81,10 +81,10 @@ export function useImageUpload(uploadToken: string | null) {
       toast.success('تم تحميل الصورة بنجاح')
 
       if (onSuccess) {
-        onSuccess(url)
+        onSuccess(result.url)
       }
 
-      return url
+      return result.url
     } catch (error) {
       console.error(`Error uploading ${type} image:`, error)
       toast.error('فشل تحميل الصورة. يرجى المحاولة مرة أخرى')
