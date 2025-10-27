@@ -1,25 +1,16 @@
 import type { Database } from '../database.types'
 import { getSupabaseAdmin } from '../supabase/admin'
+import bcrypt from 'bcryptjs'
 
 /**
  * Sign in admin with email and password
+ * Uses database password_hash instead of Supabase Auth
  */
 export async function signInAdmin(email: string, password: string) {
   const supabaseAdmin = getSupabaseAdmin()
 
-  // Attempt sign in with Supabase Auth
-  const { data, error } = await supabaseAdmin.auth.signInWithPassword({
-    email,
-    password,
-  })
-
-  if (error) {
-    console.error('Admin sign in error:', error)
-    throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة')
-  }
-
   // Fetch admin details from admins table
-  const { data: admin, error: adminError } = await getSupabaseAdmin()
+  const { data: admin, error: adminError } = await supabaseAdmin
     .from('admins')
     .select('*')
     .eq('email', email)
@@ -30,7 +21,49 @@ export async function signInAdmin(email: string, password: string) {
     throw new Error('حساب المسؤول غير موجود')
   }
 
-  return { user: data.user, session: data.session, admin }
+  // Verify password using bcrypt
+  const isValidPassword = await bcrypt.compare(password, admin.password_hash)
+
+  if (!isValidPassword) {
+    console.error('Invalid password for admin:', email)
+    throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة')
+  }
+
+  // Create a session object for compatibility
+  // Note: This is a custom session, not a real Supabase Auth session
+  const sessionToken = Buffer.from(JSON.stringify({
+    admin_id: admin.id,
+    email: admin.email,
+    role: admin.role,
+    timestamp: Date.now()
+  })).toString('base64')
+
+  const mockSession = {
+    access_token: sessionToken,
+    refresh_token: sessionToken,
+    expires_in: 3600,
+    expires_at: Math.floor(Date.now() / 1000) + 3600,
+    token_type: 'bearer',
+    user: {
+      id: admin.id,
+      email: admin.email,
+      role: admin.role,
+    }
+  }
+
+  return {
+    user: {
+      id: admin.id,
+      email: admin.email,
+      role: admin.role,
+      user_metadata: {
+        name: admin.name,
+        role: admin.role
+      }
+    },
+    session: mockSession,
+    admin
+  }
 }
 
 /**
