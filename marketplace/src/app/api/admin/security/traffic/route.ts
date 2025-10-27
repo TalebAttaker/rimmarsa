@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/auth/admin-middleware'
 
-const supabaseAdmin = createClient(
+function getSupabaseAdmin() {
+  return createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
   {
@@ -11,7 +12,8 @@ const supabaseAdmin = createClient(
       persistSession: false,
     },
   }
-)
+  )
+}
 
 /**
  * GET /api/admin/security/traffic?hours=24
@@ -50,6 +52,7 @@ export async function GET(request: NextRequest) {
     const hours = Math.min(parseInt(searchParams.get('hours') || '24'), 168) // Max 7 days
 
     // Call the traffic report function
+    const supabaseAdmin = getSupabaseAdmin()
     const { data, error } = await supabaseAdmin.rpc('get_hourly_traffic_report', {
       p_hours: hours,
     })

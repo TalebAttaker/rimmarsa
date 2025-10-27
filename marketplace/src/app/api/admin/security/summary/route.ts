@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/auth/admin-middleware'
 
-const supabaseAdmin = createClient(
+function getSupabaseAdmin() {
+  return createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
   {
@@ -11,7 +12,8 @@ const supabaseAdmin = createClient(
       persistSession: false,
     },
   }
-)
+  )
+}
 
 /**
  * GET /api/admin/security/summary
@@ -38,6 +40,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Call the security summary function
+    const supabaseAdmin = getSupabaseAdmin()
     const { data, error } = await supabaseAdmin.rpc('get_security_summary')
 
     if (error) {
