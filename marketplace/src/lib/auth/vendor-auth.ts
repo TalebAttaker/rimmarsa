@@ -138,6 +138,7 @@ export async function signOutVendor(accessToken: string) {
  * Get current vendor from session
  */
 export async function getCurrentVendor(userId: string) {
+  const supabaseAdmin = getSupabaseAdmin()
   const { data: vendor, error } = await supabaseAdmin
     .from('vendors')
     .select('*')
