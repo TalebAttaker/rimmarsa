@@ -2,12 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { createClient } from '@supabase/supabase-js';
 
-// R2 Configuration
-const R2_ACCOUNT_ID = '932136e1e064884067a65d0d357297cf';
-const R2_ACCESS_KEY_ID = 'd4963dcd29796040ac1062c4e6e59936';
-const R2_SECRET_ACCESS_KEY = '7a9b56cea689661dbd115769c3fb371122080706b02ff674ddc686280bf81805';
-const R2_BUCKET_NAME = 'rimmarsa-vendor-images';
-const R2_PUBLIC_URL = 'https://pub-6cf3ef49a27d47f7bc38b12620f38013.r2.dev';
+// R2 Configuration - Load from environment variables
+const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
+const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;
+const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY;
+const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME || 'rimmarsa-vendor-images';
+const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || 'https://pub-6cf3ef49a27d47f7bc38b12620f38013.r2.dev';
+
+// Validate required R2 credentials at startup
+if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY) {
+  console.error('CRITICAL: Missing R2 credentials in environment variables');
+  console.error('Required: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY');
+}
 
 // Security Configuration
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -20,15 +26,21 @@ const FILE_SIGNATURES: { [key: string]: number[][] } = {
   'image/webp': [[0x52, 0x49, 0x46, 0x46]], // RIFF
 };
 
-// Initialize S3 client for R2
-const s3Client = new S3Client({
-  region: 'auto',
-  endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: R2_ACCESS_KEY_ID,
-    secretAccessKey: R2_SECRET_ACCESS_KEY,
-  },
-});
+// Initialize S3 client for R2 (with lazy initialization to handle runtime credential validation)
+function getS3Client() {
+  if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY) {
+    throw new Error('R2 credentials not configured');
+  }
+
+  return new S3Client({
+    region: 'auto',
+    endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId: R2_ACCESS_KEY_ID,
+      secretAccessKey: R2_SECRET_ACCESS_KEY,
+    },
+  });
+}
 
 /**
  * Validate file content by checking magic numbers (file signatures)
@@ -54,6 +66,14 @@ function validateFileSignature(buffer: Buffer, mimeType: string): boolean {
  */
 export async function POST(request: NextRequest) {
   try {
+    // Runtime validation of R2 credentials
+    if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY) {
+      return NextResponse.json(
+        { error: 'Server configuration error: R2 credentials not configured' },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     const token = formData.get('token') as string;
     const file = formData.get('image') as File;
@@ -184,6 +204,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    const s3Client = getS3Client();
     await s3Client.send(uploadCommand);
 
     // 14. Update token usage count

@@ -1,32 +1,17 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
-
-// Lazy initialization to avoid runtime errors during build
-let supabaseAdmin: SupabaseClient | null = null
-
-function getSupabaseAdmin() {
-  if (!supabaseAdmin) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-    if (!url || !key) {
-      throw new Error('Missing Supabase environment variables')
-    }
-
-    supabaseAdmin = createClient(url, key, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    })
-  }
-  return supabaseAdmin
-}
+import { getSupabaseAdmin } from './supabase/admin'
 
 interface RateLimitResult {
   success: boolean
   limit: number
   remaining: number
   reset: number
+}
+
+interface RateLimitResponse {
+  allowed: boolean
+  limit: number
+  remaining: number
+  reset_at: string
 }
 
 /**
@@ -51,7 +36,7 @@ export async function checkRateLimit(
       p_window_minutes: windowMinutes,
     })
 
-    if (error) {
+    if (error || !data) {
       console.error('Rate limit check error:', error)
       // If there's an error, allow the request (fail open for availability)
       return {
@@ -62,11 +47,14 @@ export async function checkRateLimit(
       }
     }
 
+    // Type assertion with proper type checking
+    const response = data as unknown as RateLimitResponse
+
     return {
-      success: data.allowed,
-      limit: data.limit,
-      remaining: data.remaining,
-      reset: new Date(data.reset_at).getTime(),
+      success: response?.allowed ?? true,
+      limit: response?.limit ?? maxRequests,
+      remaining: response?.remaining ?? maxRequests,
+      reset: response?.reset_at ? new Date(response.reset_at).getTime() : Date.now() + windowMinutes * 60 * 1000,
     }
   } catch (error) {
     console.error('Rate limit exception:', error)
@@ -96,7 +84,7 @@ export async function authRateLimit(identifier: string): Promise<RateLimitResult
       p_identifier: identifier,
     })
 
-    if (error) {
+    if (error || !data) {
       console.error('Auth rate limit check error:', error)
       return {
         success: true,
@@ -106,11 +94,14 @@ export async function authRateLimit(identifier: string): Promise<RateLimitResult
       }
     }
 
+    // Type assertion with proper type checking
+    const response = data as unknown as RateLimitResponse
+
     return {
-      success: data.allowed,
-      limit: data.limit,
-      remaining: data.remaining,
-      reset: new Date(data.reset_at).getTime(),
+      success: response?.allowed ?? true,
+      limit: response?.limit ?? 5,
+      remaining: response?.remaining ?? 5,
+      reset: response?.reset_at ? new Date(response.reset_at).getTime() : Date.now() + 15 * 60 * 1000,
     }
   } catch (error) {
     console.error('Auth rate limit exception:', error)
