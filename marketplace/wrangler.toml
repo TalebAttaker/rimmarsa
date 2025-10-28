@@ -1,0 +1,12 @@
+name = "vendor-images-public"
+main = "r2-public-worker.js"
+compatibility_date = "2024-01-01"
+
+routes = [
+  { pattern = "rimmarsa.com/r2/*", zone_name = "rimmarsa.com" },
+  { pattern = "www.rimmarsa.com/r2/*", zone_name = "rimmarsa.com" }
+]
+
+[[r2_buckets]]
+binding = "VENDOR_IMAGES"
+bucket_name = "rimmarsa-vendor-images"

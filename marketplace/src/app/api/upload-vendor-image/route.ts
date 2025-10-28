@@ -8,7 +8,8 @@ const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
 const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;
 const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY;
 const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME || 'rimmarsa-vendor-images';
-const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || 'https://pub-6cf3ef49a27d47f7bc38b12620f38013.r2.dev';
+// Use Vercel API route to serve R2 images publicly
+const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/r2-images` : 'https://www.rimmarsa.com/api/r2-images');
 
 // Validate required R2 credentials at startup
 if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY) {
