@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         headers: {
           // Set BOTH access and refresh tokens as HttpOnly cookies
           'Set-Cookie': [
-            `sb-admin-token=${session?.access_token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`,
+            `sb-admin-token=${session?.access_token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=28800`, // 8 hours
             `sb-admin-refresh-token=${session?.refresh_token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${7 * 24 * 60 * 60}`, // 7 days
           ].join(', '),
         },

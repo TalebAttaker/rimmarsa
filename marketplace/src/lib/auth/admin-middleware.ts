@@ -46,9 +46,9 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AdminAuthRe
 
       // Check if it's a custom admin session token
       if (decoded.admin_id && decoded.email && decoded.role) {
-        // Verify token hasn't expired (1 hour from timestamp)
+        // Verify token hasn't expired (8 hours from timestamp)
         const tokenAge = Date.now() - decoded.timestamp
-        if (tokenAge > 3600000) { // 1 hour in milliseconds
+        if (tokenAge > 28800000) { // 8 hours in milliseconds
           return {
             success: false,
             error: 'Session expired',
