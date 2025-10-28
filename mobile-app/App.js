@@ -26,7 +26,7 @@ import { createClient } from '@supabase/supabase-js';
 import * as ImagePicker from 'expo-image-picker';
 
 const { width } = Dimensions.get('window');
-const CURRENT_VERSION = '1.5.1';
+const CURRENT_VERSION = '1.7.0';
 const VERSION_CHECK_URL = 'https://www.rimmarsa.com/api/app-version';
 
 const supabase = createClient(
