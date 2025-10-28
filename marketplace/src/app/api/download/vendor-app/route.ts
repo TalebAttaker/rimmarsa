@@ -58,26 +58,9 @@ export async function GET(request: NextRequest) {
       downloaded_at: new Date().toISOString()
     });
 
-    // Fetch the file from R2 and stream it with proper headers
-    const response = await fetch(downloadUrl);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch APK: ${response.status}`);
-    }
-
-    // Get the file as a blob
-    const blob = await response.blob();
-
-    // Return with proper headers to ensure correct download
-    return new NextResponse(blob, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/vnd.android.package-archive',
-        'Content-Disposition': `attachment; filename="vendor-app-${version}.apk"`,
-        'Content-Length': blob.size.toString(),
-        'Cache-Control': 'public, max-age=3600',
-      },
-    });
+    // Redirect to the APK URL instead of proxying
+    // This avoids double-proxy issues and is more efficient
+    return NextResponse.redirect(downloadUrl, 302);
   } catch (error) {
     console.error('Error processing download:', error);
     return NextResponse.json(
